@@ -1,3 +1,4 @@
+#include "voice_gamemgr.h"
 /***
 *
 *	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
@@ -157,6 +158,9 @@ public:
 
 	// Immediately end a multiplayer game
 	virtual void EndMultiplayerGame( void ) {}
+
+	BOOL                       m_bFreezePeriod;      /*     4     4 */
+	BOOL                       m_bBombDropped;       /*     8     4 */
 };
 
 extern CGameRules *InstallGameRules( void );
@@ -349,11 +353,108 @@ public:
 	// Immediately end a multiplayer game
 	virtual void EndMultiplayerGame( void ) { GoToIntermission(); }
 
+	CVoiceGameMgr				m_VoiceGameMgr;						/*    12     0 */
+
+	float						m_fTeamCount;						/*    40     4 */
+	float						m_flCheckWinConditions;				/*    44     4 */
+	float						m_fRoundCount;						/*    48     4 */
+	int							m_iRoundTime;						/*    52     4 */
+	int							m_iRoundTimeSecs;					/*    56     4 */
+	int							m_iIntroRoundTime;					/*    60     4 */
+	float						m_fIntroRoundCount;					/*    64     4 */
+
+	int							m_iAccountTerrorist;				/*    68     4 */
+	int							m_iAccountCT;						/*    72     4 */
+
+	int							m_iNumTerrorist;					/*    76     4 */
+	int							m_iNumCT;							/*    80     4 */
+	int							m_iNumSpawnableTerrorist;			/*    84     4 */
+	int							m_iNumSpawnableCT;					/*    88     4 */
+	int							m_iSpawnPointCount_Terrorist;		/*    92     4 */
+	int							m_iSpawnPointCount_CT;				/*    96     4 */
+
+	int							m_iHostagesRescued;					/*   100     4 */
+	int							m_iHostagesTouched;					/*   104     4 */
+
+	int							m_iRoundWinStatus;					/*   108     4 */
+	short int					m_iNumCTWins;						/*   112     2 */
+	short int					m_iNumTerroristWins;				/*   114     2 */
+
+	bool						m_bTargetBombed;					/*   116     1 */
+	bool						m_bBombDefused;						/*   117     1 */
+
+	bool						m_bMapHasBombTarget;				/*   118     1 */
+	bool						m_bMapHasBombZone;					/*   119     1 */
+	bool						m_bMapHasBuyZone;					/*   120     1 */
+	bool						m_bMapHasRescueZone;				/*   121     1 */
+	bool						m_bMapHasEscapeZone;				/*   122     1 */
+	int							m_iMapHasVIPSafetyZone;				/*   124     4 */
+	int							m_bMapHasCameras;					/*   128     4 */
+
+	int							m_iC4Timer;							/*   132     4 */
+	int							m_iC4Guy;							/*   136     4 */
+
+	int							m_iLoserBonus;						/*   140     4 */
+	int							m_iNumConsecutiveCTLoses;			/*   144     4 */
+	int							m_iNumConsecutiveTerroristLoses;	/*   148     4 */
+
+	float						m_fMaxIdlePeriod;					/*   152     4 */
+	int							m_iLimitTeams;						/*   156     4 */
+	bool						m_bLevelInitialized;				/*   160     1 */
+	bool						m_bRoundTerminating;				/*   161     1 */
+	bool						m_bCompleteReset;					/*   162     1 */
+
+	float						m_flRequiredEscapeRatio;			/*   164     4 */
+	int							m_iNumEscapers;						/*   168     4 */
+	int							m_iHaveEscaped;						/*   172     4 */
+
+	bool						m_bCTCantBuy;						/*   176     1 */
+	bool						m_bTCantBuy;						/*   177     1 */
+
+	float						m_flBombRadius;						/*   180     4 */
+
+	int							m_iConsecutiveVIP;					/*   184     4 */
+
+	int							m_iTotalGunCount;					/*   188     4 */
+	int							m_iTotalGrenadeCount;				/*   192     4 */
+	int							m_iTotalArmourCount;				/*   196     4 */
+
+	int							m_iUnBalancedRounds;				/*   200     4 */
+	int							m_iNumEscapeRounds;					/*   204     4 */
+
+	int							m_iMapVotes[100];					/*   208   400 */
+	int							m_iLastPick;						/*   608     4 */
+	int							m_iMaxMapTime;						/*   612     4 */
+	int							m_iMaxRounds;						/*   616     4 */
+	int							m_iTotalRoundsPlayed;				/*   620     4 */
+	int							m_iMaxRoundsWon;					/*   624     4 */
+
+	int							m_iStoredSpectValue;				/*   628     4 */
+	float						m_flForceCameraValue;				/*   632     4 */
+	float						m_flForceChaseCamValue;				/*   636     4 */
+	float						m_flFadeToBlackValue;				/*   640     4 */
+
+	class CBasePlayer *			m_pVIP;								/*   644     4 */
+	class CBasePlayer *			VIPQueue[5];						/*   648    20 */
+
 protected:
+
 	virtual void ChangeLevel( void );
 	virtual void GoToIntermission( void );
-	float m_flIntermissionEndTime;
-	BOOL m_iEndIntermissionButtonHit;
+
+	float                      m_flIntermissionEndTime;				/*   668     4 */
+	float                      m_flIntermissionStartTime;			/*   672     4 */
+	BOOL                       m_iEndIntermissionButtonHit;			/*   676     4 */
+
+	float                      m_tmNextPeriodicThink;				/*   680     4 */
+	bool                       m_bFirstConnected;					/*   684     1 */
+	bool                       m_bInCareerGame;						/*   685     1 */
+	float                      m_fCareerRoundMenuTime;				/*   688     4 */
+	int                        m_iCareerMatchWins;					/*   692     4 */
+	int                        m_iRoundWinDifference;				/*   696     4 */
+	float                      m_fCareerMatchMenuTime;				/*   700     4 */
+	bool                       m_bSkipSpawn;						/*   704     1 */
+
 	void SendMOTDToClient( edict_t *client );
 };
 
