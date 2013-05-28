@@ -52,7 +52,30 @@ public:
 	virtual int	BloodColor( void ) { return DONT_BLEED; }
 	virtual void Killed( entvars_t *pevAttacker, int iGib );
 
-	BOOL m_fRegisteredSound;// whether or not this grenade has issued its DANGER sound to the world sound list yet.
+	bool						m_bStartDefuse;       /*   404     1 */
+	bool						m_bIsC4;              /*   405     1 */
+	EHANDLE						m_pBombDefuser;       /*   408     8 */
+	float						m_flDefuseCountDown;  /*   416     4 */
+	float						m_flC4Blow;           /*   420     4 */
+	float						m_flNextFreqInterval; /*   424     4 */
+	float						m_flNextBeep;         /*   428     4 */
+	float						m_flNextFreq;         /*   432     4 */
+	char *						m_sBeepName;          /*   436     4 */
+	float						m_fAttenu;            /*   440     4 */
+	float						m_flNextBlink;        /*   444     4 */
+	float						m_fNextDefuse;        /*   448     4 */
+	bool						m_bJustBlew;          /*   452     1 */
+	int							m_iTeam;              /*   456     4 */
+	int							m_iCurWave;           /*   460     4 */
+	edict_t *					m_pentCurBombTarget;  /*   464     4 */
+	int							m_SGSmoke;            /*   468     4 */
+	int							m_angle;              /*   472     4 */
+	short unsigned int			m_usEvent;            /*   476     2 */
+	bool						m_bLightSmoke;        /*   478     1 */
+	bool						m_bDetonated;         /*   479     1 */
+	Vector						m_vSmokeDetonate;     /*   480    12 */
+	int							m_iBounceCount;       /*   492     4 */
+	BOOL						m_fRegisteredSound;   /*   496     4 */  //whether or not this grenade has issued its DANGER sound to the world sound list yet.
 };
 
 
