@@ -47,6 +47,12 @@ DLL_GLOBAL	short	g_sModelIndexBubbles;// holds the index for the bubbles model
 DLL_GLOBAL	short	g_sModelIndexBloodDrop;// holds the sprite index for the initial blood
 DLL_GLOBAL	short	g_sModelIndexBloodSpray;// holds the sprite index for splattered blood
 
+// CS
+DLL_GLOBAL	short	g_sModelIndexFireball2;
+DLL_GLOBAL	short	g_sModelIndexFireball3;
+DLL_GLOBAL	short	g_sModelIndexFireball4;
+
+
 ItemInfo CBasePlayerItem::ItemInfoArray[MAX_WEAPONS];
 AmmoInfo CBasePlayerItem::AmmoInfoArray[MAX_AMMO_SLOTS];
 
@@ -398,6 +404,11 @@ void W_Precache(void)
 	g_sModelIndexBubbles = PRECACHE_MODEL ("sprites/bubble.spr");//bubbles
 	g_sModelIndexBloodSpray = PRECACHE_MODEL ("sprites/bloodspray.spr"); // initial blood
 	g_sModelIndexBloodDrop = PRECACHE_MODEL ("sprites/blood.spr"); // splattered blood 
+
+	// CS
+	g_sModelIndexFireball2 = PRECACHE_MODEL( "sprites/eexplo.spr" );
+	g_sModelIndexFireball3 = PRECACHE_MODEL( "sprites/fexplo.spr" );
+	g_sModelIndexFireball4 = PRECACHE_MODEL( "sprites/fexplo1.spr" );
 
 	g_sModelIndexLaser = PRECACHE_MODEL( (char *)g_pModelNameLaser );
 	g_sModelIndexLaserDot = PRECACHE_MODEL("sprites/laserdot.spr");
