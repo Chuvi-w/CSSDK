@@ -266,6 +266,7 @@
     <ClInclude Include="activitymap.h" />
     <ClInclude Include="animation.h" />
     <ClInclude Include="basemonster.h" />
+    <ClInclude Include="bot.h" />
     <ClInclude Include="cbase.h" />
     <ClInclude Include="cdll_dll.h" />
     <ClInclude Include="client.h" />
