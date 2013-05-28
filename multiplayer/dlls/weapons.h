@@ -28,58 +28,59 @@ class CGrenade : public CBaseMonster
 public:
 	virtual void Spawn( void );
 
+	virtual int ObjectCaps( void ) { return m_bStartDefuse ? FCAP_IMPULSE_USE : FCAP_FORCE_TRANSITION; }	// CS
+	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );		// CS
+	virtual int Save( CSave &save );																		// CS
+	virtual int Restore( CRestore &restore );																// CS
+
 	typedef enum { SATCHEL_DETONATE = 0, SATCHEL_RELEASE } SATCHELCODE;
 
-	static CGrenade *ShootTimed( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time );
-	static CGrenade *ShootContact( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity );
-	static CGrenade *ShootSatchelCharge( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity );
+	static CGrenade *ShootTimed( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time );										// CS (Flashbang Grenade)
+	static CGrenade *ShootContact( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity );													
+	static CGrenade *ShootSatchelCharge( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity );											// CS (C4 Bomb)
+	static CGrenade *ShootTimed2(entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, int iTeam, short unsigned int usEvent ); // CS (He Grenade)
+	static CGrenade *ShootSmokeGrenade( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, short unsigned int usEvent );		// CS (Smoke Grenade)
+
 	static void UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code );
 
-	void Explode( Vector vecSrc, Vector vecAim );
-	void Explode( TraceResult *pTrace, int bitsDamageType );
-
-	// CS
-	void Explode2( TraceResult *pTrace, int bitsDamageType );
-	void Explode3( TraceResult *pTrace, int bitsDamageType );
-	void SG_Explode( TraceResult *pTrace, int bitsDamageType );
-
-	void EXPORT Smoke( void );
-
-	// CS
-	void Smoke2( void );
-	void Smoke3_A( void );
-	void Smoke3_B( void );
-	void Smoke3_C( void );
-	void SG_Smoke( void );
+	void Explode( Vector vecSrc, Vector vecAim );				// CS (Flashbang Grenade)
+	void Explode( TraceResult *pTrace, int bitsDamageType );	// CS (Flashbang Grenade)
+	void Explode2( TraceResult *pTrace, int bitsDamageType );	// CS (C4 Bomb)
+	void Explode3( TraceResult *pTrace, int bitsDamageType );	// CS (He Grenade)
+	void SG_Explode( TraceResult *pTrace, int bitsDamageType );	// CS (Smoke Grenade)
 
 	void EXPORT BounceTouch( CBaseEntity *pOther );
 	void EXPORT SlideTouch( CBaseEntity *pOther );
 	void EXPORT ExplodeTouch( CBaseEntity *pOther );
+
+	void EXPORT C4Touch( CBaseEntity *pOther );					// CS (C4 bomb)
+	void EXPORT C4Think( void );								// CS (C4 bomb)
+
 	void EXPORT DangerSoundThink( void );
+
+	void EXPORT Detonate( void );								// CS (Flashbang Grenade)
+	void EXPORT Detonate2( void );								// CS (C4 Bomb)
+	void EXPORT Detonate3( void );								// CS (He Grenade)
+	void EXPORT DetonateUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ); // CS (Flashbang Grenade)
 	void EXPORT PreDetonate( void );
-	void EXPORT Detonate( void );
+	
+	void EXPORT SG_Detonate( void );							// CS (Smoke Grenade)
+	void EXPORT SG_Smoke( void );								// CS (Smoke Grenade)
+	void EXPORT SG_TumbleThink( void );							// CS (Smoke Grenade)
 
-	// CS
-	void SG_Detonate( void );
-	void Detonate2( void );
-	void Detonate3( void );
+	void EXPORT Smoke( void );									// CS (Flashbang Grenade)
+	void EXPORT Smoke2( void );									// CS (C4 Bomb)
+	void EXPORT Smoke3_A( void );
+	void EXPORT Smoke3_B( void );
+	void EXPORT Smoke3_C( void );								// CS (He Grenade)
 
-	void EXPORT DetonateUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT TumbleThink( void );
-
-	// CS
-	void SG_TumbleThink( void );
-	void C4Think( void );
 
 	virtual void BounceSound( void );
 	virtual int	BloodColor( void ) { return DONT_BLEED; }
 	virtual void Killed( entvars_t *pevAttacker, int iGib );
 
-	// CS
-	virtual int ObjectCaps( void ) { return m_bStartDefuse ? FCAP_IMPULSE_USE : FCAP_FORCE_TRANSITION; } 
-	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	virtual int Save( CSave &save );
-	virtual int Restore( CRestore &restore );
+	static TYPEDESCRIPTION m_SaveData[];
 
 	// CS
 	bool						m_bStartDefuse;       /*   404     1 */
@@ -107,6 +108,25 @@ public:
 	int							m_iBounceCount;       /*   492     4 */
 
 	BOOL						m_fRegisteredSound;   /*   496     4 */  //whether or not this grenade has issued its DANGER sound to the world sound list yet.
+
+	/* vtable has 8 entries: 
+	{
+	   [0]	= Spawn			(_ZN8CGrenade5SpawnEv), 
+	   [4]	= Save			(_ZN8CGrenade4SaveER5CSave), 
+	   [5]	= Restore		(_ZN8CGrenade7RestoreER8CRestore), 
+	   [6]	= ObjectCaps	(_ZN8CGrenade10ObjectCapsEv), 
+	   [14] = Killed		(_ZN8CGrenade6KilledEP9entvars_si), 
+	   [15] = BloodColor	(_ZN8CGrenade10BloodColorEv), 
+	   [46] = Use			(_ZN8CGrenade3UseEP11CBaseEntityS1_8USE_TYPEf), 
+	   [76] = BounceSound	(_ZN8CGrenade11BounceSoundEv), 
+	} */
+
+	/* size: 500, cachelines: 8, members: 26 */
+	/* sum members: 91, holes: 3, sum holes: 409 */
+	/* padding: 260 */
+	/* last cacheline: 52 bytes */
+
+	/* BRAIN FART ALERT! 500 != 91 + 409(holes), diff = 0 */
 };
 
 
