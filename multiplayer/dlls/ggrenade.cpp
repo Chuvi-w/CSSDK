@@ -26,15 +26,37 @@
 #include "nodes.h"
 #include "soundent.h"
 #include "decals.h"
-
-
-//===================grenade
+#include "gamerules.h"
+#include "player.h"
+#include "hltv.h"
 
 
 LINK_ENTITY_TO_CLASS( grenade, CGrenade );
 
+TYPEDESCRIPTION	CGrenade::m_SaveData[] = 
+{
+	DEFINE_FIELD( CGrenade, m_flNextFreqInterval, FIELD_TIME	),
+	DEFINE_FIELD( CGrenade, m_flNextBeep		, FIELD_TIME	),
+	DEFINE_FIELD( CGrenade, m_flNextFreq		, FIELD_TIME	),
+	DEFINE_FIELD( CGrenade, m_sBeepName			, FIELD_STRING	),
+	DEFINE_FIELD( CGrenade, m_fAttenu			, FIELD_FLOAT	),
+	DEFINE_FIELD( CGrenade, m_flNextBlink		, FIELD_TIME	),
+	DEFINE_FIELD( CGrenade, m_bJustBlew			, FIELD_BOOLEAN ),
+	DEFINE_FIELD( CGrenade, m_pentCurBombTarget	, FIELD_ENTITY	),
+	DEFINE_FIELD( CGrenade, m_SGSmoke			, FIELD_INTEGER ),
+	DEFINE_FIELD( CGrenade, m_bLightSmoke		, FIELD_BOOLEAN ),
+	DEFINE_FIELD( CGrenade, m_usEvent			, FIELD_SHORT	),
+};
+
+IMPLEMENT_SAVERESTORE( CGrenade, CBaseEntity );
+
+
 // Grenades flagged with this will be triggered when the owner calls detonateSatchelCharges
 #define SF_DETONATE		0x0001
+
+// CS
+extern int gmsgScenarioIcon;
+extern int gmsgBombPickup;
 
 //
 // Grenade Explode
@@ -423,37 +445,6 @@ CGrenade * CGrenade:: ShootTimed( entvars_t *pevOwner, Vector vecStart, Vector v
 }
 
 
-CGrenade * CGrenade :: ShootSatchelCharge( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity )
-{
-	CGrenade *pGrenade = GetClassPtr( (CGrenade *)NULL );
-	pGrenade->pev->movetype = MOVETYPE_BOUNCE;
-	pGrenade->pev->classname = MAKE_STRING( "grenade" );
-	
-	pGrenade->pev->solid = SOLID_BBOX;
-
-	SET_MODEL(ENT(pGrenade->pev), "models/grenade.mdl");	// Change this to satchel charge model
-
-	UTIL_SetSize(pGrenade->pev, Vector( 0, 0, 0), Vector(0, 0, 0));
-
-	pGrenade->pev->dmg = 200;
-	UTIL_SetOrigin( pGrenade->pev, vecStart );
-	pGrenade->pev->velocity = vecVelocity;
-	pGrenade->pev->angles = g_vecZero;
-	pGrenade->pev->owner = ENT(pevOwner);
-	
-	// Detonate in "time" seconds
-	pGrenade->SetThink( &CBaseEntity::SUB_DoNothing );
-	pGrenade->SetUse( &CGrenade::DetonateUse );
-	pGrenade->SetTouch( &CGrenade::SlideTouch );
-	pGrenade->pev->spawnflags = SF_DETONATE;
-
-	pGrenade->pev->friction = 0.9;
-
-	return pGrenade;
-}
-
-
-
 void CGrenade :: UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code )
 {
 	edict_t *pentFind;
@@ -484,5 +475,583 @@ void CGrenade :: UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code )
 	}
 }
 
-//======================end grenade
+
+
+
+// ==========
+//	C4 BOMB
+// ==========
+
+CGrenade *CGrenade::ShootSatchelCharge( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity )	// Last check: 2013, May 28
+{
+	CGrenade *pGrenade = GetClassPtr( ( CGrenade* )NULL );
+
+	pGrenade->pev->movetype	= MOVETYPE_TOSS;
+	pGrenade->pev->solid	= SOLID_BBOX;
+
+	// TODO: Implements me.
+	// if( pev->classname )
+	//		RemoveEntityHashValue( STRING( pev->classname ) );
+
+	pGrenade->pev->classname = MAKE_STRING( "grenade" );
+
+	// TODO: Implements me.
+	// AddEntityHashValue( STRING( pev->classname ) );
+
+	SET_MODEL( ENT( pGrenade->pev ), "models/w_c4.mdl" );
+
+	UTIL_SetSize( pGrenade->pev, Vector( 3, 6, 8 ), Vector( -3, -6, 0 ) );
+	UTIL_SetOrigin( pGrenade->pev, vecStart );
+
+	pGrenade->pev->dmg		= 100;
+	pGrenade->pev->angles	= vecVelocity;
+	pGrenade->pev->velocity = g_vecZero;
+	pGrenade->pev->owner	= ENT( pevOwner );
+
+	pGrenade->SetThink( &CGrenade::C4Think );
+	pGrenade->SetTouch( &CGrenade::C4Touch );
+
+	pGrenade->pev->spawnflags = SF_DETONATE;
+	pGrenade->pev->nextthink  = gpGlobals->time + 0.1;
+
+	pGrenade->m_flC4Blow			= gpGlobals->time + ( ( CHalfLifeMultiplay* )g_pGameRules )->m_iC4Timer;
+	pGrenade->m_flNextFreqInterval	= ( ( CHalfLifeMultiplay* )g_pGameRules )->m_iC4Timer / 4;
+	pGrenade->m_flNextFreq			= gpGlobals->time;
+	pGrenade->m_flNextBeep			= gpGlobals->time + 0.5;
+	pGrenade->m_flNextBlink			= gpGlobals->time + 2.0;
+
+	pGrenade->m_iCurWave	= 0;
+	pGrenade->m_fAttenu		= 0;
+	pGrenade->m_sBeepName	= NULL;
+
+	pGrenade->m_fNextDefuse = 0;
+
+	pGrenade->m_bIsC4		= true;
+	pGrenade->m_bStartDefuse= false;
+	pGrenade->m_bJustBlew	= false;
+
+	pGrenade->pev->friction = 0.9;
+
+	if( !FNullEnt( pevOwner ) )
+	{
+		CBasePlayer *pPlayer = ( CBasePlayer* )Instance( pevOwner );
+
+		if( pPlayer->IsPlayer() )
+			pGrenade->m_pentCurBombTarget = pPlayer->m_pentCurBombTarget;
+	}
+	else
+		pGrenade->m_pentCurBombTarget = NULL;
+
+	return pGrenade;
+}
+
+void CGrenade::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ) // Last check: 2013, May 28
+{
+	if( !m_bIsC4 )
+	{
+		return;
+	}
+
+	int barTime = 0;
+
+	CBasePlayer* pPlayer = GetClassPtr( ( CBasePlayer* )pActivator->pev );
+
+	if( pPlayer->m_iTeam == CT )
+	{
+		if( m_bStartDefuse )
+		{
+			m_fNextDefuse = gpGlobals->time + 0.5;
+			return;
+		}
+
+		g_engfuncs.pfnSetClientMaxspeed( ENT( pPlayer->pev ), 1.0 );
+
+		// TODO: Adds support for bots.
+		// TheBots->OnEvent( EVENT_BOMB_DEFUSING, pActivator, NULL );
+
+		//if( g_pGameRules->IsCareer() )
+		//{
+			// TODO: Implements this.
+			// TheCareerTasks->HandleEvent( EVENT_BOMB_DEFUSING, NULL, NULL );
+		//}
+
+		if( pPlayer->m_bHasDefuser )
+		{
+			UTIL_LogPrintf(	"\"%s<%i><%s><CT>\" triggered \"Begin_Bomb_Defuse_With_Kit\"\n", 
+				STRING( pPlayer->pev->netname ),
+				GETPLAYERAUTHID( pPlayer->edict() ),
+				GETPLAYERUSERID( pPlayer->edict() ) );
+
+			ClientPrint( pPlayer->pev, HUD_PRINTCENTER, "#Defusing_Bomb_With_Defuse_Kit" );
+			EMIT_SOUND( ENT( pPlayer->pev ), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM );
+
+			pPlayer->m_bIsDefusing = true;
+
+			m_pBombDefuser		= pActivator;
+			m_bStartDefuse		= TRUE;
+			m_flDefuseCountDown	= gpGlobals->time + 5.0;
+			m_fNextDefuse		= gpGlobals->time + 0.5;
+
+			barTime = 5;
+		}
+		else
+		{
+			UTIL_LogPrintf(	"\"%s<%i><%s><CT>\" triggered \"Begin_Bomb_Defuse_Without_Kit\"\n", 
+				STRING( pPlayer->pev->netname ),
+				GETPLAYERAUTHID( pPlayer->edict() ),
+				GETPLAYERUSERID( pPlayer->edict() ) );
+
+			ClientPrint( pPlayer->pev, HUD_PRINTCENTER, "#Defusing_Bomb_Without_Defuse_Kit" );
+			EMIT_SOUND( ENT( pPlayer->pev ), CHAN_ITEM, "weapons/c4_disarm.wav", VOL_NORM, ATTN_NORM );
+
+			pPlayer->m_bIsDefusing = true;
+
+			m_pBombDefuser		= pActivator;
+			m_bStartDefuse		= TRUE;
+			m_flDefuseCountDown	= gpGlobals->time + 10.0;
+			m_fNextDefuse		= gpGlobals->time + 0.5;
+
+			barTime = 10;
+		}
+
+		// TODO: Implements this.
+		// pPlayer->SetProgressBarTime( barTime );
+	}
+}
+
+void CGrenade::Detonate2( void ) // Last check: 2013, May 28
+{
+	TraceResult tr;
+	Vector		vecSpot;
+
+	vecSpot = pev->origin + Vector( 0 , 0 , 8 );
+	UTIL_TraceLine( vecSpot, vecSpot + Vector( 0, 0, -40 ), ignore_monsters, ENT( pev ), &tr );
+
+	Explode2( &tr, DMG_BLAST );
+}
+
+void CGrenade::Smoke2( void ) // Last check: 2013, May 28
+{
+	if( UTIL_PointContents( pev->origin ) == CONTENTS_WATER )
+	{
+		UTIL_Bubbles( pev->origin - Vector( 64, 64, 64 ), pev->origin + Vector( 64, 64, 64 ), 100 );
+	}
+	else
+	{
+		MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, pev->origin );
+			WRITE_BYTE( TE_SMOKE );
+			WRITE_COORD( pev->origin.x );
+			WRITE_COORD( pev->origin.y );
+			WRITE_COORD( pev->origin.z );
+			WRITE_SHORT( g_sModelIndexSmoke );
+			WRITE_BYTE( 150 );	// scale * 10
+			WRITE_BYTE( 8  );	// framerate
+		MESSAGE_END();
+	}
+
+	UTIL_Remove( this );
+}
+
+void CGrenade::Explode2( TraceResult* pTrace, int bitsDamageType ) // Last check: 2013, May 28
+{
+	CHalfLifeMultiplay *pGameRules = ( CHalfLifeMultiplay* )g_pGameRules;
+
+	pev->model		= iStringNull;	// invisible
+	pev->solid		= SOLID_NOT;	// intangible
+	pev->takedamage = DAMAGE_NO;
+
+	UTIL_ScreenShake( pTrace->vecEndPos, 25.0, 150.0, 1.0, 3000.0 );
+
+	pGameRules->m_bTargetBombed = true;
+
+	//if( pGameRules->IsCareer() )
+	//{
+		// TODO: implements this.
+		// TheCareerTasks->LatchRoundEndMessage();
+	//}
+
+	m_bJustBlew = true;
+	//pGameRules->CheckWinConditions();
+
+	if( pTrace->flFraction != 1.0 )
+	{
+		pev->origin = pTrace->vecEndPos + ( pTrace->vecPlaneNormal * ( pev->dmg - 24 ) * 0.6 );
+	}
+
+	bool isInWater = UTIL_PointContents( pev->origin ) == CONTENTS_WATER;
+
+	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+		WRITE_BYTE( TE_SPRITE );		
+		WRITE_COORD( pev->origin.x );
+		WRITE_COORD( pev->origin.y );
+		WRITE_COORD( pev->origin.z - 10.0 );
+		WRITE_SHORT( g_sModelIndexFireball3 );
+		WRITE_BYTE( ( pev->dmg - 275 ) * 0.6 );
+		WRITE_BYTE( 150 ); 
+	MESSAGE_END();
+
+	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+		WRITE_BYTE( TE_SPRITE );		
+		WRITE_COORD( pev->origin.x + RANDOM_FLOAT( -512, 512 ) );
+		WRITE_COORD( pev->origin.y + RANDOM_FLOAT( -512, 512 ) );
+		WRITE_COORD( pev->origin.z + RANDOM_FLOAT( -10, 10 ) );
+		WRITE_SHORT( g_sModelIndexFireball2 );
+		WRITE_BYTE( floor( ( pev->dmg - 275 ) * 0.6 ) );
+		WRITE_BYTE( 150 ); 
+	MESSAGE_END();
+
+	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+		WRITE_BYTE( TE_SPRITE );		
+		WRITE_COORD( pev->origin.x + RANDOM_FLOAT( -512, 512 ) );
+		WRITE_COORD( pev->origin.y + RANDOM_FLOAT( -512, 512 ) );
+		WRITE_COORD( pev->origin.z + RANDOM_FLOAT( -10, 10 ) );
+		WRITE_SHORT( g_sModelIndexFireball3 );
+		WRITE_BYTE( floor( ( pev->dmg - 275 ) * 0.6 ) );
+		WRITE_BYTE( 150 ); 
+	MESSAGE_END();
+
+	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+		WRITE_BYTE( TE_SPRITE );		
+		WRITE_COORD( pev->origin.x + RANDOM_FLOAT( -512, 512 ) );
+		WRITE_COORD( pev->origin.y + RANDOM_FLOAT( -512, 512 ) );
+		WRITE_COORD( pev->origin.z + RANDOM_FLOAT( -10, 10 ) );
+		WRITE_SHORT( g_sModelIndexFireball );
+		WRITE_BYTE( floor( ( pev->dmg - 275 ) * 0.6 ) );
+		WRITE_BYTE( 17 ); 
+	MESSAGE_END();
+
+	EMIT_SOUND( ENT( pev ), CHAN_WEAPON, "weapons/c4_explode1.wav", VOL_NORM, 0.25 );
+
+	CSoundEnt::InsertSound( bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3.0 );
+
+	entvars_t *pevOwner;
+
+	if ( pev->owner )
+		pevOwner = VARS( pev->owner );
+	else
+		pevOwner = NULL;
+
+	pev->owner = NULL; // Can't traceline attack owner if this is set.
+
+	// TODO: Fix me.
+	//RadiusDamage( pev, pevOwner, pev->dmg, g_pGameRules->m_flBombRadius, CLASS_NONE, bitsDamageType );
+
+//	if( g_pGameRules->IsCareer() )
+	//{
+		// TODO: implements this.
+		// TheCareerTasks->UnlatchRoundEndMessage();
+	//}
+
+	MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
+		WRITE_BYTE( 9 );
+		WRITE_BYTE( DRC_CMD_EVENT );
+		WRITE_SHORT( ENTINDEX( this->edict() ) );
+		WRITE_SHORT( NULL );
+		WRITE_ENTITY( DRC_FLAG_FINAL | DRC_FLAG_PRIO_MASK );
+	MESSAGE_END();
+
+	UTIL_DecalTrace( pTrace, RANDOM_FLOAT( 0 , 1 ) < 0.5 ? DECAL_SCORCH1 : DECAL_SCORCH2 );
+
+	switch ( RANDOM_LONG( 0, 2 ) )
+	{
+		case 0:	EMIT_SOUND( ENT( pev ), CHAN_VOICE, "weapons/debris1.wav", 0.55, ATTN_NORM ); break;
+		case 1:	EMIT_SOUND( ENT( pev ), CHAN_VOICE, "weapons/debris2.wav", 0.55, ATTN_NORM ); break;
+		case 2:	EMIT_SOUND( ENT( pev ), CHAN_VOICE, "weapons/debris3.wav", 0.55, ATTN_NORM ); break;
+	}
+
+	pev->effects |= EF_NODRAW;
+	SetThink( &CGrenade::Smoke2 );
+
+	pev->velocity	= g_vecZero;
+	pev->nextthink	= gpGlobals->time + 0.85;
+
+	if( !isInWater )
+	{
+		int sparkCount = RANDOM_LONG( 0, 3 );
+
+		for( int i = 0; i < sparkCount; i++ )
+		{
+			Create( "spark_shower", pev->origin, pTrace->vecPlaneNormal, NULL );
+		}
+	}
+}
+
+void CGrenade::C4Think( void )
+{
+	if( !IsInWorld() )
+	{
+		UTIL_Remove( this );
+		return;
+	}
+
+	pev->nextthink = gpGlobals->time + 0.12;
+
+	if( gpGlobals->time >= m_flNextFreq )
+	{
+		m_flNextFreq = gpGlobals->time + m_flNextFreqInterval;
+		m_flNextFreqInterval *= 0.9;
+
+		switch( m_iCurWave )
+		{
+			case 0 :
+			{
+				m_fAttenu = 1.5;
+				m_sBeepName = "weapons/c4_beep1.wav";
+
+				// TODO: Implement this.
+				/*
+				if( UTIL_IsGame( "czero" ) )
+				{
+					MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
+						WRITE_BYTE( 1 );
+						WRITE_STRING( "bombticking" );
+						WRITE_BYTE( 255 );
+						WRITE_SHORT( 140 );
+						WRITE_SHORT( 0 );
+					MESSAGE_END();
+				}*/
+
+				break;
+			}
+			case 1 :
+			{
+				m_fAttenu = 1.0;
+				m_sBeepName = "weapons/c4_beep2.wav";
+
+				// TODO: Implement this.
+				/*
+				if( UTIL_IsGame( "czero" ) )
+				{
+					MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
+						WRITE_BYTE( 1 );
+						WRITE_STRING( "bombticking" );
+						WRITE_BYTE( 255 );
+						WRITE_SHORT( 70 );
+						WRITE_SHORT( 0 );
+					MESSAGE_END();
+				}
+				*/
+
+				break;
+			}
+			case 2 :
+			{
+				m_fAttenu = 0.8;
+				m_sBeepName = "weapons/c4_beep3.wav";
+
+				// TODO: Implement this.
+				/*
+				if( UTIL_IsGame( "czero" ) )
+				{
+					MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
+						WRITE_BYTE( 1 );
+						WRITE_STRING( "bombticking" );
+						WRITE_BYTE( 255 );
+						WRITE_SHORT( 40 );
+						WRITE_SHORT( 0 );
+					MESSAGE_END();
+				}
+				*/
+
+				break;
+			}
+			case 3 :
+			{
+				m_fAttenu = 0.5;
+				m_sBeepName = "weapons/c4_beep4.wav";
+
+				// TODO: Implement this.
+				/*
+				if( UTIL_IsGame( "czero" ) )
+				{
+					MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
+						WRITE_BYTE( 1 );
+						WRITE_STRING( "bombticking" );
+						WRITE_BYTE( 255 );
+						WRITE_SHORT( 30 );
+						WRITE_SHORT( 0 );
+					MESSAGE_END();
+				}
+				*/
+
+				break;
+			}
+			case 4 :
+			{
+				m_fAttenu = 0.2;
+				m_sBeepName = "weapons/c4_beep5.wav";
+
+				// TODO: Implement this.
+				/*
+				if( UTIL_IsGame( "czero" ) )
+				{
+					MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
+						WRITE_BYTE( 1 );
+						WRITE_STRING( "bombticking" );
+						WRITE_BYTE( 255 );
+						WRITE_SHORT( 20 );
+						WRITE_SHORT( 0 );
+					MESSAGE_END();
+				}
+				*/
+
+				break;
+			}		
+		}
+
+		++m_iCurWave;
+	}
+
+	if( m_flNextBeep < gpGlobals->time )
+	{
+		m_flNextBeep = gpGlobals->time + 1.4;
+		EMIT_SOUND( ENT( pev ), CHAN_VOICE, m_sBeepName, VOL_NORM, m_fAttenu );
+
+		// TODO: Adds support for bots.
+		// TheBots->OnEvent( EVENT_BOMB_BEEP, this, NULL );
+	}
+
+	if( m_flNextBlink < gpGlobals->time )
+	{
+		m_flNextBlink = gpGlobals->time	+ 2.0;
+
+		MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, pev->origin );
+			WRITE_BYTE( TE_GLOWSPRITE );
+			WRITE_COORD( pev->origin.x );
+			WRITE_COORD( pev->origin.y );
+			WRITE_COORD( pev->origin.z + 5.0 );
+			//WRITE_SHORT( g_sModelIndexC4Glow );
+			WRITE_BYTE( 1 );
+			WRITE_BYTE( 3 );
+			WRITE_BYTE( 255 );
+		MESSAGE_END();
+	}
+
+	CHalfLifeMultiplay *pGameRules = ( CHalfLifeMultiplay* )g_pGameRules;
+
+	if( m_flC4Blow <= gpGlobals->time )
+	{
+		// TODO: Adds support for bots.
+		// TheBots->OnEvent( EVENT_BOMB_EXPLODED, NULL, NULL );
+
+		MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
+		WRITE_BYTE( 0 );
+		MESSAGE_END();
+
+		if( m_pentCurBombTarget )
+		{
+			CBaseEntity *pEntity = CBaseEntity::Instance( m_pentCurBombTarget );
+
+			if( pEntity )
+			{
+				CBaseEntity* pPlayer = CBaseEntity::Instance( pev->owner );
+
+				if( pPlayer )
+				{
+					pEntity->Use( pPlayer, this, USE_TOGGLE, 0 );
+				}
+			}
+		}
+
+		CBasePlayer* pPlayer = (CBasePlayer *)CBaseEntity::Instance( pev->owner );
+
+		if( pPlayer )
+		{
+			pPlayer->pev->frags += 3;
+		}
+
+		MESSAGE_BEGIN( MSG_ALL, gmsgBombPickup );
+		MESSAGE_END();
+
+		pGameRules->m_bBombDropped = false;
+
+		if( pev->waterlevel )
+			UTIL_Remove( this );
+		else
+			SetThink( &CGrenade::Detonate2 );	
+	}
+
+	if( m_bStartDefuse )
+	{
+		CBasePlayer* pDefuser = (CBasePlayer *)((CBaseEntity *)m_pBombDefuser);
+
+		if( pDefuser && m_flDefuseCountDown > gpGlobals->time )
+		{
+			BOOL isOnGround = !!( pDefuser->pev->flags & FL_ONGROUND );
+
+			if( !isOnGround || m_fNextDefuse < gpGlobals->time )
+			{
+				if( !isOnGround )
+				{
+					ClientPrint( pDefuser->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground" );
+				}
+
+				//pDefuser->ResetMaxSpeed();
+				//pDefuser->SetProgressBarTime( 0 );
+				pDefuser->m_bIsDefusing = false;
+
+				m_bStartDefuse = false;
+				m_flDefuseCountDown = 0.0;
+
+				// TODO: Adds support for bots.
+				// TheBots->OnEvent( EVENT_DEFUSE_ABORTED, NULL, NULL );
+			}
+		}
+		else
+		{
+			// TODO: Adds support for bots.
+			// TheBots->OnEvent( EVENT_BOMB_DEFUSED, pDefuser, NULL );
+
+			// Broadcast( "BOMBDEF" );
+
+			MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
+				WRITE_BYTE( 9 );
+				WRITE_BYTE( DRC_CMD_EVENT );
+				WRITE_SHORT( ENTINDEX( this->edict() ) );
+				WRITE_SHORT( NULL );
+				WRITE_ENTITY( DRC_FLAG_FINAL | DRC_FLAG_FACEPLAYER | DRC_FLAG_DRAMATIC | 15 );
+			MESSAGE_END();
+
+			UTIL_LogPrintf(	"\"%s<%i><%s><CT>\" triggered \"Defused_The_Bomb\"\n", 
+				STRING( pDefuser->pev->netname ),
+				GETPLAYERAUTHID( pDefuser->edict() ),
+				GETPLAYERUSERID( pDefuser->edict() ) );
+
+			UTIL_EmitAmbientSound( ENT( pev ), pev->origin, "weapons/c4_beep5.wav", 0, ATTN_NONE, SND_STOP, 0 );
+			EMIT_SOUND( ENT( pDefuser->pev ), CHAN_WEAPON, "weapons/c4_disarmed.wav", 0.8, ATTN_NORM );
+
+			UTIL_Remove( this );
+			m_bJustBlew = true;
+
+			// pDefuser->ResetMaxSpeed();
+			pDefuser->m_bIsDefusing = false;
+
+			MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
+			WRITE_BYTE( 0 );
+			MESSAGE_END();
+
+			//if( pGameRules->IsCareer() )
+			//{
+				// TODO: Adds support for bots.
+				//TheCareerTasks->HandleEvents( EVEN_BOMB_DEFUSED, pDefuser, NULL );
+			//}
+
+			pGameRules->m_bBombDefused = true;
+			//pGameRules->CheckWinConditions();
+
+			pDefuser->pev->frags += 3;
+
+			MESSAGE_BEGIN( MSG_ALL, gmsgBombPickup );
+			MESSAGE_END();
+
+			pGameRules->m_bBombDropped = FALSE;
+			m_bStartDefuse = false;			
+		}
+	}
+}
+
+void CGrenade::C4Touch( CBaseEntity* pOther ) 
+{
+	// Nothing.
+}
 
