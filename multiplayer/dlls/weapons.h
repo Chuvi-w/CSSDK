@@ -26,7 +26,7 @@ void DeactivateSatchels( CBasePlayer *pOwner );
 class CGrenade : public CBaseMonster
 {
 public:
-	void Spawn( void );
+	virtual void Spawn( void );
 
 	typedef enum { SATCHEL_DETONATE = 0, SATCHEL_RELEASE } SATCHELCODE;
 
@@ -37,7 +37,20 @@ public:
 
 	void Explode( Vector vecSrc, Vector vecAim );
 	void Explode( TraceResult *pTrace, int bitsDamageType );
+
+	// CS
+	void Explode2( TraceResult *pTrace, int bitsDamageType );
+	void Explode3( TraceResult *pTrace, int bitsDamageType );
+	void SG_Explode( TraceResult *pTrace, int bitsDamageType );
+
 	void EXPORT Smoke( void );
+
+	// CS
+	void Smoke2( void );
+	void Smoke3_A( void );
+	void Smoke3_B( void );
+	void Smoke3_C( void );
+	void SG_Smoke( void );
 
 	void EXPORT BounceTouch( CBaseEntity *pOther );
 	void EXPORT SlideTouch( CBaseEntity *pOther );
@@ -45,13 +58,30 @@ public:
 	void EXPORT DangerSoundThink( void );
 	void EXPORT PreDetonate( void );
 	void EXPORT Detonate( void );
+
+	// CS
+	void SG_Detonate( void );
+	void Detonate2( void );
+	void Detonate3( void );
+
 	void EXPORT DetonateUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT TumbleThink( void );
+
+	// CS
+	void SG_TumbleThink( void );
+	void C4Think( void );
 
 	virtual void BounceSound( void );
 	virtual int	BloodColor( void ) { return DONT_BLEED; }
 	virtual void Killed( entvars_t *pevAttacker, int iGib );
 
+	// CS
+	virtual int ObjectCaps( void ) { return m_bStartDefuse ? FCAP_IMPULSE_USE : FCAP_FORCE_TRANSITION; } 
+	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	virtual int Save( CSave &save );
+	virtual int Restore( CRestore &restore );
+
+	// CS
 	bool						m_bStartDefuse;       /*   404     1 */
 	bool						m_bIsC4;              /*   405     1 */
 	EHANDLE						m_pBombDefuser;       /*   408     8 */
@@ -75,6 +105,7 @@ public:
 	bool						m_bDetonated;         /*   479     1 */
 	Vector						m_vSmokeDetonate;     /*   480    12 */
 	int							m_iBounceCount;       /*   492     4 */
+
 	BOOL						m_fRegisteredSound;   /*   496     4 */  //whether or not this grenade has issued its DANGER sound to the world sound list yet.
 };
 
