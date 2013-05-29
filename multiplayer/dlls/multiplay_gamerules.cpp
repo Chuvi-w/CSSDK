@@ -1111,7 +1111,7 @@ int CHalfLifeMultiplay::PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *p
 	return GR_NOTTEAMMATE;
 }
 
-BOOL CHalfLifeMultiplay :: PlayFootstepSounds( CBasePlayer *pl, float fvol )
+/*BOOL CHalfLifeMultiplay :: PlayFootstepSounds( CBasePlayer *pl, float fvol )
 {
 	if ( g_footsteps && g_footsteps->value == 0 )
 		return FALSE;
@@ -1120,7 +1120,7 @@ BOOL CHalfLifeMultiplay :: PlayFootstepSounds( CBasePlayer *pl, float fvol )
 		return TRUE;  // only make step sounds in multiplayer if the player is moving fast enough
 
 	return FALSE;
-}
+}*/
 
 BOOL CHalfLifeMultiplay :: FAllowFlashlight( void ) 
 { 
