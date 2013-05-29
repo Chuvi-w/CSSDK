@@ -340,6 +340,9 @@ extern float UTIL_DotPoints ( const Vector &vecSrc, const Vector &vecCheck, cons
 
 extern void UTIL_StripToken( const char *pKey, char *pDest );// for redundant keynames
 
+// CS
+extern bool UTIL_IsGame( const char *gameName );
+
 // Misc functions
 extern void SetMovedir(entvars_t* pev);
 extern Vector VecBModelOrigin( entvars_t* pevBModel );

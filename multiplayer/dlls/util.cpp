@@ -1637,6 +1637,23 @@ void UTIL_StripToken( const char *pKey, char *pDest )
 }
 
 
+// CS
+bool UTIL_IsGame( const char *gameName )
+{
+	if( gameName )
+	{
+		static char gameDir[ 256 ];
+		GET_GAME_DIR( gameDir );
+
+		return stricmp( gameDir, gameName ) == 0;
+	}
+
+	return false;
+}
+
+
+
+
 // --------------------------------------------------------------
 //
 // CSave
