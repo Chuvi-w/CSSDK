@@ -214,13 +214,13 @@ void CHalfLifeTeamplay::InitHUD( CBasePlayer *pPlayer )
 	CHalfLifeMultiplay::InitHUD( pPlayer );
 
 	// Send down the team names
-	MESSAGE_BEGIN( MSG_ONE, gmsgTeamNames, NULL, pPlayer->edict() );  
+	/*MESSAGE_BEGIN( MSG_ONE, gmsgTeamNames, NULL, pPlayer->edict() );  
 		WRITE_BYTE( num_teams );
 		for ( i = 0; i < num_teams; i++ )
 		{
 			WRITE_STRING( team_names[ i ] );
 		}
-	MESSAGE_END();
+	MESSAGE_END();*/
 
 	RecountTeams();
 
