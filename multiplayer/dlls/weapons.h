@@ -465,6 +465,7 @@ extern DLL_GLOBAL	short	g_sModelIndexBloodSpray;// holds the sprite index for bl
 extern DLL_GLOBAL	short	g_sModelIndexFireball2;
 extern DLL_GLOBAL	short	g_sModelIndexFireball3;
 extern DLL_GLOBAL	short	g_sModelIndexFireball4;
+extern DLL_GLOBAL   short   g_sModelIndexC4Glow;
 
 extern void ClearMultiDamage(void);
 extern void ApplyMultiDamage(entvars_t* pevInflictor, entvars_t* pevAttacker );
