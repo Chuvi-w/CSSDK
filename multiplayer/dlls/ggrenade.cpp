@@ -569,11 +569,11 @@ void CGrenade::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 		// TODO: Adds support for bots.
 		// TheBots->OnEvent( EVENT_BOMB_DEFUSING, pActivator, NULL );
 
-		//if( g_pGameRules->IsCareer() )
-		//{
+		if( ( ( CHalfLifeMultiplay* )g_pGameRules )->IsCareer() )
+		{
 			// TODO: Implements this.
 			// TheCareerTasks->HandleEvent( EVENT_BOMB_DEFUSING, NULL, NULL );
-		//}
+		}
 
 		if( pPlayer->m_bHasDefuser )
 		{
@@ -652,129 +652,129 @@ void CGrenade::Smoke2( void ) // Last check: 2013, May 28
 	UTIL_Remove( this );
 }
 
-void CGrenade::Explode2( TraceResult* pTrace, int bitsDamageType ) // Last check: 2013, May 28
+void CGrenade::Explode2( TraceResult* pTrace, int bitsDamageType )  // Last check: 2013, May 28
 {
-	CHalfLifeMultiplay *pGameRules = ( CHalfLifeMultiplay* )g_pGameRules;
+    CHalfLifeMultiplay *pGameRules = ( CHalfLifeMultiplay* )g_pGameRules;
 
-	pev->model		= iStringNull;	// invisible
-	pev->solid		= SOLID_NOT;	// intangible
-	pev->takedamage = DAMAGE_NO;
+    pev->model		= iStringNull;	// invisible
+    pev->solid		= SOLID_NOT;	// intangible
+    pev->takedamage = DAMAGE_NO;
 
-	UTIL_ScreenShake( pTrace->vecEndPos, 25.0, 150.0, 1.0, 3000.0 );
+    UTIL_ScreenShake( pTrace->vecEndPos, 25.0, 150.0, 1.0, 3000.0 );
 
-	pGameRules->m_bTargetBombed = true;
+    pGameRules->m_bTargetBombed = true;
 
-	//if( pGameRules->IsCareer() )
-	//{
-		// TODO: implements this.
-		// TheCareerTasks->LatchRoundEndMessage();
-	//}
+    if( pGameRules->IsCareer() )
+    {
+        // TODO: implements this.
+        // TheCareerTasks->LatchRoundEndMessage();
+    }
 
-	m_bJustBlew = true;
-	//pGameRules->CheckWinConditions();
+    m_bJustBlew = true;
+    pGameRules->CheckWinConditions();
 
-	if( pTrace->flFraction != 1.0 )
-	{
-		pev->origin = pTrace->vecEndPos + ( pTrace->vecPlaneNormal * ( pev->dmg - 24 ) * 0.6 );
-	}
+    if( pTrace->flFraction != 1.0 )
+    {
+        pev->origin = pTrace->vecEndPos + ( pTrace->vecPlaneNormal * ( pev->dmg - 24 ) * 0.6 );
+    }
 
-	bool isInWater = UTIL_PointContents( pev->origin ) == CONTENTS_WATER;
+    bool isInWater = UTIL_PointContents( pev->origin ) == CONTENTS_WATER;
 
-	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
-		WRITE_BYTE( TE_SPRITE );		
-		WRITE_COORD( pev->origin.x );
-		WRITE_COORD( pev->origin.y );
-		WRITE_COORD( pev->origin.z - 10.0 );
-		WRITE_SHORT( g_sModelIndexFireball3 );
-		WRITE_BYTE( ( pev->dmg - 275 ) * 0.6 );
-		WRITE_BYTE( 150 ); 
-	MESSAGE_END();
+    MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+        WRITE_BYTE( TE_SPRITE );		
+        WRITE_COORD( pev->origin.x );
+        WRITE_COORD( pev->origin.y );
+        WRITE_COORD( pev->origin.z - 10.0 );
+        WRITE_SHORT( g_sModelIndexFireball3 );
+        WRITE_BYTE( ( pev->dmg - 275 ) * 0.6 );
+        WRITE_BYTE( 150 ); 
+    MESSAGE_END();
 
-	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
-		WRITE_BYTE( TE_SPRITE );		
-		WRITE_COORD( pev->origin.x + RANDOM_FLOAT( -512, 512 ) );
-		WRITE_COORD( pev->origin.y + RANDOM_FLOAT( -512, 512 ) );
-		WRITE_COORD( pev->origin.z + RANDOM_FLOAT( -10, 10 ) );
-		WRITE_SHORT( g_sModelIndexFireball2 );
-		WRITE_BYTE( floor( ( pev->dmg - 275 ) * 0.6 ) );
-		WRITE_BYTE( 150 ); 
-	MESSAGE_END();
+    MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+        WRITE_BYTE( TE_SPRITE );		
+        WRITE_COORD( pev->origin.x + RANDOM_FLOAT( -512, 512 ) );
+        WRITE_COORD( pev->origin.y + RANDOM_FLOAT( -512, 512 ) );
+        WRITE_COORD( pev->origin.z + RANDOM_FLOAT( -10, 10 ) );
+        WRITE_SHORT( g_sModelIndexFireball2 );
+        WRITE_BYTE( floor( ( pev->dmg - 275 ) * 0.6 ) );
+        WRITE_BYTE( 150 ); 
+    MESSAGE_END();
 
-	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
-		WRITE_BYTE( TE_SPRITE );		
-		WRITE_COORD( pev->origin.x + RANDOM_FLOAT( -512, 512 ) );
-		WRITE_COORD( pev->origin.y + RANDOM_FLOAT( -512, 512 ) );
-		WRITE_COORD( pev->origin.z + RANDOM_FLOAT( -10, 10 ) );
-		WRITE_SHORT( g_sModelIndexFireball3 );
-		WRITE_BYTE( floor( ( pev->dmg - 275 ) * 0.6 ) );
-		WRITE_BYTE( 150 ); 
-	MESSAGE_END();
+    MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+        WRITE_BYTE( TE_SPRITE );		
+        WRITE_COORD( pev->origin.x + RANDOM_FLOAT( -512, 512 ) );
+        WRITE_COORD( pev->origin.y + RANDOM_FLOAT( -512, 512 ) );
+        WRITE_COORD( pev->origin.z + RANDOM_FLOAT( -10, 10 ) );
+        WRITE_SHORT( g_sModelIndexFireball3 );
+        WRITE_BYTE( floor( ( pev->dmg - 275 ) * 0.6 ) );
+        WRITE_BYTE( 150 ); 
+    MESSAGE_END();
 
-	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
-		WRITE_BYTE( TE_SPRITE );		
-		WRITE_COORD( pev->origin.x + RANDOM_FLOAT( -512, 512 ) );
-		WRITE_COORD( pev->origin.y + RANDOM_FLOAT( -512, 512 ) );
-		WRITE_COORD( pev->origin.z + RANDOM_FLOAT( -10, 10 ) );
-		WRITE_SHORT( g_sModelIndexFireball );
-		WRITE_BYTE( floor( ( pev->dmg - 275 ) * 0.6 ) );
-		WRITE_BYTE( 17 ); 
-	MESSAGE_END();
+    MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
+        WRITE_BYTE( TE_SPRITE );		
+        WRITE_COORD( pev->origin.x + RANDOM_FLOAT( -512, 512 ) );
+        WRITE_COORD( pev->origin.y + RANDOM_FLOAT( -512, 512 ) );
+        WRITE_COORD( pev->origin.z + RANDOM_FLOAT( -10, 10 ) );
+        WRITE_SHORT( g_sModelIndexFireball );
+        WRITE_BYTE( floor( ( pev->dmg - 275 ) * 0.6 ) );
+        WRITE_BYTE( 17 ); 
+    MESSAGE_END();
 
-	EMIT_SOUND( ENT( pev ), CHAN_WEAPON, "weapons/c4_explode1.wav", VOL_NORM, 0.25 );
+    EMIT_SOUND( ENT( pev ), CHAN_WEAPON, "weapons/c4_explode1.wav", VOL_NORM, 0.25 );
 
-	CSoundEnt::InsertSound( bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3.0 );
+    CSoundEnt::InsertSound( bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3.0 );
 
-	entvars_t *pevOwner;
+    entvars_t *pevOwner;
 
-	if ( pev->owner )
-		pevOwner = VARS( pev->owner );
-	else
-		pevOwner = NULL;
+    if ( pev->owner )
+        pevOwner = VARS( pev->owner );
+    else
+        pevOwner = NULL;
 
-	pev->owner = NULL; // Can't traceline attack owner if this is set.
+    pev->owner = NULL; // Can't traceline attack owner if this is set.
 
-	// TODO: Fix me.
-	//RadiusDamage( pev, pevOwner, pev->dmg, g_pGameRules->m_flBombRadius, CLASS_NONE, bitsDamageType );
+    // TODO: Fix me.
+    //RadiusDamage( pev, pevOwner, pev->dmg, g_pGameRules->m_flBombRadius, CLASS_NONE, bitsDamageType );
 
-//	if( g_pGameRules->IsCareer() )
-	//{
-		// TODO: implements this.
-		// TheCareerTasks->UnlatchRoundEndMessage();
-	//}
+	if( pGameRules->IsCareer() )
+    {
+        // TODO: implements this.
+        // TheCareerTasks->UnlatchRoundEndMessage();
+    }
 
-	MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
-		WRITE_BYTE( 9 );
-		WRITE_BYTE( DRC_CMD_EVENT );
-		WRITE_SHORT( ENTINDEX( this->edict() ) );
-		WRITE_SHORT( NULL );
-		WRITE_ENTITY( DRC_FLAG_FINAL | DRC_FLAG_PRIO_MASK );
-	MESSAGE_END();
+    MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
+        WRITE_BYTE( 9 );
+        WRITE_BYTE( DRC_CMD_EVENT );
+        WRITE_SHORT( ENTINDEX( this->edict() ) );
+        WRITE_SHORT( NULL );
+        WRITE_ENTITY( DRC_FLAG_FINAL | DRC_FLAG_PRIO_MASK );
+    MESSAGE_END();
 
-	UTIL_DecalTrace( pTrace, RANDOM_FLOAT( 0 , 1 ) < 0.5 ? DECAL_SCORCH1 : DECAL_SCORCH2 );
+    UTIL_DecalTrace( pTrace, RANDOM_FLOAT( 0 , 1 ) < 0.5 ? DECAL_SCORCH1 : DECAL_SCORCH2 );
 
-	switch ( RANDOM_LONG( 0, 2 ) )
-	{
-		case 0:	EMIT_SOUND( ENT( pev ), CHAN_VOICE, "weapons/debris1.wav", 0.55, ATTN_NORM ); break;
-		case 1:	EMIT_SOUND( ENT( pev ), CHAN_VOICE, "weapons/debris2.wav", 0.55, ATTN_NORM ); break;
-		case 2:	EMIT_SOUND( ENT( pev ), CHAN_VOICE, "weapons/debris3.wav", 0.55, ATTN_NORM ); break;
-	}
+    switch ( RANDOM_LONG( 0, 2 ) )
+    {
+        case 0:	EMIT_SOUND( ENT( pev ), CHAN_VOICE, "weapons/debris1.wav", 0.55, ATTN_NORM ); break;
+        case 1:	EMIT_SOUND( ENT( pev ), CHAN_VOICE, "weapons/debris2.wav", 0.55, ATTN_NORM ); break;
+        case 2:	EMIT_SOUND( ENT( pev ), CHAN_VOICE, "weapons/debris3.wav", 0.55, ATTN_NORM ); break;
+    }
 
-	pev->effects |= EF_NODRAW;
-	SetThink( &CGrenade::Smoke2 );
+    pev->effects |= EF_NODRAW;
+    SetThink( &CGrenade::Smoke2 );
 
-	pev->velocity	= g_vecZero;
-	pev->nextthink	= gpGlobals->time + 0.85;
+    pev->velocity	= g_vecZero;
+    pev->nextthink	= gpGlobals->time + 0.85;
 
-	if( !isInWater )
-	{
-		int sparkCount = RANDOM_LONG( 0, 3 );
+    if( !isInWater )
+    {
+        int sparkCount = RANDOM_LONG( 0, 3 );
 
-		for( int i = 0; i < sparkCount; i++ )
-		{
-			Create( "spark_shower", pev->origin, pTrace->vecPlaneNormal, NULL );
-		}
-	}
-}
+        for( int i = 0; i < sparkCount; i++ )
+        {
+            Create( "spark_shower", pev->origin, pTrace->vecPlaneNormal, NULL );
+        }
+    }
+} 
 
 void CGrenade::C4Think( void )
 {
@@ -795,11 +795,9 @@ void CGrenade::C4Think( void )
 		{
 			case 0 :
 			{
+                m_sBeepName = "weapons/c4_beep1.wav";
 				m_fAttenu = 1.5;
-				m_sBeepName = "weapons/c4_beep1.wav";
 
-				// TODO: Implement this.
-				/*
 				if( UTIL_IsGame( "czero" ) )
 				{
 					MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
@@ -809,17 +807,15 @@ void CGrenade::C4Think( void )
 						WRITE_SHORT( 140 );
 						WRITE_SHORT( 0 );
 					MESSAGE_END();
-				}*/
+				}
 
 				break;
 			}
 			case 1 :
 			{
+                m_sBeepName = "weapons/c4_beep2.wav";
 				m_fAttenu = 1.0;
-				m_sBeepName = "weapons/c4_beep2.wav";
 
-				// TODO: Implement this.
-				/*
 				if( UTIL_IsGame( "czero" ) )
 				{
 					MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
@@ -830,17 +826,14 @@ void CGrenade::C4Think( void )
 						WRITE_SHORT( 0 );
 					MESSAGE_END();
 				}
-				*/
-
+	
 				break;
 			}
 			case 2 :
 			{
+                m_sBeepName = "weapons/c4_beep3.wav";
 				m_fAttenu = 0.8;
-				m_sBeepName = "weapons/c4_beep3.wav";
-
-				// TODO: Implement this.
-				/*
+				
 				if( UTIL_IsGame( "czero" ) )
 				{
 					MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
@@ -851,17 +844,14 @@ void CGrenade::C4Think( void )
 						WRITE_SHORT( 0 );
 					MESSAGE_END();
 				}
-				*/
 
 				break;
 			}
 			case 3 :
 			{
+                m_sBeepName = "weapons/c4_beep4.wav";
 				m_fAttenu = 0.5;
-				m_sBeepName = "weapons/c4_beep4.wav";
 
-				// TODO: Implement this.
-				/*
 				if( UTIL_IsGame( "czero" ) )
 				{
 					MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
@@ -872,17 +862,14 @@ void CGrenade::C4Think( void )
 						WRITE_SHORT( 0 );
 					MESSAGE_END();
 				}
-				*/
 
 				break;
 			}
 			case 4 :
 			{
+                m_sBeepName = "weapons/c4_beep5.wav";
 				m_fAttenu = 0.2;
-				m_sBeepName = "weapons/c4_beep5.wav";
 
-				// TODO: Implement this.
-				/*
 				if( UTIL_IsGame( "czero" ) )
 				{
 					MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
@@ -893,7 +880,6 @@ void CGrenade::C4Think( void )
 						WRITE_SHORT( 0 );
 					MESSAGE_END();
 				}
-				*/
 
 				break;
 			}		
@@ -1030,14 +1016,14 @@ void CGrenade::C4Think( void )
 			WRITE_BYTE( 0 );
 			MESSAGE_END();
 
-			//if( pGameRules->IsCareer() )
-			//{
+			if( pGameRules->IsCareer() )
+			{
 				// TODO: Adds support for bots.
 				//TheCareerTasks->HandleEvents( EVEN_BOMB_DEFUSED, pDefuser, NULL );
-			//}
+			}
 
 			pGameRules->m_bBombDefused = true;
-			//pGameRules->CheckWinConditions();
+			pGameRules->CheckWinConditions();
 
 			pDefuser->pev->frags += 3;
 
