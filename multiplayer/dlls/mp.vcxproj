@@ -201,6 +201,7 @@
     <ClCompile Include="animation.cpp" />
     <ClCompile Include="bmodels.cpp" />
     <ClCompile Include="buttons.cpp" />
+    <ClCompile Include="career_tasks.cpp" />
     <ClCompile Include="cbase.cpp" />
     <ClCompile Include="client.cpp" />
     <ClCompile Include="combat.cpp" />
@@ -267,6 +268,7 @@
     <ClInclude Include="animation.h" />
     <ClInclude Include="basemonster.h" />
     <ClInclude Include="bot.h" />
+    <ClInclude Include="career_tasks.h" />
     <ClInclude Include="cbase.h" />
     <ClInclude Include="cdll_dll.h" />
     <ClInclude Include="client.h" />

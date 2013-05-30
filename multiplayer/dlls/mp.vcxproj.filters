@@ -207,6 +207,9 @@
     <ClCompile Include="xen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="career_tasks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="activity.h">
@@ -336,6 +339,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="bot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="career_tasks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
