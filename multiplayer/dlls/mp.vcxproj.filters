@@ -168,6 +168,9 @@
     <ClCompile Include="career_tasks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="hintmessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="activity.h">
@@ -303,6 +306,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="unisignals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hintmessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
