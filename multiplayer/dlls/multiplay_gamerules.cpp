@@ -1695,6 +1695,31 @@ void CHalfLifeMultiplay :: SendMOTDToClient( edict_t *client )
 
 	FREE_FILE( aFileList );
 }
+
+void CHalfLifeMultiplay::CheckMapConditions()
+{
+    if( UTIL_FindEntityByClassname( NULL, "func_bomb_target" ) != NULL )
+    {
+        m_bMapHasBombTarget = true;
+        m_bMapHasBombZone   = true;
+    }
+    else if( UTIL_FindEntityByClassname( NULL, "info_bomb_target" ) != NULL )
+    {
+        m_bMapHasBombTarget = true;
+        m_bMapHasBombZone   = false;
+    }
+    else
+    {
+        m_bMapHasBombTarget = false;
+        m_bMapHasBombZone   = false;
+    }
+
+    m_bMapHasRescueZone    = UTIL_FindEntityByClassname( NULL, "func_hostage_rescue" ) != NULL;
+    m_bMapHasBuyZone       = UTIL_FindEntityByClassname( NULL, "func_buyzone" ) != NULL;
+    m_bMapHasEscapeZone    = UTIL_FindEntityByClassname( NULL,  "func_escapezone" ) != NULL;
+    m_iMapHasVIPSafetyZone = UTIL_FindEntityByClassname( NULL, "func_vip_safetyzone" ) != NULL ? 1 : 2;
+}
+
 	
 // CS
 extern int gmsgSendAudio;
