@@ -389,9 +389,6 @@ public:
 
 	virtual void UpdateItemInfo( void ) {};	// updates HUD state
 
-	int m_iPlayEmptySound;
-	int m_fFireOnEmpty;		// True when the gun is empty and the player is still holding down the
-							// attack key(s)
 	virtual BOOL PlayEmptySound( void );
 	virtual void ResetEmptySound( void );
 
@@ -421,8 +418,8 @@ public:
 
 	virtual CBasePlayerItem *GetWeaponPtr( void ) { return (CBasePlayerItem *)this; };
 
-    int                         m_iPlayEmptySound;          /*   192     4 */
-    int                         m_fFireOnEmpty;             /*   196     4 */
+    int                         m_iPlayEmptySound;          /*   192     4 */ 
+    int                         m_fFireOnEmpty;             /*   196     4 */ // True when the gun is empty and the player is still holding down the
 
     float                       m_flNextPrimaryAttack;      /*   200     4 */ // Soonest time ItemPostFrame will call PrimaryAttack.
     float                       m_flNextSecondaryAttack;    /*   204     4 */ // Soonest time ItemPostFrame will call SecondaryAttack.
