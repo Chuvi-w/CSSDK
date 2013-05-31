@@ -161,7 +161,7 @@ public:
     virtual BOOL IsFreezePeriod( void ) { return FALSE; }
     virtual void ServerDeactivate( void );
 
-    virtual void CheckMapConditions( void );
+    virtual void CheckMapConditions( void ) {};
 
 	BOOL                       m_bFreezePeriod;      /*     4     4 */
 	BOOL                       m_bBombDropped;       /*     8     4 */
