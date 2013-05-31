@@ -570,6 +570,7 @@ public:
 #define AUTOAIM_10DEGREES 0.1736481776669
 
 
+extern int  gmsgHudTextArgs;
 extern int	gmsgHudText;
 extern BOOL gInitHUD;
 

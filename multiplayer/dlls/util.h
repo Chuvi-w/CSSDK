@@ -23,6 +23,9 @@
 #ifndef ENGINECALLBACK_H
 #include "enginecallback.h"
 #endif
+
+#include "..\public\utlvector.h"
+
 inline void MESSAGE_BEGIN( int msg_dest, int msg_type, const float *pOrigin, entvars_t *ent );  // implementation later in this file
 
 extern globalvars_t				*gpGlobals;
@@ -342,6 +345,8 @@ extern void UTIL_StripToken( const char *pKey, char *pDest );// for redundant ke
 
 // CS
 extern bool UTIL_IsGame( const char *gameName );
+extern void UTIL_ShowMessageArgs( const char *pString, CBaseEntity *pPlayer, CUtlVector< char* > *args, bool isHint );
+
 
 // Misc functions
 extern void SetMovedir(entvars_t* pev);

@@ -1651,7 +1651,33 @@ bool UTIL_IsGame( const char *gameName )
 	return false;
 }
 
+// CS
+void UTIL_ShowMessageArgs( const char *pString, CBaseEntity *pPlayer, CUtlVector< char* > *args, bool isHint )
+{
+    if( pPlayer && pPlayer->IsNetClient() )
+    {
+        if( args )
+        {
+            MESSAGE_BEGIN( MSG_ONE, gmsgHudTextArgs, NULL, ENT( pPlayer->pev ) );
+                WRITE_STRING( pString );
+                WRITE_BYTE( isHint );
+                WRITE_BYTE( args->Count() );
 
+                for( int i = 0; i < args->Count(); i++ )
+                {
+                    WRITE_STRING( args->Element( i ) );
+                }
+            MESSAGE_END();
+        }
+        else
+        {
+            MESSAGE_BEGIN( MSG_ONE, gmsgHudText, NULL, ENT( pPlayer->pev ) );
+                WRITE_STRING( pString );
+                WRITE_BYTE( isHint );
+            MESSAGE_END();
+        }
+    }
+}
 
 
 // --------------------------------------------------------------
