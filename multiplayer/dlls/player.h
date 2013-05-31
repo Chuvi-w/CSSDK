@@ -70,6 +70,14 @@ typedef enum
 	PLAYER_SUPERJUMP,
 	PLAYER_DIE,
 	PLAYER_ATTACK1,
+
+    // CS
+    PLAYER_ATTACK2,
+    PLAYER_FLINCH,
+    PLAYER_LARGE_FLINCH,
+    PLAYER_RELOAD,
+    PLAYER_HOLDBOMB,
+
 } PLAYER_ANIM;
 
 #define MAX_ID_RANGE 2048
@@ -82,6 +90,106 @@ enum sbar_data
 	SBAR_ID_TARGETARMOR,
 	SBAR_END,
 };
+
+// CS
+typedef enum 
+{
+	UNASSIGNED = 0,
+	TERRORIST,
+	CT,
+	SPECTATOR,
+
+} TeamName;
+
+// CS
+typedef enum  
+{
+    SILENT = 0,
+    CALM = 1,
+    INTENSE = 2,
+
+} MusicState;
+
+// CS
+typedef enum 
+{
+    JOINED = 0,
+    SHOWLTEXT,
+    READINGLTEXT,
+    SHOWTEAMSELECT,
+    PICKINGTEAM,
+    GETINTOGAME,
+} JoinState;
+
+// CS
+typedef enum 
+{
+    MODEL_UNASSIGNED = 0,
+    MODEL_URBAN,
+    MODEL_TERROR,
+    MODEL_LEET,
+    MODEL_ARCTIC,
+    MODEL_GSG9,
+    MODEL_GIGN,
+    MODEL_SAS,
+    MODEL_GUERILLA,
+    MODEL_VIP,
+    MODEL_MILITIA,
+    MODEL_SPETSNAZ,
+
+} ModelName;
+
+// CS
+typedef enum 
+{
+    Menu_OFF = 0,
+    Menu_ChooseTeam,
+    Menu_IGChooseTeam,
+    Menu_ChooseAppearance,
+    Menu_Buy,
+    Menu_BuyPistol,
+    Menu_BuyRifle,
+    Menu_BuyMachineGun,
+    Menu_BuyShotgun,
+    Menu_BuySubMachineGun,
+    Menu_BuyItem,
+    Menu_Radio1,
+    Menu_Radio2,
+    Menu_Radio3,
+    Menu_ClientBuy,
+
+} _Menu;
+
+// CS
+typedef enum 
+{
+    CMD_SAY = 0,
+    CMD_SAYTEAM,
+    CMD_FULLUPDATE,
+    CMD_VOTE,
+    CMD_VOTEMAP,
+    CMD_LISTMAPS,
+    CMD_LISTPLAYERS,
+    CMD_NIGHTVISION,
+    COMMANDS_TO_TRACK,
+
+} TrackCommands;
+
+// CS
+typedef struct 
+{
+    int m_primaryWeapon;
+    int m_primaryAmmo;
+    int m_secondaryWeapon;
+    int m_secondaryAmmo;
+    int m_heGrenade;
+    int m_flashbang;
+    int m_smokeGrenade;
+    int m_defuser;
+    int m_nightVision;
+    int m_armor;
+
+} RebuyStruct;
 
 #define CHAT_INTERVAL 1.0f
 
