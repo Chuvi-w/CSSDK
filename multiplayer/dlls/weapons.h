@@ -421,20 +421,54 @@ public:
 
 	virtual CBasePlayerItem *GetWeaponPtr( void ) { return (CBasePlayerItem *)this; };
 
-	float m_flPumpTime;
-	int		m_fInSpecialReload;									// Are we in the middle of a reload for the shotguns
-	float	m_flNextPrimaryAttack;								// soonest time ItemPostFrame will call PrimaryAttack
-	float	m_flNextSecondaryAttack;							// soonest time ItemPostFrame will call SecondaryAttack
-	float	m_flTimeWeaponIdle;									// soonest time ItemPostFrame will call WeaponIdle
-	int		m_iPrimaryAmmoType;									// "primary" ammo index into players m_rgAmmo[]
-	int		m_iSecondaryAmmoType;								// "secondary" ammo index into players m_rgAmmo[]
-	int		m_iClip;											// number of shots left in the primary weapon clip, -1 it not used
-	int		m_iClientClip;										// the last version of m_iClip sent to hud dll
-	int		m_iClientWeaponState;								// the last version of the weapon state sent to hud dll (is current weapon, is on target)
-	int		m_fInReload;										// Are we in the middle of a reload;
+    int                         m_iPlayEmptySound;          /*   192     4 */
+    int                         m_fFireOnEmpty;             /*   196     4 */
 
-	int		m_iDefaultAmmo;// how much ammo you get when you pick up this weapon as placed by a level designer.
+    float                       m_flNextPrimaryAttack;      /*   200     4 */ // Soonest time ItemPostFrame will call PrimaryAttack.
+    float                       m_flNextSecondaryAttack;    /*   204     4 */ // Soonest time ItemPostFrame will call SecondaryAttack.
+    float                       m_flTimeWeaponIdle;         /*   208     4 */ // Soonest time ItemPostFrame will call WeaponIdle.
 
+    int                         m_iPrimaryAmmoType;         /*   212     4 */ // "primary" ammo index into players m_rgAmmo[]
+    int                         m_iSecondaryAmmoType;       /*   216     4 */ // "secondary" ammo index into players m_rgAmmo[]
+
+    int                         m_iClip;                    /*   220     4 */ // Number of shots left in the primary weapon clip, -1 it not used.
+    int                         m_iClientClip;              /*   224     4 */ // The last version of m_iClip sent to hud dll.
+    int                         m_iClientWeaponState;       /*   228     4 */ // The last version of the weapon state sent to hud dll (is current weapon, is on target).
+
+    int                         m_fInReload;                /*   232     4 */ // Are we in the middle of a reload.
+    int                         m_fInSpecialReload;         /*   236     4 */ // Are we in the middle of a reload for the shotguns.
+
+    int                         m_iDefaultAmmo;             /*   240     4 */ // How much ammo you get when you pick up this weapon as placed by a level designer.
+    int                         m_iShellId;                 /*   244     4 */
+    float                       m_fMaxSpeed;                /*   248     4 */
+
+    bool                        m_bDelayFire;               /*   252     1 */
+    int                         m_iDirection;               /*   256     4 */
+
+    bool                        m_bSecondarySilencerOn;     /*   260     1 */
+
+    float                       m_flAccuracy;               /*   264     4 */
+    float                       m_flLastFire;               /*   268     4 */
+    int                         m_iShotsFired;              /*   272     4 */
+    Vector                      m_vVecAiming;               /*   276    12 */
+
+    string_t                    model_name;                 /*   288     4 */
+
+    float                       m_flGlock18Shoot;           /*   292     4 */
+    int                         m_iGlock18ShotsFired;       /*   296     4 */
+    float                       m_flFamasShoot;             /*   300     4 */
+    int                         m_iFamasShotsFired;         /*   304     4 */
+    float                       m_fBurstSpread;             /*   308     4 */
+
+    int                         m_iWeaponState;             /*   312     4 */
+    float                       m_flNextReload;             /*   316     4 */
+    float                       m_flDecreaseShotsFired;     /*   320     4 */
+
+    short unsigned int          m_usFireGlock18;            /*   324     2 */
+    short unsigned int          m_usFireFamas;              /*   326     2 */
+
+    float                       m_flPrevPrimaryAttack;      /*   328     4 */
+    float                       m_flLastFireTime;           /*   332     4 */
 };
 
 
