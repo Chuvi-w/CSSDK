@@ -1,4 +1,3 @@
-
 /***
 *
 *	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
@@ -22,9 +21,9 @@ class CUnifiedSignals
 
         int Update( void );
         void Signal( int flSignal );
-        int GetState( void );
+        int GetState( void ) { return m_flState; }
 
-    private:
+    private :
 
         int     m_flSignal;           /*     0     4 */
         int     m_flState;            /*     4     4 */

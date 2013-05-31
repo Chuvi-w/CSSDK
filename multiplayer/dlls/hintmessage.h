@@ -22,7 +22,7 @@ class CBasePlayer;
 
 class CHintMessage 
 {
-    public:
+    public :
 
         CHintMessage( const char *hintString, bool isHint, CUtlVector< const char* > *args, float duration );
         ~CHintMessage( void );
@@ -30,7 +30,7 @@ class CHintMessage
         float GetDuration( void ) const { return m_duration; }
         void Send( CBaseEntity *client );
 
-    public:
+    public :
 
         const char                 *m_hintString;         /*     0     4 */
         bool                        m_isHint;             /*     4     1 */
