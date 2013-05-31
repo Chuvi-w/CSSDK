@@ -29,6 +29,7 @@
 #include "gamerules.h"
 #include "player.h"
 #include "hltv.h"
+#include "career_tasks.h"
 
 
 LINK_ENTITY_TO_CLASS( grenade, CGrenade );
@@ -571,8 +572,7 @@ void CGrenade::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 
 		if( ( ( CHalfLifeMultiplay* )g_pGameRules )->IsCareer() )
 		{
-			// TODO: Implements this.
-			// TheCareerTasks->HandleEvent( EVENT_BOMB_DEFUSING, NULL, NULL );
+			TheCareerTasks->HandleEvent( EVENT_BOMB_DEFUSING, NULL, NULL );
 		}
 
 		if( pPlayer->m_bHasDefuser )
@@ -666,8 +666,7 @@ void CGrenade::Explode2( TraceResult* pTrace, int bitsDamageType )  // Last chec
 
     if( pGameRules->IsCareer() )
     {
-        // TODO: implements this.
-        // TheCareerTasks->LatchRoundEndMessage();
+        TheCareerTasks->LatchRoundEndMessage();
     }
 
     m_bJustBlew = true;
@@ -738,8 +737,7 @@ void CGrenade::Explode2( TraceResult* pTrace, int bitsDamageType )  // Last chec
 
 	if( pGameRules->IsCareer() )
     {
-        // TODO: implements this.
-        // TheCareerTasks->UnlatchRoundEndMessage();
+        TheCareerTasks->UnlatchRoundEndMessage();
     }
 
     MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
@@ -906,7 +904,7 @@ void CGrenade::C4Think( void )
 			WRITE_COORD( pev->origin.x );
 			WRITE_COORD( pev->origin.y );
 			WRITE_COORD( pev->origin.z + 5.0 );
-			//WRITE_SHORT( g_sModelIndexC4Glow );
+			WRITE_SHORT( g_sModelIndexC4Glow );
 			WRITE_BYTE( 1 );
 			WRITE_BYTE( 3 );
 			WRITE_BYTE( 255 );
@@ -988,7 +986,7 @@ void CGrenade::C4Think( void )
 			// TODO: Adds support for bots.
 			// TheBots->OnEvent( EVENT_BOMB_DEFUSED, pDefuser, NULL );
 
-			// Broadcast( "BOMBDEF" );
+			Broadcast( "BOMBDEF" );
 
 			MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
 				WRITE_BYTE( 9 );
@@ -1018,8 +1016,7 @@ void CGrenade::C4Think( void )
 
 			if( pGameRules->IsCareer() )
 			{
-				// TODO: Adds support for bots.
-				//TheCareerTasks->HandleEvents( EVEN_BOMB_DEFUSED, pDefuser, NULL );
+				TheCareerTasks->HandleEvent( EVENT_BOMB_DEFUSED, pDefuser, NULL );
 			}
 
 			pGameRules->m_bBombDefused = true;
