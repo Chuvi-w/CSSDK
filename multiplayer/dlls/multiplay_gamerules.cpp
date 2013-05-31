@@ -1696,6 +1696,22 @@ void CHalfLifeMultiplay :: SendMOTDToClient( edict_t *client )
 	FREE_FILE( aFileList );
 }
 
+void CHalfLifeMultiplay::RemoveGuns()
+{
+    CBaseEntity *pEntity = NULL;
+    
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "weaponbox" ) ) != NULL )
+    {
+        ( ( CWeaponBox* )pEntity )->Kill();
+    }
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "weapon_shield" ) ) != NULL )
+    {
+        pEntity->SetThink( &CBaseEntity::SUB_Remove );
+        pEntity->pev->nextthink = gpGlobals->time + 0.1;
+    }
+}
+
 void CHalfLifeMultiplay::CheckMapConditions()
 {
     if( UTIL_FindEntityByClassname( NULL, "func_bomb_target" ) != NULL )
