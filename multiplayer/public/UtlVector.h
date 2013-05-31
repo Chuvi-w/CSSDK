@@ -20,9 +20,34 @@
 // #include "tier0/dbg.h"
 // #include "tier1/utlmemory.h"
 // #include "vstdlib/strtools.h"
-    
+#include "../public/UtlMemory.h"
+
 #define FOR_EACH_VEC( vecName, iteratorName ) \
 	for ( int iteratorName = 0; iteratorName < vecName.Count(); iteratorName++ )
+
+#define  Assert( _exp )										((void)0)
+
+template <class T> 
+inline void Construct( T* pMemory )
+{
+    ::new( pMemory ) T;
+}
+
+template <class T> 
+inline void CopyConstruct( T* pMemory, T const& src )
+{
+    //new( pMemory ) T(src);
+}
+
+template <class T> 
+inline void Destruct( T* pMemory )
+{
+    pMemory->~T();
+
+#ifdef _DEBUG
+    memset( pMemory, 0xDD, sizeof(T) );
+#endif
+}
 
 //-----------------------------------------------------------------------------
 // The CUtlVector class:
@@ -304,7 +329,7 @@ void CUtlVector<T, A>::GrowVector( int num )
 {
 	if (m_Size + num > m_Memory.NumAllocated())
 	{
-		MEM_ALLOC_CREDIT_CLASS();
+		//MEM_ALLOC_CREDIT_CLASS();
 		m_Memory.Grow( m_Size + num - m_Memory.NumAllocated() );
 	}
 
@@ -355,8 +380,8 @@ void CUtlVector<T, A>::ShiftElementsRight( int elem, int num )
 {
 	Assert( IsValidIndex(elem) || ( m_Size == 0 ) || ( num == 0 ));
 	int numToMove = m_Size - elem - num;
-	if ((numToMove > 0) && (num > 0))
-		Q_memmove( &Element(elem+num), &Element(elem), numToMove * sizeof(T) );
+	//if ((numToMove > 0) && (num > 0))
+		//Q_memmove( &Element(elem+num), &Element(elem), numToMove * sizeof(T) );
 }
 
 template< typename T, class A >
@@ -366,10 +391,10 @@ void CUtlVector<T, A>::ShiftElementsLeft( int elem, int num )
 	int numToMove = m_Size - elem - num;
 	if ((numToMove > 0) && (num > 0))
 	{
-		Q_memmove( &Element(elem), &Element(elem+num), numToMove * sizeof(T) );
+		//Q_memmove( &Element(elem), &Element(elem+num), numToMove * sizeof(T) );
 
 #ifdef _DEBUG
-		Q_memset( &Element(m_Size-num), 0xDD, num * sizeof(T) );
+		//Q_memset( &Element(m_Size-num), 0xDD, num * sizeof(T) );
 #endif
 	}
 }
