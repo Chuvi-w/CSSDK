@@ -17,7 +17,8 @@
 
 
 #include "pm_materials.h"
-#include "unisignals.h"
+//#include "unisignals.h"
+//#include "hintmessage.h"
 
 
 #define PLAYER_FATAL_FALL_SPEED		1024// approx 60 feet
@@ -257,7 +258,7 @@ public:
     Vector                      m_vBlastVector;             /*   796    12 */
     bool                        m_bKilledByGrenade;         /*   808     1 */
 
-    CHintMessageQueue           m_hintMessageQueue;         /*   812    24 */
+    //CHintMessageQueue           m_hintMessageQueue;         /*   812    24 */
     int32                       m_flDisplayHistory;         /*   836     4 */
 
     _Menu                       m_iMenu;                    /*   840     4 */
@@ -293,7 +294,7 @@ public:
     bool                        m_bIsDefusing;              /*   949     1 */
 
     float                       m_tmHandleSignals;          /*   952     4 */
-    CUnifiedSignals             m_signals;                  /*   956     8 */
+    //CUnifiedSignals             m_signals;                  /*   956     8 */
 
     edict_t                    *m_pentCurBombTarget;        /*   964     4 */
 
@@ -451,6 +452,7 @@ protected:
     MusicState                  m_musicState;               /*  2464     4 */
     float                       m_flLastCommandTime[COMMANDS_TO_TRACK];   /*  2468    32 */
 
+public:
 	virtual void Spawn( void );
 	void Pain( void );
 

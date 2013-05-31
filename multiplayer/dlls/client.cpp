@@ -227,8 +227,8 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	CBasePlayer* player = GetClassPtr((CBasePlayer *)pev);
 
 	//Not yet.
-	if ( player->m_flNextChatTime > gpGlobals->time )
-		 return;
+	//if ( player->m_flNextChatTime > gpGlobals->time )
+	//	 return;
 
 	if ( !stricmp( pcmd, cpSay) || !stricmp( pcmd, cpSayTeam ) )
 	{
@@ -290,7 +290,7 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	strcat( text, "\n" );
 
 
-	player->m_flNextChatTime = gpGlobals->time + CHAT_INTERVAL;
+	//player->m_flNextChatTime = gpGlobals->time + CHAT_INTERVAL;
 
 	// loop through all players
 	// Start with the first player.
@@ -1531,8 +1531,8 @@ void UpdateClientData ( const struct edict_s *ent, int sendweapons, struct clien
 		if ( pl )
 		{
 			cd->m_flNextAttack	= pl->m_flNextAttack;
-			cd->fuser2			= pl->m_flNextAmmoBurn;
-			cd->fuser3			= pl->m_flAmmoStartCharge;
+			//cd->fuser2			= pl->m_flNextAmmoBurn;
+			//cd->fuser3			= pl->m_flAmmoStartCharge;
 			cd->vuser1.x		= pl->ammo_9mm;
 			cd->vuser1.y		= pl->ammo_357;
 			cd->vuser1.z		= pl->ammo_argrens;

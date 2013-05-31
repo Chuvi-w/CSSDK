@@ -965,7 +965,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 
 	SetAnimation( PLAYER_DIE );
 	
-	m_iRespawnFrames = 0;
+	//m_iRespawnFrames = 0;
 
 	pev->modelindex = g_ulModelIndexPlayer;    // don't use eyes
 
@@ -1366,9 +1366,9 @@ void CBasePlayer::PlayerDeathThink(void)
 	{
 		StudioFrameAdvance( );
 
-		m_iRespawnFrames++;				// Note, these aren't necessarily real "frames", so behavior is dependent on # of client movement commands
-		if ( m_iRespawnFrames < 120 )   // Animations should be no longer than this
-			return;
+		//m_iRespawnFrames++;				// Note, these aren't necessarily real "frames", so behavior is dependent on # of client movement commands
+		//if ( m_iRespawnFrames < 120 )   // Animations should be no longer than this
+		//	return;
 	}
 
 	// once we're done animating our death and we're on the ground, we want to set movetype to None so our dead body won't do collisions and stuff anymore
@@ -1416,7 +1416,7 @@ void CBasePlayer::PlayerDeathThink(void)
 		return;
 
 	pev->button = 0;
-	m_iRespawnFrames = 0;
+	//m_iRespawnFrames = 0;
 
 	//ALERT(at_console, "Respawn\n");
 
@@ -1738,7 +1738,7 @@ void CBasePlayer::AddPointsToTeam( int score, BOOL bAllowNegativeScore )
 void CBasePlayer::InitStatusBar()
 {
 	m_flStatusBarDisappearDelay = 0;
-	m_SbarString1[0] = m_SbarString0[0] = 0; 
+	//m_SbarString1[0] = m_SbarString0[0] = 0; 
 }
 
 void CBasePlayer::UpdateStatusBar()
@@ -1749,7 +1749,7 @@ void CBasePlayer::UpdateStatusBar()
 
 	memset( newSBarState, 0, sizeof(newSBarState) );
 	strcpy( sbuf0, m_SbarString0 );
-	strcpy( sbuf1, m_SbarString1 );
+	//strcpy( sbuf1, m_SbarString1 );
 
 	// Find an ID Target
 	TraceResult tr;
@@ -1803,7 +1803,7 @@ void CBasePlayer::UpdateStatusBar()
 		bForceResend = TRUE;
 	}
 
-	if ( strcmp( sbuf1, m_SbarString1 ) )
+	/*if ( strcmp( sbuf1, m_SbarString1 ) )
 	{
 		MESSAGE_BEGIN( MSG_ONE, gmsgStatusText, NULL, pev );
 			WRITE_BYTE( 1 );
@@ -1814,7 +1814,7 @@ void CBasePlayer::UpdateStatusBar()
 
 		// make sure everything's resent
 		bForceResend = TRUE;
-	}
+	}*/
 
 	// Check values and send if they don't match
 	for (int i = 1; i < SBAR_END; i++)
@@ -2694,7 +2694,7 @@ pt_end:
 	if ( m_flNextAttack < -0.001 )
 		m_flNextAttack = -0.001;
 	
-	if ( m_flNextAmmoBurn != 1000 )
+	/*if ( m_flNextAmmoBurn != 1000 )
 	{
 		m_flNextAmmoBurn -= gpGlobals->frametime;
 		
@@ -2708,7 +2708,7 @@ pt_end:
 		
 		if ( m_flAmmoStartCharge < -0.001 )
 			m_flAmmoStartCharge = -0.001;
-	}
+	}*/
 	
 
 #else
@@ -2926,7 +2926,7 @@ void CBasePlayer::Spawn( void )
 
 	m_lastx = m_lasty = 0;
 	
-	m_flNextChatTime = gpGlobals->time;
+	//m_flNextChatTime = gpGlobals->time;
 
 	g_pGameRules->PlayerSpawn( this );
 }
@@ -3402,7 +3402,7 @@ void CBasePlayer :: ForceClientDllUpdate( void )
 	m_iClientBattery = -1;
 	m_iTrain |= TRAIN_NEW;  // Force new train message.
 	m_fWeapon = FALSE;          // Force weapon send
-	m_fKnownItem = FALSE;    // Force weaponinit messages.
+	//m_fKnownItem = FALSE;    // Force weaponinit messages.
 	m_fInitHUD = TRUE;		// Force HUD gmsgResetHUD message
 
 	// Now force all the necessary messages
@@ -4094,7 +4094,7 @@ void CBasePlayer :: UpdateClientData( void )
 	//
 	// New Weapon?
 	//
-	if (!m_fKnownItem)
+	/*if (!m_fKnownItem)
 	{
 		m_fKnownItem = TRUE;
 
@@ -4139,7 +4139,7 @@ void CBasePlayer :: UpdateClientData( void )
 				WRITE_BYTE(II.iFlags);					// byte		Flags
 			MESSAGE_END();
 		}
-	}
+	}*/
 
 
 	SendAmmoUpdate();
