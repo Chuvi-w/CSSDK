@@ -1702,6 +1702,11 @@ BOOL CHalfLifeMultiplay::ClientCommand_DeadOrAlive( CBasePlayer *pPlayer, const 
     return m_VoiceGameMgr.ClientCommand( pPlayer, pcmd ) ? TRUE : FALSE;
 }
 
+void CHalfLifeMultiplay::EndMultiplayerGame()
+{
+    GoToIntermission();
+}
+
 void CHalfLifeMultiplay::RemoveGuns()
 {
     CBaseEntity *pEntity = NULL;
