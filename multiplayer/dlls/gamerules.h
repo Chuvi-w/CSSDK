@@ -587,3 +587,5 @@ protected:
 };
 
 extern DLL_GLOBAL CGameRules*	g_pGameRules;
+
+extern void Broadcast( const char *sentence );

@@ -1696,4 +1696,22 @@ void CHalfLifeMultiplay :: SendMOTDToClient( edict_t *client )
 	FREE_FILE( aFileList );
 }
 	
+// CS
+extern int gmsgSendAudio;
 
+void Broadcast( const char *sentence )
+{
+    if( sentence )
+    {
+        char dest[ 32 ];
+
+        strcpy( dest, "%!MRAD_" );
+        strcat( dest, UTIL_VarArgs( "%s", sentence ) );
+
+        MESSAGE_BEGIN( MSG_BROADCAST, gmsgSendAudio );
+            WRITE_BYTE( 0 );
+            WRITE_STRING( dest );
+            WRITE_SHORT( 100 );
+        MESSAGE_END();
+    }
+}
