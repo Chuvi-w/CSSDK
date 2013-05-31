@@ -1696,6 +1696,12 @@ void CHalfLifeMultiplay :: SendMOTDToClient( edict_t *client )
 	FREE_FILE( aFileList );
 }
 
+
+BOOL CHalfLifeMultiplay::ClientCommand_DeadOrAlive( CBasePlayer *pPlayer, const char *pcmd ) 
+{
+    return m_VoiceGameMgr.ClientCommand( pPlayer, pcmd ) ? TRUE : FALSE;
+}
+
 void CHalfLifeMultiplay::RemoveGuns()
 {
     CBaseEntity *pEntity = NULL;
