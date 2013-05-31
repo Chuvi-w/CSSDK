@@ -1723,6 +1723,55 @@ void CHalfLifeMultiplay::RemoveGuns()
     }
 }
 
+void CHalfLifeMultiplay::CleanUpMap()
+{
+    CBaseEntity *pEntity = NULL;
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "cycler_sprite" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "light" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "func_door" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "func_water" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "func_door_rotating" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "func_tracktrain" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "func_vehicle" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "func_train" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "armoury_entity" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "ambient_generic" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "env_sprite" ) ) != NULL )
+        pEntity->Restart();
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "grenade" ) ) != NULL )
+        UTIL_Remove( pEntity );
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "item_thighpack" ) ) != NULL )
+        UTIL_Remove( pEntity );
+
+    RemoveGuns();
+
+    // TODO: Finish me. 
+    // PLAYBACK_EVENT_FULL( 6, 0, m_usResetDecals, 0, g_vecZero, g_vecZero, 0, 0, 0, 0, 0, 0 );
+}
+
 void CHalfLifeMultiplay::CheckMapConditions()
 {
     if( UTIL_FindEntityByClassname( NULL, "func_bomb_target" ) != NULL )

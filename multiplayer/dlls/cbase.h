@@ -146,6 +146,7 @@ public:
 	// initialization functions
 	virtual void	Spawn( void ) { return; }
 	virtual void	Precache( void ) { return; }
+    virtual void    Restart( void ) { return; }
 	virtual void	KeyValue( KeyValueData* pkvd) { pkvd->fHandled = FALSE; }
 	virtual int		Save( CSave &save );
 	virtual int		Restore( CRestore &restore );
