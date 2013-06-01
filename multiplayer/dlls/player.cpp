@@ -403,7 +403,7 @@ void CBasePlayer::ResetMaxSpeed()
     }
     else
     {
-        //speed = m_pActiveItem->GetMaxSpeed();
+        speed = m_pActiveItem->GetMaxSpeed();
     }
 }
 

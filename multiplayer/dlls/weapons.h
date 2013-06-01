@@ -301,67 +301,102 @@ typedef struct
 class CBasePlayerItem : public CBaseAnimating
 {
 public:
-	virtual void SetObjectCollisionBox( void );
+    virtual void SetObjectCollisionBox( void );
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-	
-	static	TYPEDESCRIPTION m_SaveData[];
+    virtual int Save( CSave &save );
+    virtual int Restore( CRestore &restore );
 
-	virtual int AddToPlayer( CBasePlayer *pPlayer );	// return TRUE if the item you want the item added to the player inventory
-	virtual int AddDuplicate( CBasePlayerItem *pItem ) { return FALSE; }	// return TRUE if you want your duplicate removed from world
-	void EXPORT DestroyItem( void );
-	void EXPORT DefaultTouch( CBaseEntity *pOther );	// default weapon touch
-	void EXPORT FallThink ( void );// when an item is first spawned, this think is run to determine when the object has hit the ground.
-	void EXPORT Materialize( void );// make a weapon visible and tangible
-	void EXPORT AttemptToMaterialize( void );  // the weapon desires to become visible and tangible, if the game rules allow for it
-	CBaseEntity* Respawn ( void );// copy a weapon
-	void FallInit( void );
-	void CheckRespawn( void );
-	virtual int GetItemInfo(ItemInfo *p) { return 0; };	// returns 0 if struct not filled out
-	virtual BOOL CanDeploy( void ) { return TRUE; };
-	virtual BOOL Deploy( )								// returns is deploy was successful
-		 { return TRUE; };
+    virtual int AddToPlayer( CBasePlayer *pPlayer );                        // Return TRUE if the item you want the item added to the player inventory.
+    virtual int AddDuplicate( CBasePlayerItem *pItem ) { return FALSE; }    // Return TRUE if you want your duplicate removed from world.
 
-	virtual BOOL CanHolster( void ) { return TRUE; };// can this weapon be put away right now?
-	virtual void Holster( int skiplocal = 0 );
-	virtual void UpdateItemInfo( void ) { return; };
+    void EXPORT DestroyItem( void );
+    void EXPORT DefaultTouch( CBaseEntity *pOther );                        // Default weapon touch.
+    void EXPORT FallThink( void );                                          // When an item is first spawned, this think is run to determine when the object has hit the ground.
+    void EXPORT Materialize( void );                                        // Make a weapon visible and tangible.
+    void EXPORT AttemptToMaterialize( void );                               // The weapon desires to become visible and tangible, if the game rules allow for it.
 
-	virtual void ItemPreFrame( void )	{ return; }		// called each frame by the player PreThink
-	virtual void ItemPostFrame( void ) { return; }		// called each frame by the player PostThink
+    virtual CBaseEntity* Respawn( void );                                   // Copy a weapon.
 
-	virtual void Drop( void );
-	virtual void Kill( void );
-	virtual void AttachToPlayer ( CBasePlayer *pPlayer );
+    void FallInit( void );
+    void CheckRespawn( void );
 
-	virtual int PrimaryAmmoIndex() { return -1; };
-	virtual int SecondaryAmmoIndex() { return -1; };
+    virtual int GetItemInfo( ItemInfo *p ) { return 0; };                    // Returns 0 if struct not filled out.
 
-	virtual int UpdateClientData( CBasePlayer *pPlayer ) { return 0; }
+    virtual BOOL CanDeploy( void ) { return TRUE; }
+    virtual BOOL CanDrop( void ) { return TRUE; }
+    virtual BOOL Deploy( void ) { return TRUE; }
+    virtual BOOL IsWeapon( void ) { return FALSE; }
+    virtual BOOL CanHolster( void ) { return TRUE; };                        // Can this weapon be put away right now?
 
-	virtual CBasePlayerItem *GetWeaponPtr( void ) { return NULL; };
+    virtual void Holster( int skiplocal = 0 );
+    virtual void UpdateItemInfo( void ) { return; }
+
+    virtual void ItemPreFrame( void )   { return; }                          // Called each frame by the player PreThink.
+    virtual void ItemPostFrame( void )  { return; }                          // Called each frame by the player PostThink.
+
+    virtual void Drop( void );
+    virtual void Kill( void );
+    virtual void AttachToPlayer( CBasePlayer *pPlayer );
+
+    virtual int PrimaryAmmoIndex( void ) { return -1; }
+    virtual int SecondaryAmmoIndex( void ) { return -1; }
+
+    virtual int UpdateClientData( CBasePlayer *pPlayer ) { return 0; }
+
+    virtual CBasePlayerItem* GetWeaponPtr( void ) { return NULL; };
+    virtual float GetMaxSpeed( void ) { return 260.0; };
+
+    virtual int iItemSlot( void ) { return 0; }
+
+    int         iItemPosition( void )   { return ItemInfoArray[ m_iId ].iPosition;  }
+    const char *pszAmmo1( void )        { return ItemInfoArray[ m_iId ].pszAmmo1;   }
+    int         iMaxAmmo1( void )       { return ItemInfoArray[ m_iId ].iMaxAmmo1;  }
+    const char *pszAmmo2( void )        { return ItemInfoArray[ m_iId ].pszAmmo2;   }
+    int         iMaxAmmo2( void )       { return ItemInfoArray[ m_iId ].iMaxAmmo2;  }
+    const char *pszName( void )         { return ItemInfoArray[ m_iId ].pszName;    }
+    int         iMaxClip( void )        { return ItemInfoArray[ m_iId ].iMaxClip;   }
+    int         iWeight( void )         { return ItemInfoArray[ m_iId ].iWeight;    }
+    int         iFlags( void )          { return ItemInfoArray[ m_iId ].iFlags;     }
+
+    static TYPEDESCRIPTION m_SaveData[];
 
 	static ItemInfo ItemInfoArray[ MAX_WEAPONS ];
 	static AmmoInfo AmmoInfoArray[ MAX_AMMO_SLOTS ];
 
-	CBasePlayer	*m_pPlayer;
+	CBasePlayer	    *m_pPlayer;
 	CBasePlayerItem *m_pNext;
-	int		m_iId;												// WEAPON_???
+	int		         m_iId;
 
-	virtual int iItemSlot( void ) { return 0; }			// return 0 to MAX_ITEMS_SLOTS, used in hud
-
-	int			iItemPosition( void ) { return ItemInfoArray[ m_iId ].iPosition; }
-	const char	*pszAmmo1( void )	{ return ItemInfoArray[ m_iId ].pszAmmo1; }
-	int			iMaxAmmo1( void )	{ return ItemInfoArray[ m_iId ].iMaxAmmo1; }
-	const char	*pszAmmo2( void )	{ return ItemInfoArray[ m_iId ].pszAmmo2; }
-	int			iMaxAmmo2( void )	{ return ItemInfoArray[ m_iId ].iMaxAmmo2; }
-	const char	*pszName( void )	{ return ItemInfoArray[ m_iId ].pszName; }
-	int			iMaxClip( void )	{ return ItemInfoArray[ m_iId ].iMaxClip; }
-	int			iWeight( void )		{ return ItemInfoArray[ m_iId ].iWeight; }
-	int			iFlags( void )		{ return ItemInfoArray[ m_iId ].iFlags; }
-
-	// int		m_iIdPrimary;										// Unique Id for primary ammo
-	// int		m_iIdSecondary;										// Unique Id for secondary ammo
+    /* vtable has 25 entries:
+    {
+       [8]  = SetObjectCollisionBox(_ZN15CBasePlayerItem21SetObjectCollisionBoxEv),
+       [4]  = Save(_ZN15CBasePlayerItem4SaveER5CSave),
+       [5]  = Restore(_ZN15CBasePlayerItem7RestoreER8CRestore),
+       [59] = AddToPlayer(_ZN15CBasePlayerItem11AddToPlayerEP11CBasePlayer),
+       [60] = AddDuplicate(_ZN15CBasePlayerItem12AddDuplicateEPS_),
+       [48] = Respawn(_ZN15CBasePlayerItem7RespawnEv),
+       [61] = GetItemInfo(_ZN15CBasePlayerItem11GetItemInfoEP8ItemInfo),
+       [62] = CanDeploy(_ZN15CBasePlayerItem9CanDeployEv),
+       [63] = CanDrop(_ZN15CBasePlayerItem7CanDropEv),
+       [64] = Deploy(_ZN15CBasePlayerItem6DeployEv),
+       [65] = IsWeapon(_ZN15CBasePlayerItem8IsWeaponEv),
+       [66] = CanHolster(_ZN15CBasePlayerItem10CanHolsterEv),
+       [67] = Holster(_ZN15CBasePlayerItem7HolsterEi),
+       [68] = UpdateItemInfo(_ZN15CBasePlayerItem14UpdateItemInfoEv),
+       [69] = ItemPreFrame(_ZN15CBasePlayerItem12ItemPreFrameEv),
+       [70] = ItemPostFrame(_ZN15CBasePlayerItem13ItemPostFrameEv),
+       [71] = Drop(_ZN15CBasePlayerItem4DropEv),
+       [72] = Kill(_ZN15CBasePlayerItem4KillEv),
+       [73] = AttachToPlayer(_ZN15CBasePlayerItem14AttachToPlayerEP11CBasePlayer),
+       [74] = PrimaryAmmoIndex(_ZN15CBasePlayerItem16PrimaryAmmoIndexEv),
+       [75] = SecondaryAmmoIndex(_ZN15CBasePlayerItem18SecondaryAmmoIndexEv),
+       [76] = UpdateClientData(_ZN15CBasePlayerItem16UpdateClientDataEP11CBasePlayer),
+       [77] = GetWeaponPtr(_ZN15CBasePlayerItem12GetWeaponPtrEv),
+       [78] = GetMaxSpeed(_ZN15CBasePlayerItem11GetMaxSpeedEv),
+       [79] = iItemSlot(_ZN15CBasePlayerItem9iItemSlotEv),
+    } */
+    /* size: 192, cachelines: 3, members: 7 */
+    /* BRAIN FART ALERT! 192 != 60 + 0(holes), diff = 132 */
 };
 
 
