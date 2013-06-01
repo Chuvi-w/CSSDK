@@ -321,19 +321,62 @@ void LinkUserMessages( void )  // Last check: 2013, May 29
 LINK_ENTITY_TO_CLASS( player, CBasePlayer );
 
 
-
-void CBasePlayer :: Pain( void )
+// CS
+void CBasePlayer::Pain( int m_LastHitGroup, bool HasArmour )
 {
-	float	flRndSound;//sound randomizer
+    int random = RANDOM_LONG( 0, 2 );
 
-	flRndSound = RANDOM_FLOAT ( 0 , 1 ); 
-	
-	if ( flRndSound <= 0.33 )
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
-	else if ( flRndSound <= 0.66 )	
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
-	else
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+    switch( m_LastHitGroup )
+    {
+        case HITGROUP_LEFTLEG :
+        case HITGROUP_RIGHTLEG :
+        {
+            switch( random )
+            {
+                case 0 : EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/bhit_flesh-1.wav", 1, ATTN_NORM ); break;
+                case 1 : EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/bhit_flesh-2.wav", 1, ATTN_NORM ); break;
+                case 2 : EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/bhit_flesh-3.wav", 1, ATTN_NORM ); break;
+            }
+
+            break;  
+        }
+        case HITGROUP_HEAD :
+        {
+            if( m_iKevlar == 2 )
+            {
+                EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/bhit_helmet-1.wav", 1, ATTN_NORM );
+            }
+            else
+            {
+                switch( random )
+                {
+                    case 0 : EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/headshot1.wav", 1, ATTN_NORM ); break;
+                    case 1 : EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/headshot2.wav", 1, ATTN_NORM ); break;
+                    case 2 : EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/headshot3.wav", 1, ATTN_NORM ); break;
+                }
+            }
+
+            break;
+        }
+        default:
+        {
+            if( HasArmour )
+            {
+                EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/bhit_kevlar-1.wav", 1, ATTN_NORM );
+            }
+            else
+            {
+                switch( random )
+                {
+                    case 0 : EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/bhit_flesh-1.wav", 1, ATTN_NORM ); break;
+                    case 1 : EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/bhit_flesh-2.wav", 1, ATTN_NORM ); break;
+                    case 2 : EMIT_SOUND( ENT( pev ), CHAN_VOICE, "player/bhit_flesh-3.wav", 1, ATTN_NORM ); break;
+                }
+            }
+
+            break;
+        }
+    }
 }
 
 /* 
