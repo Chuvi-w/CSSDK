@@ -870,23 +870,16 @@ int CBasePlayerWeapon::UpdateClientData( CBasePlayer *pPlayer )
 }
 
 
-void CBasePlayerWeapon::SendWeaponAnim( int iAnim, int skiplocal, int body )
+void CBasePlayerWeapon::SendWeaponAnim( int iAnim, int skiplocal )
 {
-	if ( UseDecrement() )
-		skiplocal = 1;
-	else
-		skiplocal = 0;
-
 	m_pPlayer->pev->weaponanim = iAnim;
 
-#if defined( CLIENT_WEAPONS )
-	if ( skiplocal && ENGINE_CANSKIP( m_pPlayer->edict() ) )
+	if( skiplocal && ENGINE_CANSKIP( m_pPlayer->edict() ) )
 		return;
-#endif
 
 	MESSAGE_BEGIN( MSG_ONE, SVC_WEAPONANIM, NULL, m_pPlayer->pev );
-		WRITE_BYTE( iAnim );						// sequence number
-		WRITE_BYTE( pev->body );					// weaponmodel bodygroup.
+		WRITE_BYTE( iAnim );						// Sequence number
+		WRITE_BYTE( pev->body );					// Weaponmodel bodygroup.
 	MESSAGE_END();
 }
 
