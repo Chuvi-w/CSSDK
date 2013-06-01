@@ -404,54 +404,65 @@ public:
 class CBasePlayerWeapon : public CBasePlayerItem
 {
 public:
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-	
-	static	TYPEDESCRIPTION m_SaveData[];
+    virtual int Save( CSave &save );
+    virtual int Restore( CRestore &restore );
 
-	// generic weapon versions of CBasePlayerItem calls
-	virtual int AddToPlayer( CBasePlayer *pPlayer );
-	virtual int AddDuplicate( CBasePlayerItem *pItem );
+    virtual int AddToPlayer( CBasePlayer *pPlayer );
+    virtual int AddDuplicate( CBasePlayerItem *pItem );
 
-	virtual int ExtractAmmo( CBasePlayerWeapon *pWeapon ); //{ return TRUE; };			// Return TRUE if you can add ammo to yourself when picked up
-	virtual int ExtractClipAmmo( CBasePlayerWeapon *pWeapon );// { return TRUE; };			// Return TRUE if you can add ammo to yourself when picked up
+    virtual int ExtractAmmo( CBasePlayerWeapon *pWeapon );                  // Return TRUE if you can add ammo to yourself when picked up.
+    virtual int ExtractClipAmmo( CBasePlayerWeapon *pWeapon );              // Return TRUE if you can add ammo to yourself when picked up.
 
-	virtual int AddWeapon( void ) { ExtractAmmo( this ); return TRUE; };	// Return TRUE if you want to add yourself to the player
+    virtual int AddWeapon( void ) { ExtractAmmo( this ); return TRUE; }     // Return TRUE if you want to add yourself to the player.
 
-	// generic "shared" ammo handlers
-	BOOL AddPrimaryAmmo( int iCount, char *szName, int iMaxClip, int iMaxCarry );
-	BOOL AddSecondaryAmmo( int iCount, char *szName, int iMaxCarry );
+    BOOL AddPrimaryAmmo( int iCount, char *szName, int iMaxClip, int iMaxCarry );
+    BOOL AddSecondaryAmmo( int iCount, char *szName, int iMaxCarry );
 
-	virtual void UpdateItemInfo( void ) {};	// updates HUD state
+    virtual void UpdateItemInfo( void ) {};                                 // Updates HUD state.
 
-	virtual BOOL PlayEmptySound( void );
-	virtual void ResetEmptySound( void );
+    virtual BOOL PlayEmptySound( void );
+    virtual void ResetEmptySound( void );
 
-	virtual void SendWeaponAnim( int iAnim, int skiplocal = 1, int body = 0 );  // skiplocal is 1 if client is predicting weapon animations
+    virtual void SendWeaponAnim( int iAnim, int skiplocal = 1 );            // Skiplocal is 1 if client is predicting weapon animations.
 
-	virtual BOOL CanDeploy( void );
-	virtual BOOL IsUseable( void );
-	BOOL DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal = 0, int body = 0 );
-	int DefaultReload( int iClipSize, int iAnim, float fDelay, int body = 0 );
+    virtual BOOL CanDeploy( void );
+    virtual BOOL IsUseable( void );
+    BOOL DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal = 0 );
+    BOOL DefaultReload( int iClipSize, int iAnim, float fDelay );
 
-	virtual void ItemPostFrame( void );	// called each frame by the player PostThink
-	// called by CBasePlayerWeapons ItemPostFrame()
-	virtual void PrimaryAttack( void ) { return; }				// do "+ATTACK"
-	virtual void SecondaryAttack( void ) { return; }			// do "+ATTACK2"
-	virtual void Reload( void ) { return; }						// do "+RELOAD"
-	virtual void WeaponIdle( void ) { return; }					// called when no buttons pressed
-	virtual int UpdateClientData( CBasePlayer *pPlayer );		// sends hud info to client dll, if things have changed
-	virtual void RetireWeapon( void );
-	virtual BOOL ShouldWeaponIdle( void ) {return FALSE; };
-	virtual void Holster( int skiplocal = 0 );
-	virtual BOOL UseDecrement( void ) { return FALSE; };
-	
-	int	PrimaryAmmoIndex(); 
-	int	SecondaryAmmoIndex(); 
+    virtual void ItemPostFrame( void );                                     // Called each frame by the player PostThink.
+    virtual void PrimaryAttack( void ) { return; }                          // Do "+ATTACK".
+    virtual void SecondaryAttack( void ) { return; }                        // Do "+ATTACK2".
+    virtual void Reload( void ) { return; }                                 // Do "+RELOAD".
+    virtual void WeaponIdle( void ) { return; }                             // Called when no buttons pressed.
+    virtual int UpdateClientData( CBasePlayer *pPlayer );                   // Sends hud info to client dll, if things have changed.
+    virtual void RetireWeapon( void );
+    virtual BOOL ShouldWeaponIdle( void ) { return FALSE; }
+    virtual void Holster( int skiplocal = 0 );
+    virtual BOOL UseDecrement( void ) { return FALSE; }
 
-	void PrintState( void );
+    virtual BOOL IsWeapon( void ) { return TRUE; }
 
-	virtual CBasePlayerItem *GetWeaponPtr( void ) { return (CBasePlayerItem *)this; };
+    virtual int PrimaryAmmoIndex( void );
+    virtual int SecondaryAmmoIndex( void );
+
+    virtual CBasePlayerItem* GetWeaponPtr( void ) { return ( CBasePlayerItem* )this; };
+
+    void FireRemaining( int &shotsFired, float &shootTime, BOOL bIsGlock );
+    void KickBack( float up_base, float lateral_base, float up_modifier, float lateral_modifier, float up_max, float lateral_max, int direction_change );
+    void EjectBrassLate( void );
+    void MakeBeam( void );
+    void BeamUpdate( void );
+    void ReloadSound( void );
+    float GetNextAttackDelay( float delay );
+    bool HasSecondaryAttack( void );
+    BOOL IsPistol( void ) { return FALSE; }
+
+    void SetPlayerShieldAnim( void );
+    void ResetPlayerShieldAnim( void );
+    bool ShieldSecondaryFire( int iUpAnim, int iDownAnim );
+
+    static	TYPEDESCRIPTION m_SaveData[];
 
     int                         m_iPlayEmptySound;          /*   192     4 */ 
     int                         m_fFireOnEmpty;             /*   196     4 */ // True when the gun is empty and the player is still holding down the
@@ -501,6 +512,41 @@ public:
 
     float                       m_flPrevPrimaryAttack;      /*   328     4 */
     float                       m_flLastFireTime;           /*   332     4 */
+
+    /* vtable has 27 entries:
+    {
+       [4] = Save(_ZN17CBasePlayerWeapon4SaveER5CSave),
+       [5] = Restore(_ZN17CBasePlayerWeapon7RestoreER8CRestore),
+       [59] = AddToPlayer(_ZN17CBasePlayerWeapon11AddToPlayerEP11CBasePlayer),
+       [60] = AddDuplicate(_ZN17CBasePlayerWeapon12AddDuplicateEP15CBasePlayerItem),
+       [80] = ExtractAmmo(_ZN17CBasePlayerWeapon11ExtractAmmoEPS_),
+       [81] = ExtractClipAmmo(_ZN17CBasePlayerWeapon15ExtractClipAmmoEPS_),
+       [82] = AddWeapon(_ZN17CBasePlayerWeapon9AddWeaponEv),
+       [68] = UpdateItemInfo(_ZN17CBasePlayerWeapon14UpdateItemInfoEv),
+       [83] = PlayEmptySound(_ZN17CBasePlayerWeapon14PlayEmptySoundEv),
+       [84] = ResetEmptySound(_ZN17CBasePlayerWeapon15ResetEmptySoundEv),
+       [85] = SendWeaponAnim(_ZN17CBasePlayerWeapon14SendWeaponAnimEii),
+       [62] = CanDeploy(_ZN17CBasePlayerWeapon9CanDeployEv),
+       [86] = IsUseable(_ZN17CBasePlayerWeapon9IsUseableEv),
+       [70] = ItemPostFrame(_ZN17CBasePlayerWeapon13ItemPostFrameEv),
+       [87] = PrimaryAttack(_ZN17CBasePlayerWeapon13PrimaryAttackEv),
+       [88] = SecondaryAttack(_ZN17CBasePlayerWeapon15SecondaryAttackEv),
+       [89] = Reload(_ZN17CBasePlayerWeapon6ReloadEv),
+       [90] = WeaponIdle(_ZN17CBasePlayerWeapon10WeaponIdleEv),
+       [76] = UpdateClientData(_ZN17CBasePlayerWeapon16UpdateClientDataEP11CBasePlayer),
+       [91] = RetireWeapon(_ZN17CBasePlayerWeapon12RetireWeaponEv),
+       [92] = ShouldWeaponIdle(_ZN17CBasePlayerWeapon16ShouldWeaponIdleEv),
+       [67] = Holster(_ZN17CBasePlayerWeapon7HolsterEi),
+       [93] = UseDecrement(_ZN17CBasePlayerWeapon12UseDecrementEv),
+       [65] = IsWeapon(_ZN17CBasePlayerWeapon8IsWeaponEv),
+       [74] = PrimaryAmmoIndex(_ZN17CBasePlayerWeapon16PrimaryAmmoIndexEv),
+       [75] = SecondaryAmmoIndex(_ZN17CBasePlayerWeapon18SecondaryAmmoIndexEv),
+       [77] = GetWeaponPtr(_ZN17CBasePlayerWeapon12GetWeaponPtrEv),
+    } */
+    /* size: 336, cachelines: 6, members: 37 */
+    /* sum members: 330, holes: 3, sum holes: 86 */
+    /* last cacheline: 16 bytes */
+    /* BRAIN FART ALERT! 336 != 330 + 86(holes), diff = -80 */
 };
 
 
