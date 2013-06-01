@@ -19,6 +19,7 @@
 #include "pm_materials.h"
 #include "unisignals.h"
 #include "hintmessage.h"
+#include "weapons.h"
 
 
 #define PLAYER_FATAL_FALL_SPEED		1024// approx 60 feet
@@ -706,8 +707,8 @@ public:
     const char *PickGrenadeKillWeaponString( void );
 
     bool ShouldExecuteAutoBuyCommand( const AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary );
-    void PostAutoBuyCommandProcessing( const AutoBuyInfoStruct *commandInfo, bool &const boughtPrimary, bool &const boughtSecondary );
-    void ParseAutoBuyString( const char *string, bool &const boughtPrimary, bool &const boughtSecondary );
+    void PostAutoBuyCommandProcessing( const AutoBuyInfoStruct *commandInfo, const bool &boughtPrimary, const bool &boughtSecondary );
+    void ParseAutoBuyString( const char *string, const bool &boughtPrimary, const bool &boughtSecondary );
     AutoBuyInfoStruct *GetAutoBuyCommandInfo( const char *command );
     void InitRebuyData( const char *str );
     void BuildRebuyStruct( void );
