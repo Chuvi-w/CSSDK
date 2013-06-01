@@ -24,15 +24,23 @@
 
 */
 
-// Hit Group standards
-#define	HITGROUP_GENERIC	0
-#define	HITGROUP_HEAD		1
-#define	HITGROUP_CHEST		2
-#define	HITGROUP_STOMACH	3
-#define HITGROUP_LEFTARM	4	
-#define HITGROUP_RIGHTARM	5
-#define HITGROUP_LEFTLEG	6
-#define HITGROUP_RIGHTLEG	7
+// Hit Group standards 
+enum HitBoxGroup
+{
+    HITGROUP_GENERIC = 0,
+    HITGROUP_HEAD,
+    HITGROUP_CHEST,
+    HITGROUP_STOMACH,
+    HITGROUP_LEFTARM,
+    HITGROUP_RIGHTARM,
+    HITGROUP_LEFTLEG,
+    HITGROUP_RIGHTLEG,
+
+    // CS
+    HITGROUP_SHIELD,
+    NUM_HITGROUPS,
+};
+
 
 
 // spawn flags 256 and above are already taken by the engine
