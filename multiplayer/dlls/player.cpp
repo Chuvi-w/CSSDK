@@ -35,6 +35,7 @@
 #include "gamerules.h"
 #include "game.h"
 #include "hltv.h"
+#include "pm_shared.h"
 
 // #define DUCKFIX
 
@@ -384,6 +385,42 @@ void CBasePlayer::SetNewPlayerModel( const char *modelName )
 {
     SET_MODEL( ENT( pev ), modelName );
     m_modelIndexPlayer = pev->modelindex;
+}
+
+// CS
+void CBasePlayer::SetProgressBarTime( int time )
+{
+    if( time )
+    {
+        m_progressStart = gpGlobals->time;
+        m_progressEnd = gpGlobals->time + time;
+    }
+    else
+    {
+        m_progressStart = 0.0;
+        m_progressEnd = 0.0;
+    }
+
+    MESSAGE_BEGIN( MSG_ONE, gmsgBarTime, NULL, ENT( pev ) );
+        WRITE_SHORT( time );
+    MESSAGE_END();
+
+    CBaseEntity *pEntity = NULL;
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+    {
+        if( !FNullEnt( pEntity ) )
+        {
+            CBasePlayer *pWatcher = GetClassPtr( ( CBasePlayer* )pEntity->pev );
+
+            if( pWatcher->pev->iuser1 == OBS_IN_EYE && pWatcher->pev->iuser2 == entindex() )
+            {
+                MESSAGE_BEGIN( MSG_ONE, gmsgBarTime, NULL, ENT( pWatcher->pev ) );
+                    WRITE_SHORT( time );
+                MESSAGE_END();
+            }
+        }
+    }
 }
 
 /* 
