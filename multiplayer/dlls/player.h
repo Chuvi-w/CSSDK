@@ -453,115 +453,256 @@ protected:
     float                       m_flLastCommandTime[COMMANDS_TO_TRACK];   /*  2468    32 */
 
 public:
-	virtual void Spawn( void );
-	void Pain( void );
 
-//	virtual void Think( void );
-	virtual void Jump( void );
-	virtual void Duck( void );
-	virtual void PreThink( void );
-	virtual void PostThink( void );
-	virtual Vector GetGunPosition( void );
-	virtual int TakeHealth( float flHealth, int bitsDamageType );
-	virtual void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	virtual int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
-	virtual void	Killed( entvars_t *pevAttacker, int iGib );
-	virtual Vector BodyTarget( const Vector &posSrc ) { return Center( ) + pev->view_ofs * RANDOM_FLOAT( 0.5, 1.1 ); };		// position to shoot at
-	virtual void StartSneaking( void ) { m_tSneaking = gpGlobals->time - 1; }
-	virtual void StopSneaking( void ) { m_tSneaking = gpGlobals->time + 30; }
-	virtual BOOL IsSneaking( void ) { return m_tSneaking <= gpGlobals->time; }
-	virtual BOOL IsAlive( void ) { return (pev->deadflag == DEAD_NO) && pev->health > 0; }
-	virtual BOOL ShouldFadeOnDeath( void ) { return FALSE; }
-	virtual	BOOL IsPlayer( void ) { return TRUE; }			// Spectators should return FALSE for this, they aren't "players" as far as game logic is concerned
+    void SpawnClientSideCorpse( void );
 
-	virtual BOOL IsNetClient( void ) { return TRUE; }		// Bots should return FALSE for this, they can't receive NET messages
-															// Spectators should return TRUE for this
-	virtual const char *TeamID( void );
+    void Observer_FindNextPlayer( bool bReverse, const char *name );
+    CBaseEntity* Observer_IsValidTarget( int iPlayerIndex, bool bSameTeam );
+    void Observer_HandleButtons( void );
+    void Observer_SetMode( int iMode );
+    void Observer_CheckTarget( void );
+    void Observer_CheckProperties( void );
+    int IsObserver( void );
 
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-	void RenewItems(void);
-	void PackDeadPlayerItems( void );
-	void RemoveAllItems( BOOL removeSuit );
-	BOOL SwitchWeapon( CBasePlayerItem *pWeapon );
+    void PlantC4( void );
 
-	// JOHN:  sends custom messages if player HUD data has changed  (eg health, ammo)
-	virtual void UpdateClientData( void );
-	
-	// Player is moved across the transition by other means
-	virtual int		ObjectCaps( void ) { return CBaseMonster :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-	virtual void	Precache( void );
-	BOOL			IsOnLadder( void );
-	BOOL			FlashlightIsOn( void );
-	void			FlashlightTurnOn( void );
-	void			FlashlightTurnOff( void );
-	
-	void UpdatePlayerSound ( void );
-	void DeathSound ( void );
+    void Radio( const char *msg_id, const char *msg_verbose, short int pitch, bool showIcon );
+    CBasePlayer*  GetNextRadioRecipient( CBasePlayer *pStartPlayer );
+    void SmartRadio( void );
 
-	int Classify ( void );
-	void SetAnimation( PLAYER_ANIM playerAnim );
-	void SetWeaponAnimType( const char *szExtention );
+    void ThrowWeapon( char *pszItemName );
+    void ThrowPrimary( void );
 
-	// custom player functions
-	virtual void ImpulseCommands( void );
-	void CheatImpulseCommands( int iImpulse );
+    void AddAccount( int amount, bool bTrackChange );
+    void Disappear( void );
+    void MakeVIP( void );
+    bool CanPlayerBuy( bool display );
+    void SwitchTeam( void );
+    void TabulateAmmo( void );
+    void Pain( int m_LastHitGroup, bool HasArmour );
 
-	void StartDeathCam( void );
-	void StartObserver( Vector vecPosition, Vector vecViewAngle );
+    virtual void Spawn( void );
+    virtual void Jump( void );
+    virtual void Duck( void );
+    virtual void PreThink( void );
+    virtual void PostThink( void );
 
-	void AddPoints( int score, BOOL bAllowNegativeScore );
-	void AddPointsToTeam( int score, BOOL bAllowNegativeScore );
-	BOOL AddPlayerItem( CBasePlayerItem *pItem );
-	BOOL RemovePlayerItem( CBasePlayerItem *pItem );
-	void DropPlayerItem ( char *pszItemName );
-	BOOL HasPlayerItem( CBasePlayerItem *pCheckItem );
-	BOOL HasNamedPlayerItem( const char *pszItemName );
-	BOOL HasWeapons( void );// do I have ANY weapons?
-	void SelectPrevItem( int iItem );
-	void SelectNextItem( int iItem );
-	void SelectLastItem(void);
-	void SelectItem(const char *pstr);
-	void ItemPreFrame( void );
-	void ItemPostFrame( void );
-	void GiveNamedItem( const char *szName );
-	void EnableControl(BOOL fControl);
+    virtual Vector GetGunPosition( void );
 
-	int  GiveAmmo( int iAmount, char *szName, int iMax );
-	void SendAmmoUpdate(void);
+    virtual int TakeHealth( float flHealth, int bitsDamageType );
+    virtual void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType );
+    virtual int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );
+    virtual void Killed( entvars_t *pevAttacker, int iGib );
 
-	void WaterMove( void );
-	void EXPORT PlayerDeathThink( void );
-	void PlayerUse( void );
+    virtual Vector BodyTarget( const Vector &posSrc ) { return Center() + pev->view_ofs * RANDOM_FLOAT( 0.5, 1.1 ); };
 
-	void CheckSuitUpdate();
-	void SetSuitUpdate(char *name, int fgroup, int iNoRepeat);
-	void UpdateGeigerCounter( void );
-	void CheckTimeBasedDamage( void );
+    virtual void StartSneaking( void ) { m_tSneaking = gpGlobals->time - 1.0f; }
+    virtual void StopSneaking( void ) { m_tSneaking = gpGlobals->time + 30.0f; }
+    virtual BOOL IsSneaking( void ) { return m_tSneaking <= gpGlobals->time; }
 
-	BOOL FBecomeProne ( void );
-	void BarnacleVictimBitten ( entvars_t *pevBarnacle );
-	void BarnacleVictimReleased ( void );
-	static int GetAmmoIndex(const char *psz);
-	int AmmoInventory( int iAmmoIndex );
-	int Illumination( void );
+    virtual BOOL IsAlive( void ) { return pev->deadflag == DEAD_NO && pev->health > 0; }
+    virtual BOOL ShouldFadeOnDeath( void ) { return FALSE; }
+    virtual BOOL IsPlayer( void ) { return TRUE; }
+    virtual BOOL IsBot( void ) { return FALSE; }
+    virtual BOOL IsNetClient( void ) { return TRUE; }
 
-	void ResetAutoaim( void );
-	Vector GetAutoaimVector( float flDelta  );
-	Vector AutoaimDeflection( Vector &vecSrc, float flDist, float flDelta  );
+    BOOL IsBombGuy( void );
+    bool IsLookingAtPosition( const Vector *pos, float angleTolerance );
 
-	void ForceClientDllUpdate( void );  // Forces all client .dll specific data to be resent to client.
+    virtual const char *TeamID( void );
 
-	void DeathMessage( entvars_t *pevKiller );
+    virtual int Save( CSave &save );
+    virtual int Restore( CRestore &restore );
 
-	void SetCustomDecalFrames( int nFrames );
-	int GetCustomDecalFrames( void );
+    void Reset( void );
+    void SetScoreboardAttributes( CBasePlayer *destination );
 
-	void TabulateAmmo( void );
+    void RenewItems( void );
+    void PackDeadPlayerItems( void );
+    void GiveDefaultItems( void );
+    void RemoveAllItems( BOOL removeSuit );
+    void SetBombIcon( BOOL bFlash );
 
-	//Player ID
-	void InitStatusBar( void );
-	void UpdateStatusBar( void );
+    void SetProgressBarTime( int time );
+    void SetProgressBarTime2( int time, float timeElapsed );
+
+    void SetPlayerModel( BOOL HasC4 );
+    void SetNewPlayerModel( const char *modelName );
+
+    BOOL SwitchWeapon( CBasePlayerItem *pWeapon );
+    void CheckPowerups( entvars_t *pev );
+
+    bool CanAffordPrimary( void );
+    bool CanAffordPrimaryAmmo( void );
+    bool CanAffordSecondaryAmmo( void );
+    bool CanAffordArmor( void );
+    bool CanAffordDefuseKit( void );
+    bool CanAffordGrenade( void );
+
+    bool NeedsPrimaryAmmo( void );
+    bool NeedsSecondaryAmmo( void );
+    bool NeedsArmor( void );
+    bool NeedsDefuseKit( void );
+    bool NeedsGrenade( void );
+
+    virtual void UpdateClientData( void );
+    virtual int ObjectCaps( void ) { return CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+    virtual void Precache( void );
+
+    BOOL IsOnLadder( void );
+
+    BOOL FlashlightIsOn( void );
+    void FlashlightTurnOn( void );
+    void FlashlightTurnOff( void );
+
+    void UpdatePlayerSound( void );
+    void DeathSound( void );
+
+    virtual int Classify( void );
+
+    void SetAnimation( PLAYER_ANIM playerAnim );
+
+    virtual void ImpulseCommands( void );
+    void CheatImpulseCommands( int iImpulse );
+
+    virtual void RoundRespawn( void );
+
+    void StartDeathCam( void );
+    void StartObserver( Vector vecPosition, Vector vecViewAngle );
+
+    virtual void AddPoints( int score, BOOL bAllowNegativeScore );
+    virtual void AddPointsToTeam( int score, BOOL bAllowNegativeScore );
+
+    void HandleSignals( void );
+
+    virtual int AddPlayerItem( CBasePlayerItem *pItem );
+    virtual int RemovePlayerItem( CBasePlayerItem *pItem );
+    void DropPlayerItem( const char *pszItemName );
+    BOOL HasPlayerItem( CBasePlayerItem * pCheckItem );
+    BOOL HasNamedPlayerItem( const char *pszItemName);
+    BOOL HasWeapons( void );
+
+    void SelectPrevItem( int iItem );
+    void SelectNextItem( int iItem );
+    void SelectLastItem( void );
+    void SelectItem( const char *pstr );
+
+    void ItemPreFrame( void );
+    void ItemPostFrame( void );
+
+    void GiveNamedItem( const char *szName );
+    void EnableControl( BOOL fControl );
+    virtual void ResetMaxSpeed( void );
+    bool HintMessage( const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride );
+
+    virtual int GiveAmmo( int iAmount, char *szName, int iMax );
+    void SendAmmoUpdate( void );
+    void SendFOV( int fov );
+
+    void WaterMove( void );
+    void PlayerDeathThink( void );
+    void PlayerUse( void );
+    void HostageUsed( void );
+    void JoiningThink( void );
+
+    void RemoveLevelText( void );
+    void MenuPrint( CBasePlayer *pl, const char *msg);
+    void ResetMenu( void );
+
+    void SyncRoundTimer( void );
+    void CheckSuitUpdate( void );
+    void SetSuitUpdate( char *name, int fgroup, int iNoRepeatTime );
+    void UpdateGeigerCounter( void );
+    void CheckTimeBasedDamage( void );
+
+    virtual BOOL FBecomeProne( void );
+    void BarnacleVictimBitten( entvars_t * pevBarnacle );
+    void BarnacleVictimReleased( void );
+
+    static int GetAmmoIndex( const char *psz );
+    int AmmoInventory( int iAmmoIndex );
+
+    virtual int Illumination( void );
+    void ResetAutoaim( void );
+    virtual Vector GetAutoaimVector( float flDelta );
+    Vector AutoaimDeflection( const Vector &vecSrc, float flDist, float flDelta );
+    void ForceClientDllUpdate( void );
+
+    void SetCustomDecalFrames( int nFrames);
+    int GetCustomDecalFrames( void );
+
+    void InitStatusBar( void );
+    void UpdateStatusBar( void );
+
+    void StudioEstimateGait( void );
+    void StudioPlayerBlend( int *pBlend, float * pPitch );
+    void CalculatePitchBlend( void );
+    void CalculateYawBlend( void );
+    void StudioProcessGait( void );
+
+    void SendHostagePos( void );
+    void SendHostageIcons( void );
+
+    void ResetStamina( void );
+    BOOL IsArmored( int nHitGroup );
+    BOOL ShouldDoLargeFlinch( int nHitGroup, int nGunType );
+    void SetPrefsFromUserinfo( char *infobuffer );
+    void SendWeatherInfo( void );
+
+    void UpdateShieldCrosshair( bool draw );
+    bool HasShield( void );
+    bool IsProtectedByShield( void );
+    void RemoveShield( void );
+    void DropShield( bool bDeploy );
+    void GiveShield( bool bDeploy );
+    bool IsHittingShield( const Vector &vecDirection, TraceResult * ptr );
+
+    bool IsReloading( void );
+    // static bool IsBlind( const CBasePlayer *pPlayer ); // Unsure.
+    virtual void Blind( float duration, float holdTime, float fadeTime, int alpha );
+    virtual void OnTouchingWeapon( CWeaponBox *box );
+
+    // bool IsAutoFollowAllowed( const CBasePlayer *pPlayer); // Unsure.
+    void InhibitAutoFollow( float duration );
+    void AllowAutoFollow( void );
+
+    void ClearAutoBuyData( void );
+    void AddAutoBuyData( const char *str );
+    void AutoBuy( void );
+    // void ClientCommand( const char*, const char*, const char*, const char*); // Unsure.
+    void PrioritizeAutoBuyString( char *autobuyString, const char *priorityString );
+
+    const char *PickPrimaryCareerTaskWeapon( void );
+    const char *PickSecondaryCareerTaskWeapon( void );
+    const char *PickFlashKillWeaponString( void );
+    const char *PickGrenadeKillWeaponString( void );
+
+    bool ShouldExecuteAutoBuyCommand( const AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary );
+    void PostAutoBuyCommandProcessing( const AutoBuyInfoStruct *commandInfo, bool &const boughtPrimary, bool &const boughtSecondary );
+    void ParseAutoBuyString( const char *string, bool &const boughtPrimary, bool &const boughtSecondary );
+    AutoBuyInfoStruct *GetAutoBuyCommandInfo( const char *command );
+    void InitRebuyData( const char *str );
+    void BuildRebuyStruct( void );
+
+    void Rebuy( void );
+    void RebuyPrimaryWeapon( void );
+    void RebuyPrimaryAmmo( void );
+    void RebuySecondaryWeapon( void );
+    void RebuySecondaryAmmo( void );
+    void RebuyHEGrenade( void );
+    void RebuyFlashbang( void );
+    void RebuySmokeGrenade( void );
+    void RebuyDefuser( void );
+    void RebuyNightVision( void );
+    void RebuyArmor( void );
+
+    void UpdateLocation( bool forceUpdate );
+
+    void SetObserverAutoDirector( bool val );
+    bool IsObservingPlayer( CBasePlayer *pPlayer );
+    //static inline bool CanSwitchObserverModes( const CBasePlayer* pPlayer ); // Unsure.
+
+    void Intense( void );
 };
 
 #define AUTOAIM_2DEGREES  0.0348994967025
