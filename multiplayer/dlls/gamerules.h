@@ -365,7 +365,7 @@ public:
     // Player stuff
 	virtual BOOL ClientCommand_DeadOrAlive( CBasePlayer *pPlayer, const char *pcmd );
 	virtual BOOL ClientCommand( CBasePlayer *pPlayer, const char *pcmd );
-	virtual void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer );
+	virtual void ClientUserInfoChanged( CBasePlayer *pPlayer, char *infobuffer );
 	void PlayerJoinedTeam( CBasePlayer *pPlayer );
 
 	virtual void CleanUpMap( void );

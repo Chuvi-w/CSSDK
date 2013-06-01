@@ -1808,6 +1808,13 @@ void CHalfLifeMultiplay::ServerDeactivate()
     }
 }
 
+// CS
+void CHalfLifeMultiplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *infobuffer )
+{
+    pPlayer->SetPlayerModel();
+    pPlayer->SetPrefsFromUserinfo( infobuffer );
+}
+
 	
 // CS
 extern int gmsgSendAudio;
