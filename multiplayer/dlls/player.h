@@ -193,6 +193,34 @@ typedef struct
 
 } RebuyStruct;
 
+// CS
+typedef enum 
+{
+    AUTOBUYCLASS_PRIMARY     = 1 << 0,  // 1
+    AUTOBUYCLASS_SECONDARY   = 1 << 1,  // 2
+    AUTOBUYCLASS_AMMO        = 1 << 2,  // 4
+    AUTOBUYCLASS_ARMOR       = 1 << 3,  // 8
+    AUTOBUYCLASS_DEFUSER     = 1 << 4,  // 16
+    AUTOBUYCLASS_PISTOL      = 1 << 5,  // 32
+    AUTOBUYCLASS_SMG         = 1 << 6,  // 64
+    AUTOBUYCLASS_RIFLE       = 1 << 7,  // 128
+    AUTOBUYCLASS_SNIPERRIFLE = 1 << 8,  // 256
+    AUTOBUYCLASS_SHOTGUN     = 1 << 9,  // 512
+    AUTOBUYCLASS_MACHINEGUN  = 1 << 10, // 1024
+    AUTOBUYCLASS_GRENADE     = 1 << 11, // 4096
+    AUTOBUYCLASS_NIGHTVISION = 1 << 12, // 8192
+    AUTOBUYCLASS_SHIELD      = 1 << 13, // 16384
+
+} AutoBuyClassType;
+
+typedef struct  
+{
+    AutoBuyClassType     m_class;              /*     0     4 */
+    char                *m_command;            /*     4     4 */
+    char                *m_classname;          /*     8     4 */
+
+} AutoBuyInfoStruct;
+
 #define CHAT_INTERVAL 1.0f
 
 class CBasePlayer : public CBaseMonster
