@@ -1811,7 +1811,7 @@ void CHalfLifeMultiplay::ServerDeactivate()
 // CS
 void CHalfLifeMultiplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *infobuffer )
 {
-    pPlayer->SetPlayerModel();
+    pPlayer->SetPlayerModel( pPlayer->m_bHasC4 );
     pPlayer->SetPrefsFromUserinfo( infobuffer );
 }
 
