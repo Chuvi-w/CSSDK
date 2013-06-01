@@ -143,6 +143,22 @@ typedef enum
 } ModelName;
 
 // CS
+enum HitBoxGroup
+{
+    HITGROUP_GENERIC = 0,
+    HITGROUP_HEAD,
+    HITGROUP_CHEST,
+    HITGROUP_STOMACH,
+    HITGROUP_LEFTARM,
+    HITGROUP_RIGHTARM,
+    HITGROUP_LEFTLEG,
+    HITGROUP_RIGHTLEG,
+    HITGROUP_SHIELD,
+    NUM_HITGROUPS,
+};
+
+
+// CS
 typedef enum 
 {
     Menu_OFF = 0,
