@@ -606,7 +606,7 @@ public:
 
     virtual int AddPlayerItem( CBasePlayerItem *pItem );
     virtual int RemovePlayerItem( CBasePlayerItem *pItem );
-    void DropPlayerItem( const char *pszItemName );
+    void DropPlayerItem( char *pszItemName );
     BOOL HasPlayerItem( CBasePlayerItem * pCheckItem );
     BOOL HasNamedPlayerItem( const char *pszItemName);
     BOOL HasWeapons( void );
@@ -654,7 +654,7 @@ public:
     virtual int Illumination( void );
     void ResetAutoaim( void );
     virtual Vector GetAutoaimVector( float flDelta );
-    Vector AutoaimDeflection( const Vector &vecSrc, float flDist, float flDelta );
+    Vector AutoaimDeflection( Vector &vecSrc, float flDist, float flDelta );
     void ForceClientDllUpdate( void );
 
     void SetCustomDecalFrames( int nFrames);
