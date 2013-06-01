@@ -1523,19 +1523,3 @@ void CWeaponBox::SetObjectCollisionBox( void )
 	pev->absmin = pev->origin + Vector(-16, -16, 0);
 	pev->absmax = pev->origin + Vector(16, 16, 16); 
 }
-
-
-void CBasePlayerWeapon::PrintState( void )
-{
-	ALERT( at_console, "primary:  %f\n", m_flNextPrimaryAttack );
-	ALERT( at_console, "idle   :  %f\n", m_flTimeWeaponIdle );
-
-//	ALERT( at_console, "nextrl :  %f\n", m_flNextReload );
-//	ALERT( at_console, "nextpum:  %f\n", m_flPumpTime );
-
-//	ALERT( at_console, "m_frt  :  %f\n", m_fReloadTime );
-	ALERT( at_console, "m_finre:  %i\n", m_fInReload );
-//	ALERT( at_console, "m_finsr:  %i\n", m_fInSpecialReload );
-
-	ALERT( at_console, "m_iclip:  %i\n", m_iClip );
-}
