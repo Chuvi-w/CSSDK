@@ -436,16 +436,13 @@ void CBasePlayer::SetProgressBarTime( int time )
 
     while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
     {
-        if( !FNullEnt( pEntity ) )
-        {
-            CBasePlayer *pWatcher = GetClassPtr( ( CBasePlayer* )pEntity->pev );
+        CBasePlayer *pWatcher = GetClassPtr( ( CBasePlayer* )pEntity->pev );
 
-            if( pWatcher->pev->iuser1 == OBS_IN_EYE && pWatcher->pev->iuser2 == entindex() )
-            {
-                MESSAGE_BEGIN( MSG_ONE, gmsgBarTime, NULL, ENT( pWatcher->pev ) );
-                    WRITE_SHORT( time );
-                MESSAGE_END();
-            }
+        if( pWatcher->pev->iuser1 == OBS_IN_EYE && pWatcher->pev->iuser2 == entindex() )
+        {
+            MESSAGE_BEGIN( MSG_ONE, gmsgBarTime, NULL, ENT( pWatcher->pev ) );
+            WRITE_SHORT( time );
+            MESSAGE_END();
         }
     }
 }
