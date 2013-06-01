@@ -379,6 +379,13 @@ void CBasePlayer::Pain( int m_LastHitGroup, bool HasArmour )
     }
 }
 
+// CS
+void CBasePlayer::SetNewPlayerModel( const char *modelName )
+{
+    SET_MODEL( ENT( pev ), modelName );
+    m_modelIndexPlayer = pev->modelindex;
+}
+
 /* 
  *
  */
