@@ -381,6 +381,33 @@ void CBasePlayer::Pain( int m_LastHitGroup, bool HasArmour )
 }
 
 // CS
+void CBasePlayer::ResetMaxSpeed()
+{
+    float speed = 900.0;
+
+    if( pev->iuser1 )
+    {
+        speed = 900.0;
+    }
+    else if( g_pGameRules->IsMultiplayer() && g_pGameRules->IsFreezePeriod() )
+    {
+        speed = 1.0;
+    }
+    else if( m_bIsVIP )
+    {
+        speed = 227.0;
+    }
+    else if( m_pActiveItem == NULL )
+    {
+        speed = 240.0;
+    }
+    else
+    {
+        //speed = m_pActiveItem->GetMaxSpeed();
+    }
+}
+
+// CS
 void CBasePlayer::SetNewPlayerModel( const char *modelName )
 {
     SET_MODEL( ENT( pev ), modelName );
