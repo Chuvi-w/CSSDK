@@ -1796,6 +1796,18 @@ void CHalfLifeMultiplay::CheckMapConditions()
     m_iMapHasVIPSafetyZone = UTIL_FindEntityByClassname( NULL, "func_vip_safetyzone" ) != NULL ? 1 : 2;
 }
 
+// CS
+void CHalfLifeMultiplay::ServerDeactivate()
+{
+    if( IS_CAREER_MATCH() )
+    {
+        CVAR_SET_FLOAT( "pausable", 0 );
+        CVAR_SET_FLOAT( "mp_windifference", 1.0f );
+        
+        UTIL_LogPrintf( "Career End\n" );
+    }
+}
+
 	
 // CS
 extern int gmsgSendAudio;

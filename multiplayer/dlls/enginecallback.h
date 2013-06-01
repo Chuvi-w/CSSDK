@@ -162,4 +162,8 @@ inline void *GET_PRIVATE( edict_t *pent )
 
 #define PLAYER_CNX_STATS		( *g_engfuncs.pfnGetPlayerStats )
 
+
+//CS
+#define IS_CAREER_MATCH ( *g_engfuncs.pfnIsCareerMatch )
+
 #endif		//ENGINECALLBACK_H
