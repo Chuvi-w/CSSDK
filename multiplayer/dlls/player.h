@@ -427,9 +427,6 @@ public:
     float                       m_flNextDecalTime;          /*  1964     4 */
 
     char                        m_szTeamName[TEAM_NAME_LENGTH];  /*  1968    16 */ // next time this player can spray a decal
-
-protected:
-
     int                         m_modelIndexPlayer;         /*  1984     4 */
 
     static TYPEDESCRIPTION      m_playerSaveData[];         /*     0   640 */

@@ -987,21 +987,32 @@ BOOL CBasePlayerWeapon :: CanDeploy( void )
 	return TRUE;
 }
 
-BOOL CBasePlayerWeapon :: DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal /* = 0 */, int body )
+BOOL CBasePlayerWeapon::DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal )
 {
-	if (!CanDeploy( ))
-		return FALSE;
+    if( !CanDeploy() )
+        return FALSE;
 
-	m_pPlayer->TabulateAmmo();
-	m_pPlayer->pev->viewmodel = MAKE_STRING(szViewModel);
-	m_pPlayer->pev->weaponmodel = MAKE_STRING(szWeaponModel);
-	//strcpy( m_pPlayer->m_szAnimExtention, szAnimExt );
-	SendWeaponAnim( iAnim, skiplocal, body );
+    m_pPlayer->TabulateAmmo();
+    m_pPlayer->pev->viewmodel = MAKE_STRING(szViewModel);
+    m_pPlayer->pev->weaponmodel = MAKE_STRING(szWeaponModel);
 
-	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0;
+    model_name = m_pPlayer->pev->viewmodel;
 
-	return TRUE;
+    strcpy( m_pPlayer->m_szAnimExtention, szAnimExt );
+    SendWeaponAnim( iAnim, skiplocal );
+
+    m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+    m_flTimeWeaponIdle        = UTIL_WeaponTimeBase() + 1.5;
+
+    m_flLastFireTime = 0;
+    m_flDecreaseShotsFired = gpGlobals->time;
+
+    m_pPlayer->m_iFOV        = 90;
+    m_pPlayer->pev->fov      = 90.0;
+    m_pPlayer->m_bResumeZoom = 0;
+    m_pPlayer->m_iLastZoom   = 90;
+
+    return TRUE;
 }
 
 
