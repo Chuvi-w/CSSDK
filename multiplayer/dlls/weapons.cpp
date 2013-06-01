@@ -987,6 +987,7 @@ BOOL CBasePlayerWeapon :: CanDeploy( void )
 	return TRUE;
 }
 
+// CS
 BOOL CBasePlayerWeapon::DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal )
 {
     if( !CanDeploy() )
@@ -1015,25 +1016,25 @@ BOOL CBasePlayerWeapon::DefaultDeploy( char *szViewModel, char *szWeaponModel, i
     return TRUE;
 }
 
-
-BOOL CBasePlayerWeapon :: DefaultReload( int iClipSize, int iAnim, float fDelay, int body )
+// CS
+BOOL CBasePlayerWeapon::DefaultReload( int iClipSize, int iAnim, float fDelay )
 {
-	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	if( m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 )
 		return FALSE;
 
-	int j = min(iClipSize - m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]);	
+	int j = min( iClipSize - m_iClip, m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] );	
 
-	if (j == 0)
+	if( j == 0 )
 		return FALSE;
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + fDelay;
 
-	//!!UNDONE -- reload sound goes here !!!
+    ReloadSound();
 	SendWeaponAnim( iAnim, UseDecrement() ? 1 : 0 );
 
-	m_fInReload = TRUE;
+	m_fInReload        = TRUE;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
 
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3;
 	return TRUE;
 }
 
