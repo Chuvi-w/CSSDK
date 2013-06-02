@@ -676,7 +676,7 @@ public:
     void SendWeatherInfo( void );
 
     void UpdateShieldCrosshair( bool draw );
-    bool HasShield( void );
+    bool HasShield( void )  { return m_bOwnsShield; }
     bool IsProtectedByShield( void );
     void RemoveShield( void );
     void DropShield( bool bDeploy );
