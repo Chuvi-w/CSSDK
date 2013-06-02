@@ -2201,6 +2201,22 @@ void CHalfLifeMultiplay::ServerDeactivate()
     }
 }
 
+extern int gmsgTeamScore;
+
+// CS
+void CHalfLifeMultiplay::UpdateTeamScores()
+{
+    MESSAGE_BEGIN( MSG_ALL, gmsgTeamScore );
+        WRITE_STRING( "CT" );
+        WRITE_SHORT( m_iNumCTWins );
+    MESSAGE_END();
+
+    MESSAGE_BEGIN( MSG_ALL, gmsgTeamScore );
+        WRITE_STRING( "TERRORIST" );
+        WRITE_SHORT( m_iNumTerroristWins );
+    MESSAGE_END();
+}
+
 // CS
 void CHalfLifeMultiplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *infobuffer )
 {
