@@ -686,7 +686,7 @@ public:
     bool IsReloading( void );
     // static bool IsBlind( const CBasePlayer *pPlayer ); // Unsure.
     virtual void Blind( float duration, float holdTime, float fadeTime, int alpha );
-    virtual void OnTouchingWeapon( CWeaponBox *box );
+    virtual void OnTouchingWeapon( CWeaponBox *box ) {}
 
     // bool IsAutoFollowAllowed( const CBasePlayer *pPlayer); // Unsure.
     void InhibitAutoFollow( float duration );
