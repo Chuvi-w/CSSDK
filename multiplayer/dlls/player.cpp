@@ -323,6 +323,26 @@ LINK_ENTITY_TO_CLASS( player, CBasePlayer );
 
 
 // CS
+void CBasePlayer::AddAccount( int amount, bool bTrackChange )
+{
+    m_iAccount += amount;
+
+    if( m_iAccount < 0 )
+    {
+        m_iAccount = 0;
+    }
+    else if( m_iAccount > 16000 )
+    {
+        m_iAccount = 16000;
+    }
+
+    MESSAGE_BEGIN( MSG_ONE, gmsgMoney, NULL, ENT( pev ) );
+        WRITE_LONG( m_iAccount );
+        WRITE_BYTE( bTrackChange );
+    MESSAGE_END();
+}
+
+// CS
 void CBasePlayer::Pain( int m_LastHitGroup, bool HasArmour )
 {
     int random = RANDOM_LONG( 0, 2 );
