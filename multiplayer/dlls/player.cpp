@@ -447,6 +447,17 @@ void CBasePlayer::ResetMaxSpeed()
 }
 
 // CS
+void CBasePlayer::ResetMenu( void )
+{
+    MESSAGE_BEGIN( MSG_ONE, gmsgShowMenu, NULL, ENT( pev ) );
+        WRITE_SHORT( 0 );
+        WRITE_CHAR( 0 );
+        WRITE_BYTE( 0 );
+        WRITE_STRING( 0 );
+    MESSAGE_END();
+}
+
+// CS
 void CBasePlayer::RoundRespawn()
 {
     m_canSwitchObserverModes = true;
