@@ -481,6 +481,28 @@ void CBasePlayer::RoundRespawn()
 }
 
 // CS
+void CBasePlayer::SendWeatherInfo( void )
+{
+    int mode = 0;
+
+    if( UTIL_FindEntityByClassname( NULL, "env_rain" ) != NULL || UTIL_FindEntityByClassname( NULL, "func_rain" ) != NULL )
+    {
+        mode = 1;
+    }
+    else if( UTIL_FindEntityByClassname( NULL, "env_snow" ) != NULL || UTIL_FindEntityByClassname( NULL, "func_snow" ) != NULL )
+    {
+        mode = 2;
+    }
+
+    if( mode )
+    {
+        MESSAGE_BEGIN( MSG_ONE, gmsgReceiveW, NULL, ENT( pev ) );
+            WRITE_BYTE( mode );
+        MESSAGE_END();
+    }
+}
+
+// CS
 void CBasePlayer::SetBombIcon( BOOL bFlash )
 {
     if( m_bHasC4 )
