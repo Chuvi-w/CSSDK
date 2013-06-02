@@ -547,6 +547,15 @@ void CBasePlayer::SetProgressBarTime( int time )
     }
 }
 
+// CS
+void CBasePlayer::UpdateShieldCrosshair( bool draw )
+{
+    if( draw )
+        m_iHideHUD &= ~HIDEHUD_CROSSHAIR2;
+    else
+        m_iHideHUD |= HIDEHUD_CROSSHAIR2;
+}
+
 /* 
  *
  */
