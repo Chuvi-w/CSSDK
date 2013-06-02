@@ -587,13 +587,6 @@ void CHalfLifeMultiplay :: PlayerSpawn( CBasePlayer *pPlayer )
 
 //=========================================================
 //=========================================================
-BOOL CHalfLifeMultiplay :: FPlayerCanRespawn( CBasePlayer *pPlayer )
-{
-	return TRUE;
-}
-
-//=========================================================
-//=========================================================
 float CHalfLifeMultiplay :: FlPlayerSpawnTime( CBasePlayer *pPlayer )
 {
 	return gpGlobals->time;//now!
@@ -1801,6 +1794,27 @@ void CHalfLifeMultiplay::CheckMapConditions()
     m_bMapHasBuyZone       = UTIL_FindEntityByClassname( NULL, "func_buyzone" ) != NULL;
     m_bMapHasEscapeZone    = UTIL_FindEntityByClassname( NULL,  "func_escapezone" ) != NULL;
     m_iMapHasVIPSafetyZone = UTIL_FindEntityByClassname( NULL, "func_vip_safetyzone" ) != NULL ? 1 : 2;
+}
+
+// CS
+BOOL CHalfLifeMultiplay::FPlayerCanRespawn( CBasePlayer *pPlayer )
+{
+    if( pPlayer->m_iNumSpawns <= 0 )
+    {
+        m_iNumCT        = CountTeamPlayers( CT );
+        m_iNumTerrorist = CountTeamPlayers( TERRORIST );
+
+        if( m_iNumCT <= 0 || m_iNumTerrorist <= 0 || gpGlobals->time <= m_fRoundCount + 20.0 )
+        {
+            return pPlayer->m_iMenu != 3;
+        }
+        else if( fadetoblack.value != 0.0 )
+        {
+            UTIL_ScreenFade( pPlayer, 0, 3.0, 3.0, 255, 5 );
+        }
+    }
+
+    return FALSE;
 }
 
 // CS
