@@ -471,7 +471,7 @@ void CBasePlayer::RoundRespawn()
 
     if( m_pActiveItem )
     {
-        if( m_pActiveItem->iItemSlot() == 4 && m_pActiveItem->CanDeploy() )
+        if( m_pActiveItem->iItemSlot() == GRENADE_SLOT && m_pActiveItem->CanDeploy() )
         {
             SwitchWeapon( m_pActiveItem );
         }
