@@ -1725,3 +1725,21 @@ int AllowLagCompensation( void )
 {
 	return 1;
 }
+
+
+// CS
+int CountTeamPlayers( int iTeam )
+{
+    CBaseEntity *pEntity = NULL;
+    int count = 0;
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+    {
+        if( !FNullEnt( pEntity->pev ) && pEntity->pev->flags >= 0 )
+        {
+            count += GetClassPtr( ( CBasePlayer* )pEntity->pev )->m_iTeam == iTeam;
+        }
+    }
+
+    return count;
+}

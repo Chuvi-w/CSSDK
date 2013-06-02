@@ -29,6 +29,7 @@
 #include	"voice_gamemgr.h"
 #include	"hltv.h"
 #include "bot.h"
+#include "client.h"
 
 extern DLL_GLOBAL CGameRules	*g_pGameRules;
 extern DLL_GLOBAL BOOL	g_fGameOver;

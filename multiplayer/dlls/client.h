@@ -62,4 +62,7 @@ extern int	InconsistentFile( const edict_t *player, const char *filename, char *
 
 extern int AllowLagCompensation( void );
 
+// CS
+extern int CountTeamPlayers( int iTeam );
+
 #endif		// CLIENT_H
