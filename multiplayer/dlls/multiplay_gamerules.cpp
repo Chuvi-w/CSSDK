@@ -28,6 +28,7 @@
 #include	"items.h"
 #include	"voice_gamemgr.h"
 #include	"hltv.h"
+#include "bot.h"
 
 extern DLL_GLOBAL CGameRules	*g_pGameRules;
 extern DLL_GLOBAL BOOL	g_fGameOver;
@@ -1794,6 +1795,398 @@ void CHalfLifeMultiplay::CheckMapConditions()
     m_bMapHasBuyZone       = UTIL_FindEntityByClassname( NULL, "func_buyzone" ) != NULL;
     m_bMapHasEscapeZone    = UTIL_FindEntityByClassname( NULL,  "func_escapezone" ) != NULL;
     m_iMapHasVIPSafetyZone = UTIL_FindEntityByClassname( NULL, "func_vip_safetyzone" ) != NULL ? 1 : 2;
+}
+
+extern int gmsgBombPickup;
+extern int gmsgShowTimer;
+extern int gmsgHLTV;
+
+// CS
+void CHalfLifeMultiplay::RestartRound()
+{
+    // TODO: Implement me.
+    // if( TheBots )
+    //    TheBots->RestartRound();
+
+    // TODO: Implement me.
+    // if( g_pHostages )
+    //    g_pHostages->RestartRound();
+
+    ++m_iTotalRoundsPlayed;
+
+    // TODO: Implement me.
+    // ClearBodyQue();
+
+    CVAR_SET_FLOAT( "sv_accelerate", 5.0 );
+    CVAR_SET_FLOAT( "sv_friction", 4.0 );
+    CVAR_SET_FLOAT( "sv_stopspeed", 75.0 );
+
+    // TODO: Implement me.
+    // m_iNumCT        = CountTeamPlayers( CT );
+    // m_iNumTerrorist = CountTeamPlayers( TERRORIST );
+
+    if( m_bMapHasBombTarget )
+    {
+        MESSAGE_BEGIN( MSG_ALL, gmsgBombPickup );
+        MESSAGE_END();
+
+        MESSAGE_BEGIN( MSG_ALL, gmsgShowTimer );
+        MESSAGE_END();
+    }
+
+    g_pGameRules->m_bBombDropped = false;
+
+    MESSAGE_BEGIN( MSG_SPEC, gmsgHLTV );
+        WRITE_BYTE( 0 );
+        WRITE_BYTE( 228 );
+    MESSAGE_END();
+
+    MESSAGE_BEGIN( MSG_SPEC, gmsgHLTV );
+        WRITE_BYTE( 0 );
+        WRITE_BYTE( 0 );
+    MESSAGE_END();
+
+    int autoBalance = ( int )CVAR_GET_FLOAT( "mp_autoteambalance" );
+
+    if( autoBalance > 0 || m_iUnBalancedRounds > 0 )
+    {
+        BalanceTeams();
+    }
+    if( m_iNumCT - m_iNumTerrorist >= 2 || m_iNumTerrorist - m_iNumCT >= 2 )
+        m_iUnBalancedRounds++;
+    else
+        m_iUnBalancedRounds = 0;
+
+    if( autoBalance != 0 && m_iUnBalancedRounds == 1 )
+    {
+        UTIL_ClientPrintAll( print_center, "#Auto_Team_Balance_Next_Round" );
+    }
+
+    if( m_bCompleteReset )
+    {
+        if( timelimit.value < 0 )
+        {
+            CVAR_SET_FLOAT( "mp_timelimit", 0.0 );
+        }
+
+        // TODO: Implement me.
+        // g_flResetTime = gpGlobals->time;
+
+        if( timelimit.value != 0 )
+        {
+            // TODO: Implement me.
+            // g_flTimeLimit = gpGlobals->time + timelimit.value * 60;
+        }
+
+        m_iTotalRoundsPlayed = 0;
+
+        if( ( m_iMaxRounds = floor( CVAR_GET_FLOAT( "mp_maxrounds" ) ) ) < 0 )
+        {
+            m_iMaxRounds = 0;
+            CVAR_SET_FLOAT( "mp_maxrounds", 0 );
+        }
+
+        if( ( m_iMaxRoundsWon = floor( CVAR_GET_FLOAT( "mp_winlimit" ) ) ) < 0 )
+        {
+            m_iMaxRoundsWon = 0;
+            CVAR_SET_FLOAT( "mp_winlimit", 0 );
+        }
+
+        m_iNumTerroristWins             = 0;
+        m_iNumCTWins                    = 0;
+        m_iNumConsecutiveTerroristLoses = 0;
+        m_iNumConsecutiveCTLoses        = 0;
+
+        UpdateTeamScores();
+
+        for( int i = 1; i <= gpGlobals->maxClients; i++ )
+        {
+            CBasePlayer *pPlayer = ( CBasePlayer* )UTIL_PlayerByIndex( i );
+
+            if( pPlayer && !FNullEnt( pPlayer->pev ) )
+            {
+                pPlayer->Reset();
+            }
+        }
+
+        // TODO: Implement me.
+        // TheBots->OnEvents( EVENT_NEW_MATCH, NULL, NULL );
+    }
+
+    m_bFreezePeriod     = true;
+    m_bRoundTerminating = false;
+
+    // TODO: Implement me.
+    // ReadMultiplayCvars();
+
+    m_fMaxIdlePeriod = m_iRoundTime * 2;
+    m_iRoundTimeSecs = m_iIntroRoundTime;
+
+    // TODO: Implement me
+    /*
+    CBaseEntity * pEnt = UTIL_FindEntityByClassname( NULL, "info_map_parameters" );
+
+    if( pEnt != NULL )
+    {
+        switch( pEnt->m_ibuying )
+        {
+            case 0: 
+            {
+                m_bCTCantBuy = false; 
+                m_bTCantBuy  = false; 
+
+                ALERT( at_console, "EVERYONE CAN BUY!\n" );
+                break;
+            }
+            case 1: 
+            {
+                m_bCTCantBuy = false; 
+                m_bTCantBuy  = true; 
+
+                ALERT( at_console, "Only CT's can buy!!\n" );
+                break;
+            }
+            case 2: 
+            {
+                m_bCTCantBuy = true; 
+                m_bTCantBuy  = false; 
+
+                ALERT( at_console, "Only T's can buy!!\n" );
+                break;
+            }
+            case 3: 
+            {
+                m_bCTCantBuy = true; 
+                m_bTCantBuy  = true;
+
+                ALERT( at_console, "No one can buy!!\n" );
+                break;
+            }
+            default: 
+            {
+                m_bCTCantBuy = false; 
+                m_bTCantBuy  = false; 
+                break;
+            }
+        }
+
+        m_flBombRadius = pEnt->m_flBombRadius;
+    }*/
+
+    if( UTIL_FindEntityByClassname( NULL, "func_bomb_target" ) != NULL )
+    {
+        m_bMapHasBombTarget = true;
+        m_bMapHasBombZone   = true;
+    }
+    else if( UTIL_FindEntityByClassname( NULL, "info_bomb_target" ) != NULL )
+    {
+        m_bMapHasBombTarget = true;
+        m_bMapHasBombZone   = false;
+    }
+    else
+    {
+        m_bMapHasBombTarget = false;
+        m_bMapHasBombZone   = false;
+    }
+
+    m_bMapHasRescueZone = UTIL_FindEntityByClassname( NULL, "func_hostage_rescue" ) != NULL;
+    m_bMapHasBuyZone    = UTIL_FindEntityByClassname( NULL, "func_buyzone" ) != NULL;
+
+    if( UTIL_FindEntityByClassname( NULL, "func_escapezone") != NULL )
+    {
+        m_bMapHasEscapeZone = true;
+        m_iHaveEscaped      = 0;
+        m_iNumEscapers      = 0;
+
+        if( m_iNumEscapeRounds > 2 )
+        {
+            SwapAllPlayers();
+            m_iNumEscapeRounds = 1;
+        }
+        else
+            m_iNumEscapeRounds++;
+    }
+    else
+    {
+        m_bMapHasEscapeZone = false;
+    }
+
+    if( UTIL_FindEntityByClassname( NULL, "func_vip_safetyzone" ) != NULL )
+    {
+        PickNextVIP();
+
+        m_iConsecutiveVIP++;
+        m_iMapHasVIPSafetyZone = 1;
+    }
+    else
+        m_iMapHasVIPSafetyZone = 2;
+
+    int accountTemp = 0;
+
+    // TODO: Implement me
+    /* CHostage *pHostage;
+    int accountTemp = 0;
+
+    while( ( pHostage = ( CHostage* )UTIL_FindEntityByClassname( pHostage, "hostage_entity" ) ) != NULL )
+    {
+        if( pHostage->pev->solid )
+        {
+            accountTemp += 150;
+
+            if( pHostage->pev->deadflag == DEAD_DEAD )
+            {
+                pHostage->pev->deeadflag = DEAD_RESPAWNABLE;
+            }
+        }
+
+        pHostage->RePosition();
+
+        if( accountTemp >= 2000 )
+        {
+            break;
+        }
+    }*/   
+
+    switch( m_iRoundWinStatus )
+    {
+        case 1 :
+        {
+            if( m_iNumConsecutiveTerroristLoses > 1 )
+            {
+                m_iLoserBonus = 1500;
+            }
+
+            m_iNumConsecutiveTerroristLoses = 0;
+            m_iNumConsecutiveCTLoses++;
+
+            break;
+        }
+        case 2 :
+        {
+            if( m_iNumConsecutiveCTLoses > 1 )
+            {
+                m_iLoserBonus = 1500;
+            }
+
+            m_iNumConsecutiveCTLoses = 0;
+            m_iNumConsecutiveTerroristLoses++;
+            break;
+        }
+    }
+
+    if( m_iLoserBonus < 3000 && ( m_iNumConsecutiveTerroristLoses > 1 || m_iNumConsecutiveCTLoses > 1 ) )
+    {
+        m_iLoserBonus += 500;
+    }
+
+    switch( m_iRoundWinStatus )
+    {
+        case 1 :
+        {
+            m_iAccountCT += accountTemp;
+
+            if( !m_bMapHasEscapeZone )
+            {
+                m_iAccountTerrorist += m_iLoserBonus;
+            }
+
+            break;
+        }
+        case 2 :
+        {
+            m_iAccountTerrorist += accountTemp;
+            m_iAccountCT += m_iLoserBonus;
+
+            break;
+        }
+    }
+
+    m_iAccountCT += m_iHostagesRescued * 750;
+    m_fIntroRoundCount = m_fRoundCount = gpGlobals->time;
+
+    if( m_bCompleteReset )
+    {
+        m_iAccountTerrorist             = 0;
+        m_iAccountCT                    = 0;
+        m_iNumTerroristWins             = 0; 
+        m_iNumCTWins                    = 0;
+        m_iNumConsecutiveTerroristLoses = 0;
+        m_iNumConsecutiveCTLoses        = 0;
+        m_iLoserBonus                   = 1400;
+    }
+
+    CBaseEntity *pEntity = NULL;
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+    {
+        CBasePlayer *pPlayer = GetClassPtr( ( CBasePlayer* )pEntity );
+
+        pPlayer->m_iNumSpawns   = 0;
+        pPlayer->m_bTeamChanged = false;
+
+        if( !pPlayer->IsPlayer() )
+        {
+            pPlayer->SyncRoundTimer();
+        }
+
+        switch( pPlayer->m_iTeam )
+        {
+            case CT :
+            {
+                if( !pPlayer->m_bReceivesNoMoneyNextRound )
+                {
+                    pPlayer->AddAccount( m_iAccountCT, true );
+                }
+            }
+            case TERRORIST :
+            {
+                m_iNumEscapers++;
+
+                if( !pPlayer->m_bReceivesNoMoneyNextRound )
+                {
+                    pPlayer->AddAccount( m_iAccountTerrorist, true );
+                }
+
+                if( m_bMapHasEscapeZone )
+                {
+                    pPlayer->m_bNotKilled = false;
+                }
+            }
+        }
+
+        if( pPlayer->m_iTeam != UNASSIGNED && pPlayer->m_iTeam != SPECTATOR )
+        {
+            if( pPlayer->m_bHasC4 )
+            {
+                pPlayer->DropPlayerItem( "weapon_c4" );
+            }
+
+            pPlayer->RoundRespawn();
+        }        
+    }
+
+    CleanUpMap();
+
+    if( m_bMapHasBombTarget )
+    {
+        GiveC4();
+    }
+
+    // TODO: Implement me
+    // TheBots->OnEvents( EVENT_BUY_TIME_START, NULL, NULL);
+
+    m_flIntermissionEndTime   = 0;
+    m_flIntermissionStartTime = 0;
+    m_fTeamCount              = 0;
+    m_iAccountTerrorist       = 0;
+    m_iAccountCT              = 0;
+    m_iHostagesRescued        = 0;
+    m_iHostagesTouched        = 0;
+    m_iRoundWinStatus         = 0;
+    m_bTargetBombed           = false;
+    m_bBombDefused            = false;
+    m_bLevelInitialized       = false;
+    m_bCompleteReset          = false;
 }
 
 // CS
