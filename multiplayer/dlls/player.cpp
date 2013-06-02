@@ -488,6 +488,33 @@ void CBasePlayer::SetNewPlayerModel( const char *modelName )
 }
 
 // CS
+void CBasePlayer::SetPrefsFromUserinfo( char *infobuffer )
+{
+    char *buffer = NULL;
+    
+    buffer = g_engfuncs.pfnInfoKeyValue( infobuffer, "_cl_autowepswitch" );
+
+    if( *buffer )
+        m_iAutoWepSwitch = strtol( buffer, NULL, 10 );
+    else
+        m_iAutoWepSwitch = 1;
+
+    buffer = g_engfuncs.pfnInfoKeyValue( infobuffer, "_vgui_menus" );
+
+    if ( *buffer )
+        m_bVGUIMenus = strtol( buffer, NULL, 10 ) != 0;
+    else
+        m_bVGUIMenus = true;
+
+    buffer = g_engfuncs.pfnInfoKeyValue( infobuffer, "_ah" );
+
+    if ( *buffer )
+        m_bShowHints = strtol( buffer, NULL, 10 ) != 0;
+    else
+        m_bShowHints = true;
+}
+
+// CS
 void CBasePlayer::SetProgressBarTime( int time )
 {
     if( time )
