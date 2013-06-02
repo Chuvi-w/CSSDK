@@ -420,6 +420,59 @@ void CBasePlayer::Pain( int m_LastHitGroup, bool HasArmour )
 }
 
 // CS
+void CBasePlayer::Reset( void )
+{
+    pev->frags = 0.0;
+    m_iDeaths  = 0;
+    m_iAccount = 0;
+
+    MESSAGE_BEGIN( MSG_ONE, gmsgMoney, NULL, ENT( pev ) );
+        WRITE_LONG( m_iAccount );
+        WRITE_BYTE( 0 );
+    MESSAGE_END();
+
+    m_bNotKilled = false;
+
+    if( HasShield() )
+    {
+        m_bOwnsShield  = false;
+        m_bHasPrimary  = false;
+        m_bShieldDrawn = false;
+
+        pev->gamestate = 1;
+
+        UpdateShieldCrosshair( true );
+    }
+
+    CheckStartMoney();
+
+    int money = m_iAccount + startmoney.value;
+
+    if( money < 0 )
+    {
+        m_iAccount = 0;
+    }
+    else if( money > 16000 )
+    {
+        m_iAccount = 16000;
+    }
+
+    MESSAGE_BEGIN( MSG_ONE, gmsgMoney, NULL, edict() );
+        WRITE_BYTE( m_iAccount );
+        WRITE_BYTE( 1 );
+    MESSAGE_END();
+
+    MESSAGE_BEGIN( MSG_ALL, gmsgScoreInfo );
+        WRITE_BYTE( entindex() );
+        WRITE_SHORT( 0 );
+        WRITE_SHORT( 0 );
+        WRITE_SHORT( 0 );
+        WRITE_SHORT( m_iTeam );
+    MESSAGE_END();
+}
+
+
+// CS
 void CBasePlayer::ResetMaxSpeed()
 {
     float speed = 900.0;
