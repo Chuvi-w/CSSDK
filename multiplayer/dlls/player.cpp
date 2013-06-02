@@ -548,6 +548,39 @@ void CBasePlayer::SetProgressBarTime( int time )
 }
 
 // CS
+BOOL CBasePlayer::SwitchWeapon( CBasePlayerItem *pWeapon ) 
+{
+    if( !pWeapon->CanDeploy() )
+    {
+        return FALSE;
+    }
+
+    ResetAutoaim();
+
+    if( m_pActiveItem )
+    {
+        m_pActiveItem->Holster();
+    }
+
+    m_pLastItem   = m_pActiveItem;
+    m_pActiveItem = pWeapon;
+
+    pWeapon->Deploy();
+
+    if( pWeapon->m_pPlayer )
+    {
+        pWeapon->m_pPlayer->ResetMaxSpeed();
+    }
+
+    if( m_bOwnsShield )
+    {
+        m_iHideHUD &= ~HIDEHUD_CROSSHAIR2;
+    }
+
+    return TRUE;
+}
+
+// CS
 void CBasePlayer::UpdateShieldCrosshair( bool draw )
 {
     if( draw )
@@ -4842,29 +4875,6 @@ BOOL CBasePlayer::HasNamedPlayerItem( const char *pszItemName )
 	}
 
 	return FALSE;
-}
-
-//=========================================================
-// 
-//=========================================================
-BOOL CBasePlayer :: SwitchWeapon( CBasePlayerItem *pWeapon ) 
-{
-	if ( !pWeapon->CanDeploy() )
-	{
-		return FALSE;
-	}
-	
-	ResetAutoaim( );
-	
-	if (m_pActiveItem)
-	{
-		m_pActiveItem->Holster( );
-	}
-
-	m_pActiveItem = pWeapon;
-	pWeapon->Deploy( );
-
-	return TRUE;
 }
 
 //=========================================================
