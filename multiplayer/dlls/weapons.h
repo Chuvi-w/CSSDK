@@ -297,6 +297,16 @@ typedef struct
 	int iId;
 } AmmoInfo;
 
+typedef enum 
+{
+    PRIMARY_WEAPON_SLOT = 1,
+    PISTOL_SLOT,
+    KNIFE_SLOT,
+    GRENADE_SLOT,
+    C4_SLOT,
+
+} InventorySlotType;
+
 // Items that the player has in their inventory that they can use
 class CBasePlayerItem : public CBaseAnimating
 {
