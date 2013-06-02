@@ -64,5 +64,6 @@ extern int AllowLagCompensation( void );
 
 // CS
 extern int CountTeamPlayers( int iTeam );
+extern void CheckStartMoney( void );
 
 #endif		// CLIENT_H

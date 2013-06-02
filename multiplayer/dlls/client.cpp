@@ -1743,3 +1743,18 @@ int CountTeamPlayers( int iTeam )
 
     return count;
 }
+
+// CS
+void CheckStartMoney()
+{
+    int money = ( int )floor( startmoney.value );
+
+    if( money > 16000 )
+    {
+        CVAR_SET_FLOAT( "mp_startmoney", 16000.0 );
+    }
+    else if( money < 800 )
+    {
+        CVAR_SET_FLOAT( "mp_startmoney", 800.0 );
+    }
+}
