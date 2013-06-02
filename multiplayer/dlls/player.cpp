@@ -343,6 +343,15 @@ void CBasePlayer::AddAccount( int amount, bool bTrackChange )
 }
 
 // CS
+void CBasePlayer::CheckPowerups( entvars_s *pev )
+{
+    if( pev->health > 0.0 )
+    {
+        pev->modelindex = m_modelIndexPlayer;
+    }
+}
+
+// CS
 void CBasePlayer::Pain( int m_LastHitGroup, bool HasArmour )
 {
     int random = RANDOM_LONG( 0, 2 );
