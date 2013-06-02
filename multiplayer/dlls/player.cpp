@@ -447,6 +447,40 @@ void CBasePlayer::ResetMaxSpeed()
 }
 
 // CS
+void CBasePlayer::RoundRespawn()
+{
+    m_canSwitchObserverModes = true;
+
+    if( !m_bJustKilledTeammate )
+    {
+        if( CVAR_GET_FLOAT( "mp_tkpunish" ) != 0.0 )
+        {
+            m_bJustKilledTeammate = false ;
+            CLIENT_COMMAND( edict(), "kill\n" );
+            m_bPunishedForTK = true;
+        }
+    }
+
+    if( m_iMenu != Menu_ChooseAppearance )
+    {
+        respawn( pev, 0 );
+
+        pev->button = 0;
+        pev->nextthink = -1.0;
+    }
+
+    if( m_pActiveItem )
+    {
+        if( m_pActiveItem->iItemSlot() == 4 && m_pActiveItem->CanDeploy() )
+        {
+            SwitchWeapon( m_pActiveItem );
+        }
+    }
+
+    m_lastLocation[ 0 ] = 0;
+}
+
+// CS
 void CBasePlayer::SetNewPlayerModel( const char *modelName )
 {
     SET_MODEL( ENT( pev ), modelName );
