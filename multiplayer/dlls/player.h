@@ -684,7 +684,7 @@ public:
     bool IsHittingShield( const Vector &vecDirection, TraceResult * ptr );
 
     bool IsReloading( void );
-    // static bool IsBlind( const CBasePlayer *pPlayer ); // Unsure.
+    bool IsBlind( const CBasePlayer *pPlayer ) { return m_blindUntilTime > gpGlobals->time; }
     virtual void Blind( float duration, float holdTime, float fadeTime, int alpha );
     virtual void OnTouchingWeapon( CWeaponBox *box ) {}
 
