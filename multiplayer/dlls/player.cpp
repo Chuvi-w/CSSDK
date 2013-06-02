@@ -481,6 +481,30 @@ void CBasePlayer::RoundRespawn()
 }
 
 // CS
+void CBasePlayer::SetBombIcon( BOOL bFlash )
+{
+    if( m_bHasC4 )
+    {
+        MESSAGE_BEGIN( MSG_ONE, gmsgStatusIcon, NULL, ENT( pev ) );
+            WRITE_BYTE( bFlash + 1 );
+            WRITE_STRING( "c4" );
+            WRITE_BYTE( 0 );
+            WRITE_BYTE( 160 );
+            WRITE_BYTE( 0 );
+        MESSAGE_END();
+    }
+    else
+    {
+        MESSAGE_BEGIN( MSG_ONE, gmsgStatusIcon, NULL, ENT( pev ) );
+            WRITE_BYTE( 0 );
+            WRITE_STRING( "c4" );
+        MESSAGE_END();
+    }
+
+    SetScoreboardAttributes( NULL );
+}
+
+// CS
 void CBasePlayer::SetNewPlayerModel( const char *modelName )
 {
     SET_MODEL( ENT( pev ), modelName );
