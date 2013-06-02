@@ -37,6 +37,12 @@ extern int gmsgScoreInfo;
 extern int gmsgMOTD;
 extern int gmsgServerName;
 
+// CS
+extern int gmsgBombPickup;
+extern int gmsgShowTimer;
+extern int gmsgHLTV;
+extern int gmsgTeamScore;
+
 extern int g_teamplay;
 
 #define ITEM_RESPAWN_TIME	30
@@ -1797,10 +1803,6 @@ void CHalfLifeMultiplay::CheckMapConditions()
     m_iMapHasVIPSafetyZone = UTIL_FindEntityByClassname( NULL, "func_vip_safetyzone" ) != NULL ? 1 : 2;
 }
 
-extern int gmsgBombPickup;
-extern int gmsgShowTimer;
-extern int gmsgHLTV;
-
 // CS
 void CHalfLifeMultiplay::RestartRound()
 {
@@ -2200,8 +2202,6 @@ void CHalfLifeMultiplay::ServerDeactivate()
         UTIL_LogPrintf( "Career End\n" );
     }
 }
-
-extern int gmsgTeamScore;
 
 // CS
 void CHalfLifeMultiplay::UpdateTeamScores()
