@@ -343,6 +343,16 @@ void CBasePlayer::AddAccount( int amount, bool bTrackChange )
 }
 
 // CS
+void CBasePlayer::Blind( float duration, float holdTime, float fadeTime, int alpha )
+{
+    m_blindUntilTime = gpGlobals->time + duration;
+    m_blindStartTime = gpGlobals->time;
+    m_blindHoldTime = holdTime;
+    m_blindFadeTime = fadeTime;
+    m_blindAlpha = alpha;
+};
+
+// CS
 void CBasePlayer::CheckPowerups( entvars_s *pev )
 {
     if( pev->health > 0.0 )
