@@ -39,6 +39,7 @@ extern cvar_t	allowmonsters;
 
 //CS
 extern cvar_t   fadetoblack;
+extern cvar_t   startmoney;
 
 // Engine Cvars
 extern cvar_t	*g_psv_gravity;

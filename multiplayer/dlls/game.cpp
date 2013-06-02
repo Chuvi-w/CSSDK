@@ -42,6 +42,7 @@ cvar_t  mp_chattime = {"mp_chattime","10", FCVAR_SERVER };
 
 // CS
 cvar_t  fadetoblack = { "mp_fadetoblack", "0", FCVAR_SERVER };
+cvar_t  startmoney = { "mp_starmtoney", "800", FCVAR_SERVER };
 
 // Engine Cvars
 cvar_t 	*g_psv_gravity = NULL;
