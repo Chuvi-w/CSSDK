@@ -159,7 +159,7 @@ public:
 // Immediately end a multiplayer game
     virtual void EndMultiplayerGame( void ) {}
     virtual BOOL IsFreezePeriod( void ) { return FALSE; }
-    virtual void ServerDeactivate( void );
+    virtual void ServerDeactivate( void ) {}
 
     virtual void CheckMapConditions( void ) {};
 
