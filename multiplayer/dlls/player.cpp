@@ -384,6 +384,185 @@ void CBasePlayer::MakeVIP( void )
 }
 
 // CS
+void CBasePlayer::JoiningThink( void )
+{
+    switch( m_iJoiningState )
+    {
+        case SHOWLTEXT :
+        {
+            MESSAGE_BEGIN( MSG_ONE, gmsgShowMenu, NULL, edict() );
+                WRITE_SHORT( 0 );
+                WRITE_CHAR( 0 );
+                WRITE_BYTE( 0 );
+                WRITE_STRING( "" );
+            MESSAGE_END();
+
+            m_iJoiningState = SHOWTEAMSELECT;
+
+            MESSAGE_BEGIN( MSG_ONE, gmsgStatusIcon, NULL, edict() );
+                WRITE_BYTE( 0 );
+                WRITE_STRING( "defuser" );
+            MESSAGE_END();
+
+            m_bHasDefuser      = false;
+            m_bMissionBriefing = false;
+            m_fLastMovement    = gpGlobals->time;
+
+            MESSAGE_BEGIN( MSG_ONE, gmsgItemStatus, NULL, edict() );
+                WRITE_BYTE( m_bHasNightVision );
+            MESSAGE_END();
+
+            break;
+        }
+        case READINGLTEXT :
+        {
+            if( m_afButtonPressed & ( IN_ATTACK | IN_ATTACK2 | IN_JUMP ) )
+            {
+                m_afButtonPressed &= ~( IN_ATTACK | IN_ATTACK2 | IN_JUMP );
+
+                MESSAGE_BEGIN( MSG_ONE, gmsgShowMenu, NULL, edict() );
+                    WRITE_SHORT( 0 );
+                    WRITE_CHAR( 0 );
+                    WRITE_BYTE( 0 );
+                    WRITE_STRING( "" );
+                MESSAGE_END();
+
+                m_iJoiningState = SHOWTEAMSELECT;
+            }
+
+            break;
+        }
+        case GETINTOGAME :
+        {
+            m_iIgnoreGlobalChat = false;                                      
+            m_iTeamKills        = 0;
+            m_iFOV              = 90;
+            m_bNotKilled        = false;
+
+            memset( &m_rebuyStruct, 0, sizeof( RebuyStruct ) );
+
+            m_bIsInRebuy     = false;
+            m_bJustConnected = false;                                       
+            m_fLastMovement  = gpGlobals->time;
+
+            ResetMaxSpeed();
+
+            m_iJoiningState  = JOINED;
+
+            CHalfLifeMultiplay *pGameRules = ( CHalfLifeMultiplay* )g_pGameRules;
+
+            if( pGameRules->m_bMapHasEscapeZone && m_iTeam == CT )
+            {
+                m_iAccount = 0;
+
+                CheckStartMoney();
+                AddAccount( ( int )startmoney.value, true );
+            }
+
+            if( g_pGameRules->FPlayerCanRespawn( this ) )
+            {
+                Spawn();
+                pGameRules->CheckWinConditions();
+
+                if( pGameRules->m_fTeamCount = 0.0 && pGameRules->m_bMapHasBombTarget && !pGameRules->IsThereABomber() && !pGameRules->IsThereABomb() )
+                {
+                    pGameRules->GiveC4();
+                }
+
+                if( m_iTeam == TERRORIST )
+                {
+                    pGameRules->m_iNumEscapers++;
+                }
+            }
+            else
+            {
+                pev->deadflag = DEAD_RESPAWNABLE;
+
+                // TODO: Implement me
+                // if( pev->classname )
+                //     RemoveEntityHashValue( STRING( pev->classname ) );
+                // 
+                // AddEntityHashValue( STRING( pev->classname ) );
+
+                pev->deadflag   = DEAD_RESPAWNABLE;
+                pev->classname  = MAKE_STRING( "player" );
+                pev->flags     &= ( FL_PROXY | FL_FAKECLIENT );
+                pev->flags     |= FL_CLIENT  | FL_SPECTATOR;
+
+                edict_t *pentSpawnSpot = pGameRules->GetPlayerSpawnSpot( this );
+                StartObserver( pentSpawnSpot->v.origin, pentSpawnSpot->v.angles );
+
+                pGameRules->CheckWinConditions();
+
+                MESSAGE_BEGIN( MSG_ALL, gmsgTeamInfo );
+                    WRITE_BYTE( entindex() );
+                    switch( m_iTeam )
+                    {
+                        case TERRORIST : WRITE_STRING( "TERRORIST" );   break;
+                        case CT        : WRITE_STRING( "CT" );          break;
+                        case SPECTATOR : WRITE_STRING( "SPECTATOR" );   break;
+                        default        : WRITE_STRING( "UNASSIGNED" );  break;
+                    }
+                MESSAGE_END();
+
+                MESSAGE_BEGIN( MSG_ALL, gmsgLocation );
+                    WRITE_BYTE( entindex() );
+                    WRITE_STRING( "" );
+                MESSAGE_END();
+
+                MESSAGE_BEGIN( MSG_ALL, gmsgScoreInfo );
+                    WRITE_BYTE( entindex() );
+                    WRITE_SHORT( pev->frags );
+                    WRITE_SHORT( m_iDeaths );
+                    WRITE_SHORT( 0 );
+                    WRITE_SHORT( m_iTeam );
+                MESSAGE_END();
+
+                if( ~m_flDisplayHistory & Hint_Spec_Duck )
+                {
+                    m_hintMessageQueue.AddMessage( "#Spec_Duck", 6.0, true, NULL );
+                    m_flDisplayHistory |= Hint_Spec_Duck;
+                }
+            }
+
+            break;
+        }
+    }
+
+    if( m_pIntroCamera && m_fIntroCamTime < gpGlobals->time )
+    {
+        m_pIntroCamera = UTIL_FindEntityByClassname( m_pIntroCamera, "trigger_camera" );
+
+        if( m_pIntroCamera == NULL )
+        {
+            m_pIntroCamera = UTIL_FindEntityByClassname( NULL, "trigger_camera" );
+        }
+
+        CBaseEntity *pEnt = UTIL_FindEntityByTargetname( NULL, STRING( m_pIntroCamera->pev->target ) );
+
+        if( pEnt )
+        {
+            pev->angles = UTIL_VecToAngles( pEnt->pev->origin - m_pIntroCamera->pev->origin ).Normalize();
+            pev->angles.x = -pev->angles.x;                                                                
+
+            UTIL_SetOrigin( pev, m_pIntroCamera->pev->origin );
+
+            pev->v_angle    = pev->angles;
+            pev->velocity   = g_vecZero;
+            pev->punchangle = g_vecZero;
+            pev->view_ofs   = g_vecZero;
+            pev->fixangle   = 1;
+
+            m_fIntroCamTime = gpGlobals->time + 6.0;
+        }
+        else
+        {
+            m_pIntroCamera = NULL;
+        }
+    }
+}
+
+// CS
 void CBasePlayer::Pain( int m_LastHitGroup, bool HasArmour )
 {
     int random = RANDOM_LONG( 0, 2 );
