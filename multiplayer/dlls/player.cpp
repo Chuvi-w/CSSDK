@@ -859,6 +859,34 @@ void CBasePlayer::SetProgressBarTime( int time )
 }
 
 // CS
+void CBasePlayer::SetScoreboardAttributes( CBasePlayer *destination )
+{
+    if( destination == NULL )
+    {
+        SetScoreboardAttributes( this );
+    }
+    else
+    {
+        int flags = 0;
+
+        if( pev->deadflag )
+            flags |= 1;
+        else if( m_bHasC4 ) 
+            flags |= 2;
+        else if( m_bIsVIP )
+            flags |= 4;
+
+        if( gmsgScoreAttrib )
+        {
+            MESSAGE_BEGIN( MSG_ONE, gmsgScoreAttrib, NULL, edict() );
+                WRITE_BYTE( entindex() );
+                WRITE_BYTE( flags );
+            MESSAGE_END();
+        }
+    }
+}
+
+// CS
 BOOL CBasePlayer::SwitchWeapon( CBasePlayerItem *pWeapon ) 
 {
     if( !pWeapon->CanDeploy() )
