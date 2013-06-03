@@ -363,6 +363,27 @@ void CBasePlayer::CheckPowerups( entvars_s *pev )
 }
 
 // CS
+void CBasePlayer::MakeVIP( void )
+{
+    pev->body = 0;
+    m_iModelName = MODEL_VIP;
+
+    g_engfuncs.pfnSetClientKeyValue( entindex(), g_engfuncs.pfnGetInfoKeyBuffer( edict() ), "model", "vip" );
+
+    UTIL_LogPrintf( "\"%s<%i><%s><CT>\" triggered \"Became_VIP\"\n",
+        STRING( pev->netname ), GETPLAYERUSERID( edict() ), GETPLAYERAUTHID( edict() ) );
+
+    m_iTeam      = CT;
+    m_bIsVIP     = true;
+    m_bNotKilled = false;
+
+    CHalfLifeMultiplay *pGameRules =  ( CHalfLifeMultiplay* )g_pGameRules;
+
+    pGameRules->m_pVIP            = this;
+    pGameRules->m_iConsecutiveVIP = 1;
+}
+
+// CS
 void CBasePlayer::Pain( int m_LastHitGroup, bool HasArmour )
 {
     int random = RANDOM_LONG( 0, 2 );
