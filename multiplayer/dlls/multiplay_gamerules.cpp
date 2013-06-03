@@ -52,6 +52,10 @@ extern int g_teamplay;
 
 float g_flIntermissionStartTime = 0;
 
+// CS
+float g_flResetTime = 0;
+float g_flTimeLimit = 0;
+
 CVoiceGameMgr	g_VoiceGameMgr;
 
 class CMultiplayGameMgrHelper : public IVoiceGameMgrHelper
@@ -1838,9 +1842,8 @@ void CHalfLifeMultiplay::RestartRound()
     CVAR_SET_FLOAT( "sv_friction", 4.0 );
     CVAR_SET_FLOAT( "sv_stopspeed", 75.0 );
 
-    // TODO: Implement me.
-    // m_iNumCT        = CountTeamPlayers( CT );
-    // m_iNumTerrorist = CountTeamPlayers( TERRORIST );
+    m_iNumCT        = CountTeamPlayers( CT );
+    m_iNumTerrorist = CountTeamPlayers( TERRORIST );
 
     if( m_bMapHasBombTarget )
     {
@@ -1886,13 +1889,11 @@ void CHalfLifeMultiplay::RestartRound()
             CVAR_SET_FLOAT( "mp_timelimit", 0.0 );
         }
 
-        // TODO: Implement me.
-        // g_flResetTime = gpGlobals->time;
+        g_flResetTime = gpGlobals->time;
 
         if( timelimit.value != 0 )
         {
-            // TODO: Implement me.
-            // g_flTimeLimit = gpGlobals->time + timelimit.value * 60;
+            g_flTimeLimit = gpGlobals->time + timelimit.value * 60;
         }
 
         m_iTotalRoundsPlayed = 0;
