@@ -1802,6 +1802,116 @@ void CHalfLifeMultiplay::CheckMapConditions()
 }
 
 // CS
+void CHalfLifeMultiplay::GiveC4( void )
+{
+    int numCurrTerrorist  = m_iNumTerrorist;
+    int numFoundTerrorist = 0;
+
+    ++m_iC4Guy;
+
+    // TODO: Implement me.
+    bool botDeferToHuman; // = cv_bot_defer_to_human.value > 0.0;
+
+    if( botDeferToHuman )
+    {
+        for( int i = 1; i <= gpGlobals->maxClients; ++i )
+        {
+            CBasePlayer* pPlayer = ( CBasePlayer* )UTIL_PlayerByIndex( i );
+
+            if( !FNullEnt( pPlayer->pev ) )
+            {
+                if( pPlayer->pev->deadflag == DEAD_NO && pPlayer->m_iTeam == TERRORIST && !pPlayer->IsBot() )
+                {
+                    ++numFoundTerrorist;
+                }
+            }
+        }
+
+        if( numFoundTerrorist )
+            numCurrTerrorist = numFoundTerrorist;
+        else
+            botDeferToHuman = FALSE;
+    }
+
+    if( numCurrTerrorist < m_iC4Guy )
+    {
+        m_iC4Guy = 1;
+    }
+
+    CBaseEntity* pEntity = NULL;
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+    {
+        if( pEntity && pEntity->IsPlayer() && !pEntity->IsDormant() )
+        {
+            continue;
+        }
+
+        CBasePlayer* pPlayer = GetClassPtr( ( CBasePlayer* )pEntity->pev );
+
+        if( pPlayer->pev->deadflag == DEAD_NO && pPlayer->m_iTeam == TERRORIST && ( !botDeferToHuman || !pPlayer->IsBot() ) )
+        {
+            if( ++numCurrTerrorist == m_iC4Guy )
+            {
+                pPlayer->m_bHasC4 = true;
+
+                pPlayer->GiveNamedItem( "weapon_c4" );
+                pPlayer->SetBombIcon( FALSE );
+
+                pPlayer->pev->body = 1;
+
+                pPlayer->m_flDisplayHistory |= Hint_you_have_the_bomb;
+                pPlayer->HintMessage( "#Hint_you_have_the_bomb", FALSE, TRUE );
+
+                UTIL_LogPrintf( "\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n",
+                    STRING( pPlayer->pev->netname ),
+                    GETPLAYERAUTHID( pPlayer->edict() ),
+                    GETPLAYERUSERID( pPlayer->edict() ) );
+
+                m_bBombDropped = false;
+            }
+        }
+    }
+
+    if( !IsThereABomber() )
+    {
+        pEntity  = NULL;
+        m_iC4Guy = 0;
+
+        while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+        {
+            if( pEntity && pEntity->IsPlayer() && !pEntity->IsDormant() )
+            {
+                continue;
+            }
+
+            CBasePlayer* pPlayer = GetClassPtr( ( CBasePlayer* )pEntity->pev );
+
+            if( pPlayer->pev->deadflag == DEAD_NO && pPlayer->m_iTeam == TERRORIST )
+            {
+                pPlayer->m_bHasC4 = true;
+
+                pPlayer->GiveNamedItem( "weapon_c4" );
+                pPlayer->SetBombIcon( FALSE );
+
+                pPlayer->pev->body = 1;
+
+                pPlayer->m_flDisplayHistory |= Hint_you_have_the_bomb;
+                pPlayer->HintMessage( "#Hint_you_have_the_bomb", FALSE, TRUE );
+
+                UTIL_LogPrintf( "\"%s<%i><%s><TERRORIST>\" triggered \"Spawned_With_The_Bomb\"\n",
+                    STRING( pPlayer->pev->netname ),
+                    GETPLAYERAUTHID( pPlayer->edict() ),
+                    GETPLAYERUSERID( pPlayer->edict() ) );
+
+                m_bBombDropped = false;
+                return;
+            }
+        }
+    }
+}
+
+// CS
 BOOL CHalfLifeMultiplay::FPlayerCanRespawn( CBasePlayer *pPlayer )
 {
     if( pPlayer->m_iNumSpawns <= 0 )
