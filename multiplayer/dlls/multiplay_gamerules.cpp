@@ -2464,6 +2464,29 @@ void CHalfLifeMultiplay::ServerDeactivate()
 }
 
 // CS
+void CHalfLifeMultiplay::SwapAllPlayers()
+{
+    CBaseEntity *pEntity = NULL;
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+    {
+        if( FNullEnt( pEntity->edict() ) )
+            break;
+
+        if( pEntity->IsDormant() )
+        {
+            GetClassPtr( ( CBasePlayer* )pEntity->pev )->SwitchTeam();
+        }
+    }
+
+    m_iNumTerroristWins ^= m_iNumCTWins;
+    m_iNumCTWins        ^= m_iNumTerroristWins;
+    m_iNumTerroristWins ^= m_iNumCTWins;
+
+    UpdateTeamScores();
+}
+
+// CS
 void CHalfLifeMultiplay::UpdateTeamScores()
 {
     MESSAGE_BEGIN( MSG_ALL, gmsgTeamScore );
