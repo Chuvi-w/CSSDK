@@ -58,6 +58,9 @@ AmmoInfo CBasePlayerItem::AmmoInfoArray[MAX_AMMO_SLOTS];
 
 extern int gmsgCurWeapon;
 
+// CS
+extern int gmsgReloadSound;
+
 MULTIDAMAGE gMultiDamage;
 
 #define TRACER_FREQ		4			// Tracers fire every fourth bullet
@@ -1102,6 +1105,33 @@ BOOL CBasePlayerWeapon::DefaultReload( int iClipSize, int iAnim, float fDelay )
 
 	return TRUE;
 }
+
+// CS
+void CBasePlayerWeapon::ReloadSound( void )
+{
+    CBasePlayer *pPlayer = NULL;
+    float distance;
+
+    while( ( pPlayer = ( CBasePlayer* )UTIL_FindEntityByClassname( pPlayer, "player" ) ) != NULL )
+    {
+        if( pPlayer->IsDormant() )
+            break;
+
+        if( pPlayer == m_pPlayer )
+            continue;
+
+        distance = m_pPlayer->pev->origin.Length() - pPlayer->pev->origin.Length();
+
+        if( distance <= 512 )
+        {
+            MESSAGE_BEGIN( MSG_ONE, gmsgReloadSound, NULL, pPlayer->edict() );
+                WRITE_BYTE( ( int )( ( 1.0 - ( distance / 512.0 ) ) * 255.0 ) );
+                WRITE_BYTE( strcmp( STRING( pev->classname ), "weapon_m3" ) || strcmp( STRING( pev->classname ), "weapon_xm1014" ) );
+            MESSAGE_END();
+        }
+    }
+}
+
 
 BOOL CBasePlayerWeapon :: PlayEmptySound( void )
 {
