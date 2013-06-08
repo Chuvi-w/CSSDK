@@ -377,10 +377,8 @@ void CBasePlayer::MakeVIP( void )
     m_bIsVIP     = true;
     m_bNotKilled = false;
 
-    CHalfLifeMultiplay *pGameRules =  ( CHalfLifeMultiplay* )g_pGameRules;
-
-    pGameRules->m_pVIP            = this;
-    pGameRules->m_iConsecutiveVIP = 1;
+    g_pGameRules->m_pVIP = this;
+    g_pGameRules->m_iConsecutiveVIP = 1;
 }
 
 // CS
@@ -449,9 +447,7 @@ void CBasePlayer::JoiningThink( void )
 
             m_iJoiningState  = JOINED;
 
-            CHalfLifeMultiplay *pGameRules = ( CHalfLifeMultiplay* )g_pGameRules;
-
-            if( pGameRules->m_bMapHasEscapeZone && m_iTeam == CT )
+            if( g_pGameRules->m_bMapHasEscapeZone && m_iTeam == CT )
             {
                 m_iAccount = 0;
 
@@ -462,16 +458,16 @@ void CBasePlayer::JoiningThink( void )
             if( g_pGameRules->FPlayerCanRespawn( this ) )
             {
                 Spawn();
-                pGameRules->CheckWinConditions();
+                g_pGameRules->CheckWinConditions();
 
-                if( pGameRules->m_fTeamCount = 0.0 && pGameRules->m_bMapHasBombTarget && !pGameRules->IsThereABomber() && !pGameRules->IsThereABomb() )
+                if( g_pGameRules->m_fTeamCount = 0.0 && g_pGameRules->m_bMapHasBombTarget && !g_pGameRules->IsThereABomber() && !g_pGameRules->IsThereABomb() )
                 {
-                    pGameRules->GiveC4();
+                    g_pGameRules->GiveC4();
                 }
 
                 if( m_iTeam == TERRORIST )
                 {
-                    pGameRules->m_iNumEscapers++;
+                    g_pGameRules->m_iNumEscapers++;
                 }
             }
             else
@@ -489,10 +485,10 @@ void CBasePlayer::JoiningThink( void )
                 pev->flags     &= ( FL_PROXY | FL_FAKECLIENT );
                 pev->flags     |= FL_CLIENT  | FL_SPECTATOR;
 
-                edict_t *pentSpawnSpot = pGameRules->GetPlayerSpawnSpot( this );
+                edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot( this );
                 StartObserver( pentSpawnSpot->v.origin, pentSpawnSpot->v.angles );
 
-                pGameRules->CheckWinConditions();
+                g_pGameRules->CheckWinConditions();
 
                 MESSAGE_BEGIN( MSG_ALL, gmsgTeamInfo );
                     WRITE_BYTE( entindex() );
