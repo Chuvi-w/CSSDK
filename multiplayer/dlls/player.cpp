@@ -2489,7 +2489,7 @@ void CBasePlayer::Duck( )
 //
 int  CBasePlayer::Classify ( void )
 {
-	return MODEL_PLAYER;
+	return CLASS_PLAYER;
 }
 
 
@@ -2570,7 +2570,7 @@ void CBasePlayer::UpdateStatusBar()
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance( tr.pHit );
 
-			if (pEntity->Classify() == MODEL_PLAYER )
+			if (pEntity->Classify() == CLASS_PLAYER )
 			{
 				newSBarState[ SBAR_ID_TARGETNAME ] = ENTINDEX( pEntity->edict() );
 				strcpy( sbuf1, "1 %p1\n2 Health: %i2%%\n3 Armor: %i3%%" );
@@ -5437,7 +5437,7 @@ class CDeadHEV : public CBaseMonster
 {
 public:
 	void Spawn( void );
-	int	Classify ( void ) { return	MODEL_HUMAN_MILITARY; }
+	int	Classify ( void ) { return	CLASS_HUMAN_MILITARY; }
 
 	void KeyValue( KeyValueData *pkvd );
 
