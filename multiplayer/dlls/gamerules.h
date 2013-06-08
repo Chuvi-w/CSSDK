@@ -280,7 +280,7 @@ public:
 	virtual BOOL IsCoOp( void );
 
     // Career
-	BOOL IsCareer( void );
+    BOOL IsCareer( void ) { return FALSE; }
 	void QueueCareerRoundEndMenu( float tmDelay, int iWinStatus );
 	void SetCareerMatchLimit(int minWins, int winDifference );
 	bool IsInCareerRound( void );
