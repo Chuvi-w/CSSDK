@@ -377,7 +377,7 @@ public:
 	virtual void RemoveGuns( void );
 	virtual void GiveC4( void );
 
-	float TimeRemaining( void );
+	float TimeRemaining( void ) { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount; }
 
 	BOOL TeamFull( int team_id );
 	BOOL TeamStacked( int newTeam_id, int curTeam_id );
