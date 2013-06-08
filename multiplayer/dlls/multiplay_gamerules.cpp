@@ -1728,6 +1728,83 @@ void CHalfLifeMultiplay::RemoveGuns()
     }
 }
 
+// CS
+
+void CHalfLifeMultiplay::BalanceTeams( void )
+{
+    TeamName teamToSwap = UNASSIGNED;
+    int numPlayerToSwap;
+
+    if( m_iMapHasVIPSafetyZone == 1 )
+    {
+        int idealNumCT = ( ( m_iNumCT + m_iNumTerrorist ) % 2 != 0 ) ? ( int )( ( m_iNumCT + m_iNumTerrorist ) * 0.55 ) + 1 : ( int )( ( m_iNumCT + m_iNumTerrorist ) * 0.5 );
+        int idealNumTerrorist = ( m_iNumCT + m_iNumTerrorist ) - idealNumCT;
+
+        if( m_iNumCT < idealNumCT )
+        {
+            teamToSwap = TERRORIST;
+            numPlayerToSwap = idealNumCT - m_iNumCT;
+        }
+        else if( m_iNumTerrorist < idealNumTerrorist )
+        {
+            teamToSwap = CT;
+            numPlayerToSwap = idealNumTerrorist - m_iNumTerrorist;
+        }
+        else
+            return;
+    }
+    else
+    {
+        if( m_iNumCT > m_iNumTerrorist )
+        {
+            teamToSwap = CT;
+            numPlayerToSwap = ( m_iNumCT - m_iNumTerrorist ) * 0.5;
+        }
+        else if( m_iNumTerrorist > m_iNumCT )
+        {
+            teamToSwap = TERRORIST;
+            numPlayerToSwap = ( m_iNumTerrorist - m_iNumCT ) * 0.5;
+        }
+        else
+            return;
+    }
+
+    if( numPlayerToSwap > 4 )
+        numPlayerToSwap = 4;
+
+    int highestUserID = -1;
+
+    CBasePlayer *toSwap  = NULL;
+    CBaseEntity *pEntity = NULL;
+
+    for( int i = 1; i <= numPlayerToSwap; i++ )
+    {
+        highestUserID = 0;
+        toSwap = NULL;
+
+        while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+        {
+            if( FNullEnt( pEntity->edict() ) )
+                break;
+
+            if( pEntity->IsDormant() )
+                continue;
+
+            CBasePlayer *pPlayer = GetClassPtr( ( CBasePlayer* )pEntity->pev );
+
+            if( pPlayer->m_iTeam == teamToSwap && GETPLAYERUSERID( pPlayer->edict() ) > highestUserID && m_pVIP != pPlayer )
+            {
+                highestUserID = GETPLAYERUSERID( pPlayer->edict() );
+                toSwap = pPlayer;
+            }
+        }
+
+        if( toSwap != NULL )
+            toSwap->SwitchTeam();
+    }
+}
+
+// CS
 void CHalfLifeMultiplay::CleanUpMap()
 {
     CBaseEntity *pEntity = NULL;
