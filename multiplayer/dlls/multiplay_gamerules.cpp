@@ -1912,6 +1912,28 @@ void CHalfLifeMultiplay::GiveC4( void )
 }
 
 // CS
+bool CHalfLifeMultiplay::HasRoundTimeExpired( void )
+{
+    if( TimeRemaining() > 0 || m_iRoundWinStatus )
+    {
+        return false;
+    }
+
+    if( !IsBombPlanted() )
+    {
+        return false;
+    }
+
+    // TODO: Implement me.
+    // if( cv_bot_nav_edit.value != 0.0 && !IS_DEDICATED_SERVER() && UTIL_HumansInGame( false ) == 1 )
+    // {
+    //     return false;
+    // }
+
+    return true;
+}
+
+// CS
 BOOL CHalfLifeMultiplay::IsThereABomber( void )
 {
     CBasePlayer *pPlayer = NULL;
