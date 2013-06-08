@@ -364,6 +364,22 @@ void CBasePlayer::CheckPowerups( entvars_s *pev )
 }
 
 // CS
+bool CBasePlayer::HintMessage( const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride )
+{
+    if( !bDisplayIfPlayerDead && !IsAlive() )
+    {
+        return false;
+    }
+
+    if( bOverride || m_bShowHints )
+    {
+        return m_hintMessageQueue.AddMessage( pMessage, 6.0, true, NULL );
+    }
+
+    return true;
+}
+
+// CS
 void CBasePlayer::MakeVIP( void )
 {
     pev->body = 0;
