@@ -109,6 +109,51 @@ char *GetTeam( int teamNo )
     return "";
 }
 
+// CS
+void EndRoundMessage( const char *sentence, int event )
+{
+    char *team = NULL;
+    bool withTeam = true;
+    GameEventType botEvent = EVENT_INVALID;
+
+    UTIL_ClientPrintAll( HUD_PRINTCENTER, sentence );
+
+    switch( event )
+    {
+        case Event_Target_Bombed:
+        case Event_VIP_Assassinated:
+        case Event_Terrorists_Escaped:
+        case Event_Terrorists_Win:
+        case Event_Hostages_Not_Rescued:
+        case Event_VIP_Not_Escaped: team = GetTeam( TERRORIST ); botEvent = EVENT_TERRORISTS_WIN; break;
+        case Event_VIP_Escaped:
+        case Event_CTs_PreventEscape:
+        case Event_Escaping_Terrorists_Neutralized:
+        case Event_Bomb_Defused:
+        case Event_CTs_Win:
+        case Event_All_Hostages_Rescued:
+        case Event_Target_Saved:
+        case Event_Terrorists_Not_Escaped: team = GetTeam( CT ); botEvent = EVENT_CTS_WIN; break;
+        default: withTeam = false; botEvent = EVENT_ROUND_DRAW; break;
+    }
+
+    if( botEvent )
+    {
+        // TODO: Impplement me.
+        // TheBots->OnEvent( botEvent, NULL, NULL );
+    }
+
+    if( g_pGameRules )
+    {
+        if( withTeam )
+            UTIL_LogPrintf( "Team \"%s\" triggered \"%s\" (CT \"%i\") (T \"%i\")\n", team, &sentence[ 1 ], g_pGameRules->m_iNumCTWins, g_pGameRules->m_iNumTerroristWins );
+        else
+            UTIL_LogPrintf( "World triggered \"%s\" (CT \"%i\") (T \"%i\")\n", &sentence[ 1 ], g_pGameRules->m_iNumCTWins, g_pGameRules->m_iNumTerroristWins );
+    }
+
+    UTIL_LogPrintf( "World triggered \"Round_End\"\n" );
+}
+
 //*********************************************************
 // Rules for the half-life multiplayer game.
 //*********************************************************

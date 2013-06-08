@@ -263,6 +263,27 @@ public:
 
 #define MAX_VIP_QUEUES 5
 
+enum EventMessage
+{
+    Event_Target_Bombed = 1,
+    Event_VIP_Escaped,
+    Event_VIP_Assassinated,
+    Event_Terrorists_Escaped,
+    Event_CTs_PreventEscape,
+    Event_Escaping_Terrorists_Neutralized,
+    Event_Bomb_Defused,
+    Event_CTs_Win,
+    Event_Terrorists_Win,
+    Event_Round_Draw,
+    Event_All_Hostages_Rescued,
+    Event_Target_Saved,
+    Event_Hostages_Not_Rescued,
+    Event_Terrorists_Not_Escaped,
+    Event_VIP_Not_Escaped,
+    Event_Game_Commencing,
+};
+
+
 class CHalfLifeMultiplay : public CGameRules
 {
     public:
