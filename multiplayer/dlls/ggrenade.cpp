@@ -515,8 +515,8 @@ CGrenade *CGrenade::ShootSatchelCharge( entvars_t *pevOwner, Vector vecStart, Ve
 	pGrenade->pev->spawnflags = SF_DETONATE;
 	pGrenade->pev->nextthink  = gpGlobals->time + 0.1;
 
-	pGrenade->m_flC4Blow			= gpGlobals->time + ( ( CHalfLifeMultiplay* )g_pGameRules )->m_iC4Timer;
-	pGrenade->m_flNextFreqInterval	= ( ( CHalfLifeMultiplay* )g_pGameRules )->m_iC4Timer / 4;
+	pGrenade->m_flC4Blow			= gpGlobals->time + g_pGameRules->m_iC4Timer;
+	pGrenade->m_flNextFreqInterval	= g_pGameRules->m_iC4Timer / 4;
 	pGrenade->m_flNextFreq			= gpGlobals->time;
 	pGrenade->m_flNextBeep			= gpGlobals->time + 0.5;
 	pGrenade->m_flNextBlink			= gpGlobals->time + 2.0;
