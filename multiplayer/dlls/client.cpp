@@ -1465,9 +1465,9 @@ int GetWeaponData( struct edict_s *player, struct weapon_data_s *info )
 						item->fuser1					= max( gun->pev->fuser1, -0.001 );
 						item->fuser2					= gun->m_flStartThrow;
 						item->fuser3					= gun->m_flReleaseThrow;
-						item->iuser1					= gun->m_chargeReady;
-						item->iuser2					= gun->m_fInAttack;
-						item->iuser3					= gun->m_fireState;
+						//item->iuser1					= gun->m_chargeReady;
+						//item->iuser2					= gun->m_fInAttack;
+						//item->iuser3					= gun->m_fireState;
 						
 											
 //						item->m_flPumpTime				= max( gun->m_flPumpTime, -0.001 );
@@ -1534,13 +1534,13 @@ void UpdateClientData ( const struct edict_s *ent, int sendweapons, struct clien
 			//cd->fuser2			= pl->m_flNextAmmoBurn;
 			//cd->fuser3			= pl->m_flAmmoStartCharge;
 			cd->vuser1.x		= pl->ammo_9mm;
-			cd->vuser1.y		= pl->ammo_357;
-			cd->vuser1.z		= pl->ammo_argrens;
-			cd->ammo_nails		= pl->ammo_bolts;
+			//cd->vuser1.y		= pl->ammo_357;
+			//cd->vuser1.z		= pl->ammo_argrens;
+			//cd->ammo_nails		= pl->ammo_bolts;
 			cd->ammo_shells		= pl->ammo_buckshot;
-			cd->ammo_rockets	= pl->ammo_rockets;
-			cd->ammo_cells		= pl->ammo_uranium;
-			cd->vuser2.x		= pl->ammo_hornets;
+			//cd->ammo_rockets	= pl->ammo_rockets;
+			//cd->ammo_cells		= pl->ammo_uranium;
+			//cd->vuser2.x		= pl->ammo_hornets;
 			
 
 			if ( pl->m_pActiveItem )

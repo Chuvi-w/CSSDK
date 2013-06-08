@@ -241,7 +241,7 @@ public:
 	void EXPORT SUB_CallUseToggle( void ) { this->Use( this, this, USE_TOGGLE, 0 ); }
 	int			ShouldToggle( USE_TYPE useType, BOOL currentState );
 	void		FireBullets( ULONG	cShots, Vector  vecSrc, Vector	vecDirShooting,	Vector	vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = NULL  );
-	Vector		FireBulletsPlayer( ULONG	cShots, Vector  vecSrc, Vector	vecDirShooting,	Vector	vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = NULL, int shared_rand = 0 );
+	Vector      FireBullets3( Vector vecSrc, Vector vecDirShooting, float vecSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand );
 
 	virtual CBaseEntity *Respawn( void ) { return NULL; }
 
@@ -314,48 +314,117 @@ public:
 
 #endif
 
-
-	// virtual functions used by a few classes
-	
-	// used by monsters that are created by the MonsterMaker
 	virtual	void UpdateOwner( void ) { return; };
 
-
-	//
 	static CBaseEntity *Create( char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner = NULL );
 
 	virtual BOOL FBecomeProne( void ) {return FALSE;};
-	edict_t *edict() { return ENT( pev ); };
-	EOFFSET eoffset( ) { return OFFSET( pev ); };
-	int	  entindex( ) { return ENTINDEX( edict() ); };
 
-	virtual Vector Center( ) { return (pev->absmax + pev->absmin) * 0.5; }; // center point of entity
-	virtual Vector EyePosition( ) { return pev->origin + pev->view_ofs; };			// position of eyes
-	virtual Vector EarPosition( ) { return pev->origin + pev->view_ofs; };			// position of ears
-	virtual Vector BodyTarget( const Vector &posSrc ) { return Center( ); };		// position to shoot at
+	edict_t *edict()  { return ENT( pev ); };
+	EOFFSET eoffset() { return OFFSET( pev ); };
+	int	  entindex()  { return ENTINDEX( edict() ); };
 
-	virtual int Illumination( ) { return GETENTITYILLUM( ENT( pev ) ); };
+	virtual Vector Center() { return (pev->absmax + pev->absmin) * 0.5; };      // center point of entity
+	virtual Vector EyePosition() { return pev->origin + pev->view_ofs; };	    // position of eyes
+	virtual Vector EarPosition() { return pev->origin + pev->view_ofs; };		// position of ears
+	virtual Vector BodyTarget( const Vector &posSrc ) { return Center(); };		// position to shoot at
 
-	virtual	BOOL FVisible ( CBaseEntity *pEntity );
-	virtual	BOOL FVisible ( const Vector &vecOrigin );
+	virtual int Illumination() { return GETENTITYILLUM( ENT( pev ) ); };
 
-	//We use this variables to store each ammo count.
-	int ammo_9mm;
-	int ammo_357;
-	int ammo_bolts;
-	int ammo_buckshot;
-	int ammo_rockets;
-	int ammo_uranium;
-	int ammo_hornets;
-	int ammo_argrens;
-	//Special stuff for grenades and satchels.
-	float m_flStartThrow;
-	float m_flReleaseThrow;
-	int m_chargeReady;
-	int m_fInAttack;
+	virtual	BOOL FVisible( CBaseEntity *pEntity );
+	virtual	BOOL FVisible( const Vector &vecOrigin );
 
-	enum EGON_FIRESTATE { FIRE_OFF, FIRE_CHARGE };
-	int m_fireState;
+    int        *current_ammo;         /*    48     4 */
+    float       currentammo;          /*    52     4 */
+    int         maxammo_buckshot;     /*    56     4 */
+    int         ammo_buckshot;        /*    60     4 */
+    int         maxammo_9mm;          /*    64     4 */
+    int         ammo_9mm;             /*    68     4 */
+    int         maxammo_556nato;      /*    72     4 */
+    int         ammo_556nato;         /*    76     4 */
+    int         maxammo_556natobox;   /*    80     4 */
+    int         ammo_556natobox;      /*    84     4 */
+    int         maxammo_762nato;      /*    88     4 */
+    int         ammo_762nato;         /*    92     4 */
+    int         maxammo_45acp;        /*    96     4 */
+    int         ammo_45acp;           /*   100     4 */
+    int         maxammo_50ae;         /*   104     4 */
+    int         ammo_50ae;            /*   108     4 */
+    int         maxammo_338mag;       /*   112     4 */
+    int         ammo_338mag;          /*   116     4 */
+    int         maxammo_57mm;         /*   120     4 */
+    int         ammo_57mm;            /*   124     4 */
+    int         maxammo_357sig;       /*   128     4 */
+    int         ammo_357sig;          /*   132     4 */
+    float       m_flStartThrow;       /*   136     4 */
+    float       m_flReleaseThrow;     /*   140     4 */
+    int         m_iSwing;             /*   144     4 */
+    bool        has_disconnected;     /*   148     1 */
+
+    /* vtable has 58 entries: 
+    {
+	   [0] = Spawn
+	   [1] = Precache
+	   [2] = Restart
+	   [3] = KeyValue
+	   [4] = Save
+	   [5] = Restore
+	   [6] = ObjectCapsv), 
+	   [7] = Activate
+	   [8] = SetObjectCollisionBox
+	   [9] = Classify
+	   [10] = DeathNotice
+	   [11] = TraceAttack
+	   [12] = TakeDamage
+	   [13] = TakeHealth
+	   [14] = Killed
+	   [15] = BloodColor
+	   [16] = TraceBleed
+	   [17] = IsTriggered
+	   [18] = MyMonsterPointer
+	   [19] = MySquadMonsterPointer
+	   [20] = GetToggleState
+	   [21] = AddPoints
+	   [22] = AddPointsToTeam
+	   [23] = AddPlayerItem
+	   [24] = RemovePlayerItem
+	   [25] = GiveAmmo
+	   [26] = GetDelay
+	   [27] = IsMoving
+	   [28] = OverrideReset
+	   [29] = DamageDecal
+	   [30] = SetToggleState
+	   [31] = StartSneaking
+	   [32] = StopSneaking
+	   [33] = OnControls
+	   [34] = IsSneaking
+	   [35] = IsAlive
+	   [36] = IsBSPModel
+	   [37] = ReflectGauss
+	   [38] = HasTarget
+	   [39] = IsInWorld
+	   [40] = IsPlayer
+	   [41] = IsNetClient
+	   [42] = TeamID
+	   [43] = GetNextTarget
+	   [44] = Think
+	   [45] = Touch
+	   [46] = Use
+	   [47] = Blocked
+	   [48] = Respawn
+	   [49] = UpdateOwner
+	   [50] = FBecomeProne
+	   [51] = Center
+	   [52] = EyePosition
+	   [53] = EarPosition
+	   [54] = BodyTarget
+	   [55] = Illumination
+	   [56] = FVisible
+	   [57] = FVisible (Vector)
+	} */
+	/* size: 152, cachelines: 3, members: 35 */
+	/* padding: 3 */
+	/* last cacheline: 24 bytes */
 };
 
 
