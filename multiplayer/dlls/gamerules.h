@@ -262,328 +262,330 @@ public:
 //=========================================================
 class CHalfLifeMultiplay : public CGameRules
 {
-public:
-	CHalfLifeMultiplay();
+    public:
 
-    // GR_Think
-    virtual void Think( void );
-	virtual void RefreshSkillData( void );
-	virtual BOOL IsAllowedToSpawn( CBaseEntity *pEntity );
-	virtual BOOL FAllowFlashlight( void );
+        CHalfLifeMultiplay();
 
-	virtual BOOL FShouldSwitchWeapon( CBasePlayer *pPlayer, CBasePlayerItem *pWeapon );
-	virtual BOOL GetNextBestWeapon( CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon );
+        // GR_Think
+        virtual void Think( void );
+        virtual void RefreshSkillData( void );
+        virtual BOOL IsAllowedToSpawn( CBaseEntity *pEntity );
+        virtual BOOL FAllowFlashlight( void );
 
-    // Functions to verify the single/multiplayer status of a game
-	virtual BOOL IsMultiplayer( void );
-	virtual BOOL IsDeathmatch( void );
-	virtual BOOL IsCoOp( void );
+        virtual BOOL FShouldSwitchWeapon( CBasePlayer *pPlayer, CBasePlayerItem *pWeapon );
+        virtual BOOL GetNextBestWeapon( CBasePlayer *pPlayer, CBasePlayerItem *pCurrentWeapon );
 
-    // Career
-    BOOL IsCareer( void ) { return FALSE; }
-	void QueueCareerRoundEndMenu( float tmDelay, int iWinStatus );
-	void SetCareerMatchLimit(int minWins, int winDifference );
-	bool IsInCareerRound( void );
-	void CareerRestart( void );
+        // Functions to verify the single/multiplayer status of a game
+        virtual BOOL IsMultiplayer( void );
+        virtual BOOL IsDeathmatch( void );
+        virtual BOOL IsCoOp( void );
 
-	bool ShouldSkipSpawn( void );
-	void MarkSpawnSkipped( void );
+        // Career
+        BOOL IsCareer( void ) { return FALSE; }
+        void QueueCareerRoundEndMenu( float tmDelay, int iWinStatus );
+        void SetCareerMatchLimit(int minWins, int winDifference );
+        bool IsInCareerRound( void );
+        void CareerRestart( void );
 
-    // Client connection/disconnection
-	virtual BOOL ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[ 128 ] );
-	virtual void InitHUD( CBasePlayer *pl );
-	virtual void ClientDisconnected( edict_t *pClient );
-	virtual void UpdateGameMode( CBasePlayer *pPlayer );
+        bool ShouldSkipSpawn( void );
+        void MarkSpawnSkipped( void );
 
-    // Client damage rules
-	virtual float FlPlayerFallDamage( CBasePlayer *pPlayer );
-	virtual BOOL FPlayerCanTakeDamage( CBasePlayer *pPlayer, CBaseEntity *pAttacker );
+        // Client connection/disconnection
+        virtual BOOL ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[ 128 ] );
+        virtual void InitHUD( CBasePlayer *pl );
+        virtual void ClientDisconnected( edict_t *pClient );
+        virtual void UpdateGameMode( CBasePlayer *pPlayer );
 
-    // Client spawn/respawn control
-	virtual void PlayerSpawn( CBasePlayer *pPlayer );
-	virtual void PlayerThink( CBasePlayer *pPlayer );
-    virtual BOOL FPlayerCanRespawn( CBasePlayer *pPlayer );
-	virtual float FlPlayerSpawnTime( CBasePlayer *pPlayer );
-	virtual edict_t * GetPlayerSpawnSpot( CBasePlayer *pPlayer );
+        // Client damage rules
+        virtual float FlPlayerFallDamage( CBasePlayer *pPlayer );
+        virtual BOOL FPlayerCanTakeDamage( CBasePlayer *pPlayer, CBaseEntity *pAttacker );
 
-	virtual BOOL AllowAutoTargetCrosshair( void );
+        // Client spawn/respawn control
+        virtual void PlayerSpawn( CBasePlayer *pPlayer );
+        virtual void PlayerThink( CBasePlayer *pPlayer );
+        virtual BOOL FPlayerCanRespawn( CBasePlayer *pPlayer );
+        virtual float FlPlayerSpawnTime( CBasePlayer *pPlayer );
+        virtual edict_t * GetPlayerSpawnSpot( CBasePlayer *pPlayer );
 
-	virtual int IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled );
-	virtual void PlayerKilled( CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor );
-	virtual void DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor );
+        virtual BOOL AllowAutoTargetCrosshair( void );
 
-    // Weapon retrieval
-	virtual void PlayerGotWeapon( CBasePlayer *pPlayer, CBasePlayerItem *pWeapon );
-	virtual BOOL CanHavePlayerItem( CBasePlayer *pPlayer, CBasePlayerItem *pWeapon );
+        virtual int IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled );
+        virtual void PlayerKilled( CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor );
+        virtual void DeathNotice(CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pInflictor );
 
-    // Weapon spawn/respawn control
-	virtual int WeaponShouldRespawn( CBasePlayerItem *pWeapon );
-	virtual float FlWeaponRespawnTime( CBasePlayerItem *pWeapon );
-	virtual float FlWeaponTryRespawn( CBasePlayerItem *pWeapon );
-	virtual class Vector VecWeaponRespawnSpot( CBasePlayerItem *pWeapon );
+        // Weapon retrieval
+        virtual void PlayerGotWeapon( CBasePlayer *pPlayer, CBasePlayerItem *pWeapon );
+        virtual BOOL CanHavePlayerItem( CBasePlayer *pPlayer, CBasePlayerItem *pWeapon );
 
-    // Item retrieval
-	virtual BOOL CanHaveItem( CBasePlayer *pPlayer, CItem *pItem );
-	virtual void PlayerGotItem( CBasePlayer *pPlayer, CItem *pItem );
-	
-    // Item spawn/respawn control
-    virtual int ItemShouldRespawn( CItem *pItem );
-	virtual float FlItemRespawnTime( CItem *pItem );
-	virtual class Vector VecItemRespawnSpot( CItem *pItem );
+        // Weapon spawn/respawn control
+        virtual int WeaponShouldRespawn( CBasePlayerItem *pWeapon );
+        virtual float FlWeaponRespawnTime( CBasePlayerItem *pWeapon );
+        virtual float FlWeaponTryRespawn( CBasePlayerItem *pWeapon );
+        virtual class Vector VecWeaponRespawnSpot( CBasePlayerItem *pWeapon );
 
-    // Ammo retrieval
-	virtual void PlayerGotAmmo( CBasePlayer *pPlayer, char *szName, int iCount );
+        // Item retrieval
+        virtual BOOL CanHaveItem( CBasePlayer *pPlayer, CItem *pItem );
+        virtual void PlayerGotItem( CBasePlayer *pPlayer, CItem *pItem );
+        
+        // Item spawn/respawn control
+        virtual int ItemShouldRespawn( CItem *pItem );
+        virtual float FlItemRespawnTime( CItem *pItem );
+        virtual class Vector VecItemRespawnSpot( CItem *pItem );
 
-    // Ammo spawn/respawn control
-	virtual int AmmoShouldRespawn( CBasePlayerAmmo *pAmmo );
-	virtual float FlAmmoRespawnTime( CBasePlayerAmmo *pAmmo );
-	virtual class Vector VecAmmoRespawnSpot( CBasePlayerAmmo *pAmmo );
+        // Ammo retrieval
+        virtual void PlayerGotAmmo( CBasePlayer *pPlayer, char *szName, int iCount );
 
-    // Healthcharger respawn control
-	virtual float FlHealthChargerRechargeTime( void );
-	virtual float FlHEVChargerRechargeTime( void );
+        // Ammo spawn/respawn control
+        virtual int AmmoShouldRespawn( CBasePlayerAmmo *pAmmo );
+        virtual float FlAmmoRespawnTime( CBasePlayerAmmo *pAmmo );
+        virtual class Vector VecAmmoRespawnSpot( CBasePlayerAmmo *pAmmo );
 
-    // What happens to a dead player's weapons
-	virtual int DeadPlayerWeapons( CBasePlayer *pPlayer );
-	
-    // What happens to a dead player's ammo	
-    virtual int DeadPlayerAmmo( CBasePlayer *pPlayer );
+        // Healthcharger respawn control
+        virtual float FlHealthChargerRechargeTime( void );
+        virtual float FlHEVChargerRechargeTime( void );
 
-    // Teamplay stuff	
-	virtual const char *GetTeamID( CBaseEntity *pEntity ) { return ""; }
-	virtual int PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *pTarget );
+        // What happens to a dead player's weapons
+        virtual int DeadPlayerWeapons( CBasePlayer *pPlayer );
+        
+        // What happens to a dead player's ammo 
+        virtual int DeadPlayerAmmo( CBasePlayer *pPlayer );
 
-	virtual BOOL PlayTextureSounds( void ) { return FALSE; }
+        // Teamplay stuff   
+        virtual const char *GetTeamID( CBaseEntity *pEntity ) { return ""; }
+        virtual int PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *pTarget );
 
-    // Monsters
-	virtual BOOL FAllowMonsters( void );
+        virtual BOOL PlayTextureSounds( void ) { return FALSE; }
 
-    // Immediately end a multiplayer game
-	virtual void EndMultiplayerGame( void );
-	virtual void ServerDeactivate( void );
+        // Monsters
+        virtual BOOL FAllowMonsters( void );
 
-    // Player stuff
-	virtual BOOL ClientCommand_DeadOrAlive( CBasePlayer *pPlayer, const char *pcmd );
-	virtual BOOL ClientCommand( CBasePlayer *pPlayer, const char *pcmd );
-	virtual void ClientUserInfoChanged( CBasePlayer *pPlayer, char *infobuffer );
-	void PlayerJoinedTeam( CBasePlayer *pPlayer );
+        // Immediately end a multiplayer game
+        virtual void EndMultiplayerGame( void );
+        virtual void ServerDeactivate( void );
 
-	virtual void CleanUpMap( void );
-	virtual void RestartRound( void );
+        // Player stuff
+        virtual BOOL ClientCommand_DeadOrAlive( CBasePlayer *pPlayer, const char *pcmd );
+        virtual BOOL ClientCommand( CBasePlayer *pPlayer, const char *pcmd );
+        virtual void ClientUserInfoChanged( CBasePlayer *pPlayer, char *infobuffer );
+        void PlayerJoinedTeam( CBasePlayer *pPlayer );
 
-	virtual void CheckWinConditions( void );
-	virtual void CheckMapConditions( void );
+        virtual void CleanUpMap( void );
+        virtual void RestartRound( void );
 
-	virtual void RemoveGuns( void );
-	virtual void GiveC4( void );
+        virtual void CheckWinConditions( void );
+        virtual void CheckMapConditions( void );
 
-	float TimeRemaining( void ) { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount; }
+        virtual void RemoveGuns( void );
+        virtual void GiveC4( void );
 
-	BOOL TeamFull( int team_id );
-	BOOL TeamStacked( int newTeam_id, int curTeam_id );
+        float TimeRemaining( void ) { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount; }
 
-    // VIP Stuff
-	bool IsVIPQueueEmpty( void );
-	bool AddToVIPQueue( CBasePlayer *toAdd );
-	void PickNextVIP( void );
-	void StackVIPQueue( void );
-	void ResetCurrentVIP( void );
+        BOOL TeamFull( int team_id );
+        BOOL TeamStacked( int newTeam_id, int curTeam_id );
 
-    // Team stuff
-	void BalanceTeams( void );
-	void SwapAllPlayers( void );
-	void UpdateTeamScores( void );
+        // VIP Stuff
+        bool IsVIPQueueEmpty( void );
+        bool AddToVIPQueue( CBasePlayer *toAdd );
+        void PickNextVIP( void );
+        void StackVIPQueue( void );
+        void ResetCurrentVIP( void );
 
-    // Map stuff
-	void DisplayMaps( CBasePlayer *pPlayer, int iVote );
-	void ResetAllMapVotes( void );
-	void ProcessMapVote( CBasePlayer *pPlayer, int iVote );
+        // Team stuff
+        void BalanceTeams( void );
+        void SwapAllPlayers( void );
+        void UpdateTeamScores( void );
 
-    // C4 stuff
-	BOOL IsThereABomber( void );
-	BOOL IsThereABomb( void );
+        // Map stuff
+        void DisplayMaps( CBasePlayer *pPlayer, int iVote );
+        void ResetAllMapVotes( void );
+        void ProcessMapVote( CBasePlayer *pPlayer, int iVote );
 
-	bool IsMatchStarted( void );
+        // C4 stuff
+        BOOL IsThereABomber( void );
+        BOOL IsThereABomb( void );
 
-	virtual void ChangeLevel( void );
-	virtual void GoToIntermission( void );
+        bool IsMatchStarted( void );
 
-	void SendMOTDToClient( edict_t *client );
+        virtual void ChangeLevel( void );
+        virtual void GoToIntermission( void );
 
-private:
+        void SendMOTDToClient( edict_t *client );
 
-	bool HasRoundTimeExpired( void );
-	bool IsBombPlanted( void );
+    private:
 
-	void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound( int iTeam );
+        bool HasRoundTimeExpired( void );
+        bool IsBombPlanted( void );
 
-public:
-	CVoiceGameMgr				m_VoiceGameMgr;						/*    12     0 */
+        void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound( int iTeam );
 
-	float						m_fTeamCount;						/*    40     4 */
-	float						m_flCheckWinConditions;				/*    44     4 */
-	float						m_fRoundCount;						/*    48     4 */
-	int							m_iRoundTime;						/*    52     4 */
-	int							m_iRoundTimeSecs;					/*    56     4 */
-	int							m_iIntroRoundTime;					/*    60     4 */
-	float						m_fIntroRoundCount;					/*    64     4 */
+    public:
 
-	int							m_iAccountTerrorist;				/*    68     4 */
-	int							m_iAccountCT;						/*    72     4 */
+        CVoiceGameMgr               m_VoiceGameMgr;                     /*    12     0 */
 
-	int							m_iNumTerrorist;					/*    76     4 */
-	int							m_iNumCT;							/*    80     4 */
-	int							m_iNumSpawnableTerrorist;			/*    84     4 */
-	int							m_iNumSpawnableCT;					/*    88     4 */
-	int							m_iSpawnPointCount_Terrorist;		/*    92     4 */
-	int							m_iSpawnPointCount_CT;				/*    96     4 */
+        float                       m_fTeamCount;                       /*    40     4 */
+        float                       m_flCheckWinConditions;             /*    44     4 */
+        float                       m_fRoundCount;                      /*    48     4 */
+        int                         m_iRoundTime;                       /*    52     4 */
+        int                         m_iRoundTimeSecs;                   /*    56     4 */
+        int                         m_iIntroRoundTime;                  /*    60     4 */
+        float                       m_fIntroRoundCount;                 /*    64     4 */
 
-	int							m_iHostagesRescued;					/*   100     4 */
-	int							m_iHostagesTouched;					/*   104     4 */
+        int                         m_iAccountTerrorist;                /*    68     4 */
+        int                         m_iAccountCT;                       /*    72     4 */
 
-	int							m_iRoundWinStatus;					/*   108     4 */
-	short int					m_iNumCTWins;						/*   112     2 */
-	short int					m_iNumTerroristWins;				/*   114     2 */
+        int                         m_iNumTerrorist;                    /*    76     4 */
+        int                         m_iNumCT;                           /*    80     4 */
+        int                         m_iNumSpawnableTerrorist;           /*    84     4 */
+        int                         m_iNumSpawnableCT;                  /*    88     4 */
+        int                         m_iSpawnPointCount_Terrorist;       /*    92     4 */
+        int                         m_iSpawnPointCount_CT;              /*    96     4 */
 
-	bool						m_bTargetBombed;					/*   116     1 */
-	bool						m_bBombDefused;						/*   117     1 */
+        int                         m_iHostagesRescued;                 /*   100     4 */
+        int                         m_iHostagesTouched;                 /*   104     4 */
 
-	bool						m_bMapHasBombTarget;				/*   118     1 */
-	bool						m_bMapHasBombZone;					/*   119     1 */
-	bool						m_bMapHasBuyZone;					/*   120     1 */
-	bool						m_bMapHasRescueZone;				/*   121     1 */
-	bool						m_bMapHasEscapeZone;				/*   122     1 */
-	int							m_iMapHasVIPSafetyZone;				/*   124     4 */
-	int							m_bMapHasCameras;					/*   128     4 */
+        int                         m_iRoundWinStatus;                  /*   108     4 */
+        short int                   m_iNumCTWins;                       /*   112     2 */
+        short int                   m_iNumTerroristWins;                /*   114     2 */
 
-	int							m_iC4Timer;							/*   132     4 */
-	int							m_iC4Guy;							/*   136     4 */
+        bool                        m_bTargetBombed;                    /*   116     1 */
+        bool                        m_bBombDefused;                     /*   117     1 */
 
-	int							m_iLoserBonus;						/*   140     4 */
-	int							m_iNumConsecutiveCTLoses;			/*   144     4 */
-	int							m_iNumConsecutiveTerroristLoses;	/*   148     4 */
+        bool                        m_bMapHasBombTarget;                /*   118     1 */
+        bool                        m_bMapHasBombZone;                  /*   119     1 */
+        bool                        m_bMapHasBuyZone;                   /*   120     1 */
+        bool                        m_bMapHasRescueZone;                /*   121     1 */
+        bool                        m_bMapHasEscapeZone;                /*   122     1 */
+        int                         m_iMapHasVIPSafetyZone;             /*   124     4 */
+        int                         m_bMapHasCameras;                   /*   128     4 */
 
-	float						m_fMaxIdlePeriod;					/*   152     4 */
-	int							m_iLimitTeams;						/*   156     4 */
-	bool						m_bLevelInitialized;				/*   160     1 */
-	bool						m_bRoundTerminating;				/*   161     1 */
-	bool						m_bCompleteReset;					/*   162     1 */
+        int                         m_iC4Timer;                         /*   132     4 */
+        int                         m_iC4Guy;                           /*   136     4 */
 
-	float						m_flRequiredEscapeRatio;			/*   164     4 */
-	int							m_iNumEscapers;						/*   168     4 */
-	int							m_iHaveEscaped;						/*   172     4 */
+        int                         m_iLoserBonus;                      /*   140     4 */
+        int                         m_iNumConsecutiveCTLoses;           /*   144     4 */
+        int                         m_iNumConsecutiveTerroristLoses;    /*   148     4 */
 
-	bool						m_bCTCantBuy;						/*   176     1 */
-	bool						m_bTCantBuy;						/*   177     1 */
+        float                       m_fMaxIdlePeriod;                   /*   152     4 */
+        int                         m_iLimitTeams;                      /*   156     4 */
+        bool                        m_bLevelInitialized;                /*   160     1 */
+        bool                        m_bRoundTerminating;                /*   161     1 */
+        bool                        m_bCompleteReset;                   /*   162     1 */
 
-	float						m_flBombRadius;						/*   180     4 */
+        float                       m_flRequiredEscapeRatio;            /*   164     4 */
+        int                         m_iNumEscapers;                     /*   168     4 */
+        int                         m_iHaveEscaped;                     /*   172     4 */
 
-	int							m_iConsecutiveVIP;					/*   184     4 */
+        bool                        m_bCTCantBuy;                       /*   176     1 */
+        bool                        m_bTCantBuy;                        /*   177     1 */
 
-	int							m_iTotalGunCount;					/*   188     4 */
-	int							m_iTotalGrenadeCount;				/*   192     4 */
-	int							m_iTotalArmourCount;				/*   196     4 */
+        float                       m_flBombRadius;                     /*   180     4 */
 
-	int							m_iUnBalancedRounds;				/*   200     4 */
-	int							m_iNumEscapeRounds;					/*   204     4 */
+        int                         m_iConsecutiveVIP;                  /*   184     4 */
 
-	int							m_iMapVotes[100];					/*   208   400 */
-	int							m_iLastPick;						/*   608     4 */
-	int							m_iMaxMapTime;						/*   612     4 */
-	int							m_iMaxRounds;						/*   616     4 */
-	int							m_iTotalRoundsPlayed;				/*   620     4 */
-	int							m_iMaxRoundsWon;					/*   624     4 */
+        int                         m_iTotalGunCount;                   /*   188     4 */
+        int                         m_iTotalGrenadeCount;               /*   192     4 */
+        int                         m_iTotalArmourCount;                /*   196     4 */
 
-	int							m_iStoredSpectValue;				/*   628     4 */
-	float						m_flForceCameraValue;				/*   632     4 */
-	float						m_flForceChaseCamValue;				/*   636     4 */
-	float						m_flFadeToBlackValue;				/*   640     4 */
+        int                         m_iUnBalancedRounds;                /*   200     4 */
+        int                         m_iNumEscapeRounds;                 /*   204     4 */
 
-	class CBasePlayer *			m_pVIP;								/*   644     4 */
-	class CBasePlayer *			VIPQueue[5];						/*   648    20 */
+        int                         m_iMapVotes[100];                   /*   208   400 */
+        int                         m_iLastPick;                        /*   608     4 */
+        int                         m_iMaxMapTime;                      /*   612     4 */
+        int                         m_iMaxRounds;                       /*   616     4 */
+        int                         m_iTotalRoundsPlayed;               /*   620     4 */
+        int                         m_iMaxRoundsWon;                    /*   624     4 */
 
-protected:
+        int                         m_iStoredSpectValue;                /*   628     4 */
+        float                       m_flForceCameraValue;               /*   632     4 */
+        float                       m_flForceChaseCamValue;             /*   636     4 */
+        float                       m_flFadeToBlackValue;               /*   640     4 */
 
-	float                      m_flIntermissionEndTime;				/*   668     4 */
-	float                      m_flIntermissionStartTime;			/*   672     4 */
-	BOOL                       m_iEndIntermissionButtonHit;			/*   676     4 */
+        class CBasePlayer *         m_pVIP;                             /*   644     4 */
+        class CBasePlayer *         VIPQueue[5];                        /*   648    20 */
 
-	float                      m_tmNextPeriodicThink;				/*   680     4 */
-	bool                       m_bFirstConnected;					/*   684     1 */
-	bool                       m_bInCareerGame;						/*   685     1 */
-	float                      m_fCareerRoundMenuTime;				/*   688     4 */
-	int                        m_iCareerMatchWins;					/*   692     4 */
-	int                        m_iRoundWinDifference;				/*   696     4 */
-	float                      m_fCareerMatchMenuTime;				/*   700     4 */
-	bool                       m_bSkipSpawn;						/*   704     1 */
+    protected:
+
+        float                      m_flIntermissionEndTime;             /*   668     4 */
+        float                      m_flIntermissionStartTime;           /*   672     4 */
+        BOOL                       m_iEndIntermissionButtonHit;         /*   676     4 */
+
+        float                      m_tmNextPeriodicThink;               /*   680     4 */
+        bool                       m_bFirstConnected;                   /*   684     1 */
+        bool                       m_bInCareerGame;                     /*   685     1 */
+        float                      m_fCareerRoundMenuTime;              /*   688     4 */
+        int                        m_iCareerMatchWins;                  /*   692     4 */
+        int                        m_iRoundWinDifference;               /*   696     4 */
+        float                      m_fCareerMatchMenuTime;              /*   700     4 */
+        bool                       m_bSkipSpawn;                        /*   704     1 */
 
     /* vtable has 60 entries:
     {
-	   [1]  = Think
-	   [0]  = RefreshSkillData
-	   [2]  = IsAllowedToSpawn
-	   [3]  = FAllowFlashlight
-	   [4]  = FShouldSwitchWeapon
-	   [5]  = GetNextBestWeapon 
-	   [6]  = IsMultiplayer
-	   [7]  = IsDeathmatch
-	   [9]  = IsCoOp
-	   [11] = ClientConnected
-	   [12] = InitHUD
-	   [13] = ClientDisconnected
-	   [14] = UpdateGameMode
-	   [15] = FlPlayerFallDamage
-	   [16] = FPlayerCanTakeDamage
-	   [18] = PlayerSpawn
-	   [19] = PlayerThink
-	   [20] = FPlayerCanRespawn
-	   [21] = FlPlayerSpawnTime 
-	   [22] = GetPlayerSpawnSpot
-	   [23] = AllowAutoTargetCrosshair
-	   [27] = IPointsForKill
-	   [28] = PlayerKilled
-	   [29] = DeathNotice
-	   [31] = PlayerGotWeapon
-	   [30] = CanHavePlayerItem
-	   [32] = WeaponShouldRespawn
-	   [33] = FlWeaponRespawnTime
-	   [34] = FlWeaponTryRespawn 
-	   [35] = VecWeaponRespawnSpot
-	   [36] = CanHaveItem
-	   [37] = PlayerGotItem
-	   [38] = ItemShouldRespawn
-	   [39] = FlItemRespawnTime
-	   [40] = VecItemRespawnSpot
-	   [42] = PlayerGotAmmo
-	   [43] = AmmoShouldRespawn 
-	   [44] = FlAmmoRespawnTime
-	   [45] = VecAmmoRespawnSpot
-	   [46] = FlHealthChargerRechargeTime
-	   [47] = FlHEVChargerRechargeTime
-	   [48] = DeadPlayerWeapons
-	   [49] = DeadPlayerAmmo
-	   [50] = GetTeamID
-	   [51] = PlayerRelationship
-	   [57] = PlayTextureSounds
-	   [58] = FAllowMonsters
-	   [59] = EndMultiplayerGame
-	   [61] = ServerDeactivate
-	   [24] = ClientCommand_DeadOrAlive
-	   [25] = ClientCommand
-	   [26] = ClientUserInfoChanged
-	   [63] = CleanUpMap
-	   [64] = RestartRound
-	   [65] = CheckWinConditions
-	   [62] = CheckMapConditions
-	   [66] = RemoveGuns
-	   [67] = GiveC4
-	   [68] = ChangeLevel
-	   [69] = GoToIntermission
-	} */
-	/* size: 708, cachelines: 12, members: 76 */
-	/* sum members: 659, holes: 6, sum holes: 46 */
-	/* padding: 3 */
-	/* last cacheline: 4 bytes */
+       [1]  = Think
+       [0]  = RefreshSkillData
+       [2]  = IsAllowedToSpawn
+       [3]  = FAllowFlashlight
+       [4]  = FShouldSwitchWeapon
+       [5]  = GetNextBestWeapon 
+       [6]  = IsMultiplayer
+       [7]  = IsDeathmatch
+       [9]  = IsCoOp
+       [11] = ClientConnected
+       [12] = InitHUD
+       [13] = ClientDisconnected
+       [14] = UpdateGameMode
+       [15] = FlPlayerFallDamage
+       [16] = FPlayerCanTakeDamage
+       [18] = PlayerSpawn
+       [19] = PlayerThink
+       [20] = FPlayerCanRespawn
+       [21] = FlPlayerSpawnTime 
+       [22] = GetPlayerSpawnSpot
+       [23] = AllowAutoTargetCrosshair
+       [27] = IPointsForKill
+       [28] = PlayerKilled
+       [29] = DeathNotice
+       [31] = PlayerGotWeapon
+       [30] = CanHavePlayerItem
+       [32] = WeaponShouldRespawn
+       [33] = FlWeaponRespawnTime
+       [34] = FlWeaponTryRespawn 
+       [35] = VecWeaponRespawnSpot
+       [36] = CanHaveItem
+       [37] = PlayerGotItem
+       [38] = ItemShouldRespawn
+       [39] = FlItemRespawnTime
+       [40] = VecItemRespawnSpot
+       [42] = PlayerGotAmmo
+       [43] = AmmoShouldRespawn 
+       [44] = FlAmmoRespawnTime
+       [45] = VecAmmoRespawnSpot
+       [46] = FlHealthChargerRechargeTime
+       [47] = FlHEVChargerRechargeTime
+       [48] = DeadPlayerWeapons
+       [49] = DeadPlayerAmmo
+       [50] = GetTeamID
+       [51] = PlayerRelationship
+       [57] = PlayTextureSounds
+       [58] = FAllowMonsters
+       [59] = EndMultiplayerGame
+       [61] = ServerDeactivate
+       [24] = ClientCommand_DeadOrAlive
+       [25] = ClientCommand
+       [26] = ClientUserInfoChanged
+       [63] = CleanUpMap
+       [64] = RestartRound
+       [65] = CheckWinConditions
+       [62] = CheckMapConditions
+       [66] = RemoveGuns
+       [67] = GiveC4
+       [68] = ChangeLevel
+       [69] = GoToIntermission
+    } */
+    /* size: 708, cachelines: 12, members: 76 */
+    /* sum members: 659, holes: 6, sum holes: 46 */
+    /* padding: 3 */
+    /* last cacheline: 4 bytes */
 };
 
 extern DLL_GLOBAL CHalfLifeMultiplay* g_pGameRules;
