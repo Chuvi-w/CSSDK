@@ -37,6 +37,7 @@
 #include "hltv.h"
 #include "pm_shared.h"
 #include "client.h"
+#include "career_tasks.h"
 
 // #define DUCKFIX
 
@@ -879,6 +880,73 @@ void CBasePlayer::SetScoreboardAttributes( CBasePlayer *destination )
                 WRITE_BYTE( flags );
             MESSAGE_END();
         }
+    }
+}
+
+// CS
+void CBasePlayer::SyncRoundTimer( void )
+{
+    int timeRemaining = 0;
+
+    if( g_pGameRules->IsMultiplayer() )
+    {
+        timeRemaining = ( int )g_pGameRules->TimeRemaining();
+
+        if( timeRemaining < 0 )
+            timeRemaining = 0;
+    }
+
+    MESSAGE_BEGIN( MSG_ONE, gmsgRoundTime, NULL, edict() );
+        WRITE_SHORT( timeRemaining );
+    MESSAGE_END();
+
+    if( g_pGameRules->IsMultiplayer() )
+    {
+        // TODO: Implement me
+        if( g_pGameRules->IsFreezePeriod() /*&& TheTutor*/ && !pev->iuser1 && IsAlive() )
+        {
+            MESSAGE_BEGIN( MSG_ONE, gmsgBlinkAcct, NULL, edict() );
+                WRITE_BYTE( 30 );
+            MESSAGE_END();
+        }
+    }
+    else if( g_pGameRules->IsCareer() )
+    {
+        //TODO: Check me, it's incorrect/incomplete.
+        /*BOOL active = FALSE;
+        int flag = 0;
+
+        if( timeRemaining != 0 )
+        {
+            timeRemaining = TheCareerTasks->GetFinishedTaskTime() - ( gpGlobals->time - g_pGameRules->m_fRoundCount );
+        }
+        else if( g_pGameRules->IsFreezePeriod() )
+        {
+            timeRemaining = -1;
+        }
+        else if( TheCareerTasks->GetFinishedTaskRound() )
+        {
+            timeRemaining = -TheCareerTasks->GetFinishedTaskRound();
+        }
+
+        if( TheCareerTasks->GetFinishedTaskRound() || TheCareerTasks->GetRoundElapsedTime() >= TheCareerTasks->GetFinishedTaskTime() )
+        {
+            flag = 3;
+        }
+
+        if( !g_pGameRules->IsFreezePeriod() && !TheCareerTasks->GetFinishedTaskRound() )
+        {
+            active = TheCareerTasks->GetFinishedTaskRound() == 0;
+        }
+
+        if( !TheCareerTasks->GetFinishedTaskRound() || TheCareerTasks->m_roundEndMessage == g_pGameRules->m_iTotalRoundsPlayed )
+        {
+            MESSAGE_BEGIN( MSG_ONE, gmsgTaskTime, NULL, edict() );
+                WRITE_SHORT( timeRemaining );   // Time
+                WRITE_BYTE(  );                 // Active
+                WRITE_BYTE( flag );             // Flag
+            MESSAGE_END();
+        }*/
     }
 }
 
