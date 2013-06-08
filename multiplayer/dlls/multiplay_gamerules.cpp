@@ -43,6 +43,7 @@ extern int gmsgBombPickup;
 extern int gmsgShowTimer;
 extern int gmsgHLTV;
 extern int gmsgTeamScore;
+extern int gmsgSendAudio;
 
 extern int g_teamplay;
 
@@ -75,6 +76,25 @@ public:
 	}
 };
 static CMultiplayGameMgrHelper g_GameMgrHelper;
+
+
+// CS
+void Broadcast( const char *sentence )
+{
+    if( sentence )
+    {
+        char message[ 32 ];
+
+        strcpy( message, "%!MRAD_" );
+        strcat( message, UTIL_VarArgs( "%s", sentence ) );
+
+        MESSAGE_BEGIN( MSG_BROADCAST, gmsgSendAudio );
+            WRITE_BYTE( 0 );
+            WRITE_STRING( message );
+            WRITE_SHORT( 100 );
+        MESSAGE_END();
+    }
+}
 
 // CS
 char *GetTeam( int teamNo )
@@ -2615,25 +2635,4 @@ void CHalfLifeMultiplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *info
 {
     pPlayer->SetPlayerModel( pPlayer->m_bHasC4 );
     pPlayer->SetPrefsFromUserinfo( infobuffer );
-}
-
-	
-// CS
-extern int gmsgSendAudio;
-
-void Broadcast( const char *sentence )
-{
-    if( sentence )
-    {
-        char dest[ 32 ];
-
-        strcpy( dest, "%!MRAD_" );
-        strcat( dest, UTIL_VarArgs( "%s", sentence ) );
-
-        MESSAGE_BEGIN( MSG_BROADCAST, gmsgSendAudio );
-            WRITE_BYTE( 0 );
-            WRITE_STRING( dest );
-            WRITE_SHORT( 100 );
-        MESSAGE_END();
-    }
 }
