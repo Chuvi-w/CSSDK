@@ -2089,6 +2089,25 @@ bool CHalfLifeMultiplay::HasRoundTimeExpired( void )
 }
 
 // CS
+bool CHalfLifeMultiplay::IsBombPlanted( void )
+{
+    if( m_bMapHasBombTarget )
+    {
+        CGrenade *pGrenade = NULL;
+
+        if( ( pGrenade = ( CGrenade * )UTIL_FindEntityByClassname( pGrenade, "grenade" ) ) != NULL )
+        {
+            if( pGrenade->m_bIsC4 )
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// CS
 BOOL CHalfLifeMultiplay::IsThereABomber( void )
 {
     CBasePlayer *pPlayer = NULL;
