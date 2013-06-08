@@ -1134,6 +1134,50 @@ BOOL CBasePlayer::SwitchWeapon( CBasePlayerItem *pWeapon )
 }
 
 // CS
+void CBasePlayer::UpdateLocation( bool bForceUpdate )
+{
+    if( !bForceUpdate && m_flLastUpdateTime >= gpGlobals->time + 2.0 )
+    {
+        return;
+    }
+
+    char *location = NULL;
+
+    if( pev->deadflag == DEAD_NO && UTIL_IsGame( "czero" ) )
+    {
+        // TODO: Implement and finish me.
+        // TheNavAreaGrid->GetPlace( pev->origin );
+        // ...
+    }
+
+    if( *location && ( !m_lastLocation[ 0 ] || strcmp( location, &m_lastLocation[ 1 ] ) ) )
+    {
+        m_flLastUpdateTime = gpGlobals->time;
+        _snprintf( m_lastLocation, sizeof( m_lastLocation ), "#%s", location );
+
+        for( int i = 1; i <= gpGlobals->maxClients; i++ )
+        {
+            CBasePlayer *pOther = ( CBasePlayer* )UTIL_PlayerByIndex( i );
+
+            if( pOther->m_iTeam == m_iTeam || pOther->m_iTeam == SPECTATOR )
+            {
+                MESSAGE_BEGIN( MSG_ONE, gmsgLocation, NULL, pOther->edict() );
+                    WRITE_BYTE( entindex() );
+                    WRITE_STRING( m_lastLocation );
+                MESSAGE_END();
+            }
+            else if( bForceUpdate )
+            {
+                MESSAGE_BEGIN( MSG_ONE, gmsgLocation, NULL, pOther->edict() );
+                    WRITE_BYTE( entindex() );
+                    WRITE_STRING( "" );
+                MESSAGE_END();
+            }
+        }
+    }
+}
+
+// CS
 void CBasePlayer::UpdateShieldCrosshair( bool draw )
 {
     if( draw )
