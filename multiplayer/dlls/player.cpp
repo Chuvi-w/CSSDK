@@ -900,6 +900,140 @@ void CBasePlayer::SetScoreboardAttributes( CBasePlayer *destination )
 }
 
 // CS
+void CBasePlayer::SwitchTeam( void )
+{
+    char *model = NULL;
+    int oldTeam = m_iTeam;
+    const char *name = NULL;
+
+    if( m_iTeam == CT )
+    {
+        m_iTeam = TERRORIST;
+
+        switch( m_iModelName )
+        {
+            case MODEL_LEET     : m_iModelName = MODEL_URBAN;    model = "urban";    break;
+            case MODEL_URBAN    : m_iModelName = MODEL_LEET;     model = "leet";     break;
+            case MODEL_GSG9     : m_iModelName = MODEL_TERROR;   model = "terror";   break;
+            case MODEL_GIGN     : m_iModelName = MODEL_GUERILLA; model = "guerilla"; break;
+            case MODEL_SAS      : m_iModelName = MODEL_ARCTIC;   model = "arctic";   break;
+            
+            case MODEL_SPETSNAZ : if( UTIL_IsGame( "czero" ) )
+            {
+                m_iModelName = MODEL_MILITIA; model = "militia"; 
+                break;
+            }
+            default : if( !IsBot() /*|| !TheBotProfiles->GetCustomSkinModelname( m_iModelName )*/ )
+            {
+                m_iModelName = MODEL_LEET; model = "terror"; 
+                break;
+            }
+        }
+
+        char *infobuffer = g_engfuncs.pfnGetInfoKeyBuffer( edict() );
+        g_engfuncs.pfnSetClientKeyValue( entindex(), infobuffer, "model", model );
+    }
+    else if( m_iTeam == TERRORIST )
+    {
+        m_iTeam = CT;
+
+        switch( m_iModelName )
+        {
+            case MODEL_TERROR   : m_iModelName = MODEL_GSG9;  model = "gsg9";  break;
+            case MODEL_LEET     : m_iModelName = MODEL_URBAN; model = "urban"; break;
+            case MODEL_ARCTIC   : m_iModelName = MODEL_SAS;   model = "sas";   break;
+            case MODEL_GUERILLA : m_iModelName = MODEL_GIGN;  model = "gign";  break;
+
+            case MODEL_MILITIA  : if( UTIL_IsGame( "czero" ) )
+            {
+                m_iModelName = MODEL_SPETSNAZ; model = "spetsnaz"; 
+                break;
+            }
+            default : if( !IsBot() /*|| !TheBotProfiles->GetCustomSkinModelname( m_iModelName )*/ )
+            {
+                m_iModelName = MODEL_URBAN; model = "urban"; 
+                break;
+            }
+        }
+
+        char *infobuffer = g_engfuncs.pfnGetInfoKeyBuffer( edict() );
+        g_engfuncs.pfnSetClientKeyValue( entindex(), infobuffer, "model", model );
+    }
+
+    MESSAGE_BEGIN( MSG_ALL, gmsgTeamInfo );
+        WRITE_BYTE( entindex() );
+        WRITE_STRING( GetTeam( m_iTeam ) );
+    MESSAGE_END();
+
+    // TODO: Implement me.
+    // TheBots->OnEvent( EVENT_PLAYER_CHANGED_TEAM, this, NULL );
+
+    UpdateLocation( true );
+
+    if( m_iTeam )
+    {
+        SetScoreboardAttributes( this );
+    }
+
+    name = "<unconnected>";
+
+    if( pev->netname )
+    {
+        name = STRING( pev->netname );
+
+        if( !*name )
+        {
+            name = "<unconnected>";
+        }
+    }
+
+    if( m_iTeam == TERRORIST )
+        UTIL_ClientPrintAll( HUD_PRINTNOTIFY, "#Game_join_terrorist_auto", name );
+    else
+        UTIL_ClientPrintAll( HUD_PRINTNOTIFY, "#Game_join_ct_auto", name );
+
+    if( m_bHasDefuser )
+    {
+        m_bHasDefuser = false;
+        pev->body = 0;
+
+        MESSAGE_BEGIN( MSG_ONE, gmsgStatusIcon, NULL, edict() );
+            WRITE_BYTE( 0 );
+            WRITE_STRING( "defuser" );
+        MESSAGE_END();
+
+        MESSAGE_BEGIN( MSG_ONE, gmsgItemStatus, NULL, edict() );
+            WRITE_BYTE( m_bHasNightVision | 2 * m_bHasDefuser );
+        MESSAGE_END();
+
+        SetProgressBarTime( 0 );
+
+        for( int i = 0; i < MAX_ITEM_TYPES; i++ )
+        {
+            m_pActiveItem = m_rgpPlayerItems[i];
+
+            if( m_pActiveItem != NULL && FClassnameIs( m_pActiveItem->pev, "item_thighpack" ) )
+            {
+                m_pActiveItem->Drop();
+                m_rgpPlayerItems[i] = NULL;
+            }
+        }
+    }
+
+    UTIL_LogPrintf( "\"%s<%i><%s><%s>\" joined team \"%s\" (auto)\n",
+        STRING( pev->netname ), GETPLAYERUSERID( edict() ), GETPLAYERAUTHID( edict() ), GetTeam( oldTeam ), GetTeam( m_iTeam ) );
+
+    if( IsBot() )
+    {
+        // TODO: Implement and check me.
+        // if( m_profile && ( m_iTeam == CT && m_profile->IsValidForTeam( 1 ) == 0 ) || ( m_iTeam == TERRORIST && m_profile->IsValidForTeam( 0 ) == 0 ) )
+        // {
+        //   SERVER_COMMAND( UTIL_VarArgs("kick \"%s\"\n", STRING( pev->netname ) ) );
+        // }
+    }
+}
+
+// CS
 void CBasePlayer::SyncRoundTimer( void )
 {
     int timeRemaining = 0;
@@ -2355,7 +2489,7 @@ void CBasePlayer::Duck( )
 //
 int  CBasePlayer::Classify ( void )
 {
-	return CLASS_PLAYER;
+	return MODEL_PLAYER;
 }
 
 
@@ -2436,7 +2570,7 @@ void CBasePlayer::UpdateStatusBar()
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance( tr.pHit );
 
-			if (pEntity->Classify() == CLASS_PLAYER )
+			if (pEntity->Classify() == MODEL_PLAYER )
 			{
 				newSBarState[ SBAR_ID_TARGETNAME ] = ENTINDEX( pEntity->edict() );
 				strcpy( sbuf1, "1 %p1\n2 Health: %i2%%\n3 Armor: %i3%%" );
@@ -5303,7 +5437,7 @@ class CDeadHEV : public CBaseMonster
 {
 public:
 	void Spawn( void );
-	int	Classify ( void ) { return	CLASS_HUMAN_MILITARY; }
+	int	Classify ( void ) { return	MODEL_HUMAN_MILITARY; }
 
 	void KeyValue( KeyValueData *pkvd );
 
