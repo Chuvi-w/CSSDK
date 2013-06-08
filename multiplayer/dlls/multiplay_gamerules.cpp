@@ -76,6 +76,19 @@ public:
 };
 static CMultiplayGameMgrHelper g_GameMgrHelper;
 
+// CS
+char *GetTeam( int teamNo )
+{
+    switch( teamNo )
+    {
+        case TERRORIST : return "TERRORIST";
+        case CT        : return "CT";
+        case SPECTATOR : return "SPECTATOR";
+    }
+
+    return "";
+}
+
 //*********************************************************
 // Rules for the half-life multiplayer game.
 //*********************************************************
