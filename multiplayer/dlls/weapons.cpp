@@ -63,6 +63,7 @@ MULTIDAMAGE gMultiDamage;
 #define TRACER_FREQ		4			// Tracers fire every fourth bullet
 
 
+
 //=========================================================
 // MaxAmmoCarry - pass in a name and this function will tell
 // you the maximum amount of that type of ammunition that a 
@@ -779,6 +780,70 @@ void CBasePlayerItem::AttachToPlayer ( CBasePlayer *pPlayer )
 	pev->owner = pPlayer->edict();
 	pev->nextthink = gpGlobals->time + .1;
 	SetTouch( NULL );
+}
+
+// CS
+void CBasePlayerWeapon::FireRemaining( int &shotsFired, float &shootTime, BOOL bIsGlock )
+{
+    m_iClip -= 1;
+
+    if( m_iClip >= 0 )
+    {
+        Vector  vecDir;
+        int     flags;
+
+        UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
+
+        #ifdef CLIENT_WEAPONS
+            flags = FEV_NOTHOST;
+        #else
+            flags = 0;
+        #endif
+
+        if( bIsGlock )
+        {
+            vecDir = m_pPlayer->FireBullets3
+            ( 
+                m_pPlayer->GetGunPosition(), gpGlobals->v_forward, 
+                0.05, 8192, 1, BULLET_PLAYER_9MM, 18, 0.9, m_pPlayer->pev, TRUE, m_pPlayer->random_seed 
+            );
+            
+            m_pPlayer->ammo_9mm--;
+
+            PLAYBACK_EVENT_FULL
+            ( 
+                FEV_NOTHOST, m_pPlayer->edict(), m_usFireGlock18, 0, 
+                ( float* )&g_vecZero, ( float* )&g_vecZero, vecDir.x, vecDir.y,
+                ( int )( m_pPlayer->pev->punchangle.x * 10000), ( int )( m_pPlayer->pev->punchangle.y * 10000 ),
+                m_iClip != 0, FALSE 
+            );
+        }
+        else
+        {
+            vecDir = m_pPlayer->FireBullets3
+            ( 
+                m_pPlayer->GetGunPosition(), gpGlobals->v_forward, 
+                m_fBurstSpread, 8192, 2, BULLET_PLAYER_556MM, 30, 0.96, m_pPlayer->pev, TRUE, m_pPlayer->random_seed
+            );
+
+            m_pPlayer->ammo_556nato--;
+
+            PLAYBACK_EVENT_FULL
+            ( 
+                flags, m_pPlayer->edict(), m_usFireFamas, 0, 
+                ( float* )&g_vecZero, ( float* )&g_vecZero, vecDir.x, vecDir.y,
+                ( int )( m_pPlayer->pev->punchangle.x * 10000000 ), ( int )( m_pPlayer->pev->punchangle.y * 10000000 ), 
+                m_iClip != 0, FALSE
+            );
+        }
+    }
+    else
+    {
+        m_iClip = 0;
+
+        shotsFired = 3;
+        shootTime= 0;
+    }
 }
 
 // CALLED THROUGH the newly-touched weapon's instance. The existing player weapon is pOriginal
