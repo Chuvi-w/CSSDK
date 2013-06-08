@@ -260,6 +260,9 @@ public:
 // CHalfLifeMultiplay - rules for the basic half life multiplayer
 // competition
 //=========================================================
+
+#define MAX_VIP_QUEUES 5
+
 class CHalfLifeMultiplay : public CGameRules
 {
     public:

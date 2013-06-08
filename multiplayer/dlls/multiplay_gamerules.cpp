@@ -2067,6 +2067,103 @@ BOOL CHalfLifeMultiplay::FPlayerCanRespawn( CBasePlayer *pPlayer )
 }
 
 // CS
+void CHalfLifeMultiplay::PickNextVIP()
+{
+    if( !IsVIPQueueEmpty() )
+    {
+        if( m_pVIP != NULL )
+        {
+            ResetCurrentVIP();
+        }
+
+        for( int i = 0; i < MAX_VIP_QUEUES; i++)
+        {
+            m_pVIP = VIPQueue[i];
+            m_pVIP->MakeVIP();
+
+            VIPQueue[i] = NULL;
+
+            StackVIPQueue();
+            m_iConsecutiveVIP = 0;
+        }
+    }
+    else if( m_iConsecutiveVIP > 2 )
+    {
+        if( ++m_iLastPick > m_iNumCT )
+        {
+            m_iLastPick = 1;
+        }
+
+        int count = 1;
+
+        CBasePlayer *pLastPlayer = NULL;
+        CBaseEntity *pEntity     = NULL;
+
+        while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+        {
+            if( FNullEnt(pEntity->edict() ) )
+                break;
+
+            if( pEntity->IsDormant() )
+                continue;
+
+            CBasePlayer *pPlayer = GetClassPtr( ( CBasePlayer* )pEntity->pev );
+
+            if( pPlayer->m_iTeam == CT )
+            {
+                if( count == m_iLastPick )
+                {
+                    if( pPlayer == m_pVIP && pLastPlayer )
+                    {
+                        pPlayer = pLastPlayer;
+                    }
+
+                    if( m_pVIP != NULL )
+                    {
+                        ResetCurrentVIP();
+                    }
+
+                    pPlayer->MakeVIP();
+                    m_iConsecutiveVIP = 0;
+
+                    break;
+                }
+
+                count++;
+            }
+
+            if( pPlayer->m_iTeam != SPECTATOR )
+            {
+                pLastPlayer = pPlayer;
+            }
+        }
+    }
+    else if( !m_pVIP )
+    {
+        CBaseEntity *pEntity = NULL;
+
+        while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+        {
+            if( FNullEnt( pEntity->edict() ) )
+                break;
+
+            if( pEntity->IsDormant() )
+                continue;
+
+            CBasePlayer *pPlayer = GetClassPtr( ( CBasePlayer* )pEntity->pev );
+
+            if( pPlayer->m_iTeam = CT )
+            {
+                pPlayer->MakeVIP();
+                m_iConsecutiveVIP = 0;
+            }
+
+            break;
+        }
+    }
+}
+
+// CS
 void CHalfLifeMultiplay::RestartRound()
 {
     // TODO: Implement me.
