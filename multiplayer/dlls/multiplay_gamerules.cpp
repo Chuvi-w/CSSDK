@@ -2153,6 +2153,56 @@ bool CHalfLifeMultiplay::IsVIPQueueEmpty( void )
 }
 
 // CS
+void CHalfLifeMultiplay::ResetCurrentVIP( void )
+{
+    char *model;
+
+    bool isCzero = UTIL_IsGame( "czero" );
+
+    switch( RANDOM_LONG( 0, 5 - !isCzero ) )
+    {
+        case 1 :
+        {
+            model = "gsg9";
+            m_pVIP->m_iModelName = MODEL_GSG9;
+            break;
+        }
+        case 2 :
+        {
+            model = "sas";
+            m_pVIP->m_iModelName = MODEL_SAS;
+            break;
+        }
+        case 3 :
+        {
+            model = "gign";
+            m_pVIP->m_iModelName = MODEL_GIGN;
+            break;
+        }
+        case 4 :
+        {
+            if( isCzero )
+            {
+                model = "spetsnaz";
+                m_pVIP->m_iModelName = MODEL_SPETSNAZ;
+                break;
+            }
+        }
+        default:
+        {
+            model = "urban";
+            m_pVIP->m_iModelName = MODEL_URBAN;
+            break;
+        }
+    }
+
+    g_engfuncs.pfnSetClientKeyValue( m_pVIP->entindex(), g_engfuncs.pfnGetInfoKeyBuffer( m_pVIP->edict() ), "model", model );
+
+    m_pVIP->m_bIsVIP     = false;
+    m_pVIP->m_bNotKilled = false;
+}
+
+// CS
 void CHalfLifeMultiplay::StackVIPQueue( void )
 {
     for( int i = MAX_VIP_QUEUES - 2; i >= 0; i-- )
