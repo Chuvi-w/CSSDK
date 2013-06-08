@@ -570,7 +570,7 @@ void CGrenade::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 		// TODO: Adds support for bots.
 		// TheBots->OnEvent( EVENT_BOMB_DEFUSING, pActivator, NULL );
 
-		if( ( ( CHalfLifeMultiplay* )g_pGameRules )->IsCareer() )
+		if( g_pGameRules->IsCareer() )
 		{
 			TheCareerTasks->HandleEvent( EVENT_BOMB_DEFUSING, NULL, NULL );
 		}

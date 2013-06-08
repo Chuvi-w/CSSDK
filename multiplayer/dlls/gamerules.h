@@ -586,6 +586,6 @@ protected:
 	/* last cacheline: 4 bytes */
 };
 
-extern DLL_GLOBAL CGameRules*	g_pGameRules;
+extern DLL_GLOBAL CHalfLifeMultiplay* g_pGameRules;
 
 extern void Broadcast( const char *sentence );

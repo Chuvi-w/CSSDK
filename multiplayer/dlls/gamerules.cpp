@@ -28,7 +28,7 @@
 
 extern edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer );
 
-DLL_GLOBAL CGameRules*	g_pGameRules = NULL;
+DLL_GLOBAL CHalfLifeMultiplay*	g_pGameRules = NULL;
 extern DLL_GLOBAL BOOL	g_fGameOver;
 extern int gmsgDeathMsg;	// client dll messages
 extern int gmsgMOTD;

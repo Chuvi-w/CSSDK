@@ -496,7 +496,7 @@ void CWorld :: Precache( void )
 		delete g_pGameRules;
 	}
 
-	g_pGameRules = InstallGameRules( );
+	g_pGameRules = ( CHalfLifeMultiplay* )InstallGameRules();
 
 	//!!!UNDONE why is there so much Spawn code in the Precache function? I'll just keep it here 
 
