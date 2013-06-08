@@ -1912,6 +1912,20 @@ void CHalfLifeMultiplay::GiveC4( void )
 }
 
 // CS
+BOOL CHalfLifeMultiplay::IsThereABomber( void )
+{
+    CBasePlayer *pPlayer = NULL;
+
+    while( ( pPlayer = ( CBasePlayer* )UTIL_FindEntityByClassname( pPlayer, "player" ) ) != NULL )
+    {
+        if( pPlayer->m_iTeam != CT && pPlayer->IsBombGuy() )
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+// CS
 BOOL CHalfLifeMultiplay::FPlayerCanRespawn( CBasePlayer *pPlayer )
 {
     if( pPlayer->m_iNumSpawns <= 0 )
