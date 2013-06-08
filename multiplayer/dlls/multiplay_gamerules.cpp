@@ -2137,6 +2137,22 @@ BOOL CHalfLifeMultiplay::IsThereABomb( void )
 }
 
 // CS
+bool CHalfLifeMultiplay::IsVIPQueueEmpty( void )
+{
+    for( int i = 0; i < MAX_VIP_QUEUES; i++ )
+    {
+        if( VIPQueue[ i ] && VIPQueue[ i ]->m_iTeam != CT )
+        {
+            VIPQueue[ i ] = NULL;
+        }
+    }
+
+    StackVIPQueue();
+
+    return !VIPQueue[ 0 ] && !VIPQueue[ 1 ] && !VIPQueue[ 2 ] && !VIPQueue[ 3 ] && !VIPQueue[ 4 ];
+}
+
+// CS
 BOOL CHalfLifeMultiplay::FPlayerCanRespawn( CBasePlayer *pPlayer )
 {
     if( pPlayer->m_iNumSpawns <= 0 )
