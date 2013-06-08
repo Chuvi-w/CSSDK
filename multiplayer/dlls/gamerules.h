@@ -594,3 +594,4 @@ class CHalfLifeMultiplay : public CGameRules
 extern DLL_GLOBAL CHalfLifeMultiplay* g_pGameRules;
 
 extern void Broadcast( const char *sentence );
+extern char *GetTeam( int teamNo );
