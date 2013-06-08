@@ -1926,6 +1926,27 @@ BOOL CHalfLifeMultiplay::IsThereABomber( void )
 }
 
 // CS
+BOOL CHalfLifeMultiplay::IsThereABomb( void )
+{
+    CGrenade *pWeaponC4 = NULL;
+    bool bombFound = false;
+
+    while( ( pWeaponC4 = ( CGrenade* )UTIL_FindEntityByClassname( pWeaponC4, "grenade" ) ) != NULL )
+    {
+        if( pWeaponC4->m_bIsC4 )
+        {
+            bombFound = true;
+            break;
+        }
+    }
+
+    if( !bombFound )
+        return UTIL_FindEntityByClassname( NULL, "weapon_c4" ) != NULL;
+
+    return bombFound;
+}
+
+// CS
 BOOL CHalfLifeMultiplay::FPlayerCanRespawn( CBasePlayer *pPlayer )
 {
     if( pPlayer->m_iNumSpawns <= 0 )
