@@ -380,6 +380,12 @@ bool CBasePlayer::HintMessage( const char *pMessage, BOOL bDisplayIfPlayerDead, 
 }
 
 // CS
+BOOL CBasePlayer::IsBombGuy( void )
+{
+    return g_pGameRules->IsMultiplayer() && m_bHasC4;
+}
+
+// CS
 void CBasePlayer::MakeVIP( void )
 {
     pev->body = 0;
