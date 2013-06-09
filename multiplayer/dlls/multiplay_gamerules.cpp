@@ -2746,6 +2746,12 @@ void CHalfLifeMultiplay::PickNextVIP()
 }
 
 // CS
+void CHalfLifeMultiplay::QueueCareerRoundEndMenu( float tmDelay, int iWinStatus )
+{
+    // TODO: Fill me later.
+};
+
+// CS
 void CHalfLifeMultiplay::RestartRound()
 {
     // TODO: Implement me.
