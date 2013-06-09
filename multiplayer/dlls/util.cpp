@@ -1679,6 +1679,44 @@ void UTIL_ShowMessageArgs( const char *pString, CBaseEntity *pPlayer, CUtlVector
     }
 }
 
+// CS
+char UTIL_TextureHit( TraceResult *ptr, Vector vecSrc, Vector vecEnd )
+{
+    CBaseEntity *pEntity = CBaseEntity::Instance( ptr->pHit );
+
+    if( pEntity && pEntity->Classify() != CLASS_NONE && pEntity->Classify() != CLASS_MACHINE )
+    {
+        return CHAR_TEX_FLESH;
+    }
+
+    vec3_t start; vecSrc.CopyToArray( start );
+    vec3_t end;   vecEnd.CopyToArray( end );
+
+    const char *pTextureName = TRACE_TEXTURE( pEntity ? ENT( pEntity->pev ): ENT( 0 ), start, end );
+
+    if( pTextureName )
+    {
+        if( *pTextureName == '-' || *pTextureName == '+' )
+        {
+            pTextureName += 2;
+        }
+
+        if( *pTextureName == '{' || *pTextureName == '!' || *pTextureName == '~' || *pTextureName == ' ' )
+        {
+            pTextureName++;
+        }
+
+        char buffer[ 256 ];
+
+        strcpy( buffer, pTextureName );
+        buffer[ CBTEXTURENAMEMAX - 1 ] = 0;
+
+        return TEXTURETYPE_Find( buffer );
+    }
+
+    return 0;
+}
+
 
 // --------------------------------------------------------------
 //

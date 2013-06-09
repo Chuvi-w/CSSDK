@@ -346,7 +346,7 @@ extern void UTIL_StripToken( const char *pKey, char *pDest );// for redundant ke
 // CS
 extern bool UTIL_IsGame( const char *gameName );
 extern void UTIL_ShowMessageArgs( const char *pString, CBaseEntity *pPlayer, CUtlVector< char* > *args, bool isHint );
-
+extern char UTIL_TextureHit( TraceResult *ptr, Vector vecSrc, Vector vecEnd );
 
 // Misc functions
 extern void SetMovedir(entvars_t* pev);
