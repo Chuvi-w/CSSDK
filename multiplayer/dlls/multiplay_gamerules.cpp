@@ -1951,6 +1951,409 @@ void CHalfLifeMultiplay::CheckMapConditions()
 }
 
 // CS
+void CHalfLifeMultiplay::CheckWinConditions( void )
+{
+    if( m_bFirstConnected && m_iRoundWinStatus )
+    {
+        return;
+    }
+
+    m_iNumSpawnableCT        = 0;
+    m_iNumSpawnableTerrorist = 0;
+    m_iNumCT                 = 0;
+    m_iNumTerrorist          = 0;
+    m_iHaveEscaped           = 0;
+
+    CBaseEntity *pEntity = NULL;
+
+    int numAliveTerrorist = 0;
+    int numAliveCT        = 0;
+    int numDeadCT         = 0;
+    int numDeadTerrorist  = 0;
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+    {
+        if( FNullEnt( pEntity->edict() ) )
+        {
+            break;
+        }
+
+        CBasePlayer *pPlayer = GetClassPtr( ( CBasePlayer* )pEntity->pev );
+
+        if( pEntity->IsDormant() )
+        {
+            continue;
+        }
+
+        switch( pPlayer->m_iTeam )
+        {
+            case CT:
+            {
+                m_iNumCT++;
+
+                if( pPlayer->m_iMenu != Menu_ChooseAppearance )
+                    m_iNumSpawnableCT++;
+ 
+
+                if( pPlayer->pev->deadflag != DEAD_NO )
+                    numDeadCT++;
+                else
+                    numAliveCT++;
+
+                break;
+            }
+
+            case TERRORIST:
+            {
+                m_iNumTerrorist++;
+
+                if( pPlayer->m_iMenu != Menu_ChooseAppearance )
+                    m_iNumSpawnableTerrorist++;
+
+                if( pPlayer->pev->deadflag != DEAD_NO )
+                    numDeadTerrorist++;
+                else
+                    numAliveTerrorist++;
+
+                if( pPlayer->m_bEscaped )
+                    m_iHaveEscaped++;
+
+                break;
+            }
+        }
+    }
+
+    bool requiredPlayers = false;
+
+    if( !m_iNumSpawnableTerrorist || !m_iNumSpawnableCT )
+    {
+        UTIL_ClientPrintAll( HUD_PRINTCONSOLE, "#Game_scoring" );
+
+        requiredPlayers = true;
+        m_bFirstConnected = false;
+    }
+
+    if( !m_bFirstConnected && m_iNumSpawnableTerrorist != 0 && m_iNumSpawnableCT != 0 )
+    {
+        CBasePlayer *pPlayer = NULL;
+
+        if( !IsCareer() || ( ( pPlayer = ( CBasePlayer* )UTIL_PlayerByIndex( gpGlobals->maxClients ) ) != NULL && pPlayer->IsBot() ) )
+        {
+            UTIL_LogPrintf( "World triggered \"Game_Commencing\"\n" );
+
+            m_bFreezePeriod = FALSE;
+            m_bCompleteReset = true;
+
+            EndRoundMessage( "#Game_Commencing", Event_Round_Draw );
+
+            m_iRoundWinStatus   = 3;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + IsCareer() ? 0.0 : 3.0;
+            m_bFirstConnected   = true;
+
+            // TODO: Implement me.
+            // TheBots->OnEvent( EVENT_GAME_COMMENCE, NULL, NULL );
+        }
+    }
+    else if( m_iMapHasVIPSafetyZone == 1 && m_pVIP )
+    {
+        if( m_pVIP->m_bEscaped )
+        {
+            Broadcast( "ctwin" );
+            m_iAccountCT += 3500;
+
+            if( !requiredPlayers )
+            {
+                m_iNumCTWins++;
+                UpdateTeamScores();
+            }
+
+            MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
+                WRITE_BYTE( 9 );
+                WRITE_BYTE( DRC_CMD_EVENT );
+                WRITE_SHORT( m_pVIP->entindex() );
+                WRITE_SHORT( 0 );
+                WRITE_LONG( DRC_FLAG_FINAL | DRC_FLAG_PRIO_MASK );
+            MESSAGE_END();
+
+            EndRoundMessage( "#VIP_Escaped", Event_VIP_Escaped );
+
+            // TODO: Implement me.
+            // TheBots->OnEvent( EVENT_VIP_ESCAPED, NULL, NULL );
+            
+            m_iRoundWinStatus   = WinStatus_CT;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + 5.0;
+
+            if( IsCareer() )
+            {
+                QueueCareerRoundEndMenu( 5.0, WinStatus_CT );
+            }
+        }
+        else if( m_pVIP->pev->deadflag != DEAD_NO )
+        {
+            Broadcast( "terwin" );
+            m_iAccountTerrorist += 3250;
+
+            if( !requiredPlayers )
+            {
+                m_iNumTerroristWins++;
+                UpdateTeamScores();
+            }
+
+            EndRoundMessage( "#VIP_Assassinated", Event_VIP_Assassinated );
+
+            // TODO: Implement me.
+            // TheBots->OnEvent( EVENT_VIP_ASSASSINATED, NULL, NULL );
+
+            m_iRoundWinStatus   = WinStatus_Terrorist;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + 5.0;
+
+            if( IsCareer() )
+            {
+                QueueCareerRoundEndMenu( 5.0, WinStatus_Terrorist );
+            }
+        }
+    }
+    else if( m_bMapHasEscapeZone )
+    {
+        float escapeRatio = ( float )m_iHaveEscaped / ( float )m_iNumEscapers;
+
+        if( escapeRatio >= m_flRequiredEscapeRatio )
+        {
+            Broadcast( "terwin" );
+            m_iAccountTerrorist += 3150;
+
+            if( !requiredPlayers )
+            {
+                m_iNumTerroristWins++;
+                UpdateTeamScores();
+            }
+
+            EndRoundMessage( "#Terrorists_Escaped", Event_Terrorists_Escaped );
+
+            m_iRoundWinStatus   = WinStatus_Terrorist;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + 5.0;
+
+            if( IsCareer() )
+            {
+                QueueCareerRoundEndMenu( 5.0, WinStatus_Terrorist );
+            }
+        }
+        else if( !numAliveTerrorist && m_flRequiredEscapeRatio > escapeRatio )
+        {
+            Broadcast( "ctwin" );
+            m_iAccountCT += ( 1 - escapeRatio ) * 3500;
+
+            if( !requiredPlayers )
+            {
+                m_iNumCTWins++;
+                UpdateTeamScores();
+            }
+
+            EndRoundMessage( "#CTs_PreventEscape", Event_CTs_PreventEscape );
+
+            m_iRoundWinStatus   = WinStatus_CT;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + 5.0;
+
+            if( IsCareer() )
+            {
+                QueueCareerRoundEndMenu( 5.0, WinStatus_CT );
+            }
+        }
+        else if( !numAliveTerrorist && numDeadTerrorist && m_iNumSpawnableCT > 0 )
+        {
+            Broadcast( "ctwin" );
+            m_iAccountCT += ( 1 - escapeRatio ) * 3250;
+
+            if( !requiredPlayers )
+            {
+                m_iNumCTWins++;
+                UpdateTeamScores();
+            }
+
+            EndRoundMessage( "#Escaping_Terrorists_Neutralized", Event_Escaping_Terrorists_Neutralized );
+
+            m_iRoundWinStatus   = WinStatus_CT;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + 5.0;
+
+            if( IsCareer() )
+            {
+                QueueCareerRoundEndMenu( 5.0, WinStatus_CT );
+            }
+        }
+    }
+    else if( m_bMapHasBombTarget )
+    {
+        if( m_bTargetBombed  )
+        {
+            Broadcast( "terwin" );
+            m_iAccountTerrorist += 3500;
+
+            if( !requiredPlayers )
+            {
+                m_iNumTerroristWins++;
+                UpdateTeamScores();
+            }
+
+            EndRoundMessage( "#Target_Bombed", Event_Target_Bombed );
+
+            m_iRoundWinStatus   = WinStatus_Terrorist;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + 5.0;
+
+            if( IsCareer() )
+            {
+                QueueCareerRoundEndMenu( 5.0, WinStatus_Terrorist );
+            }
+        }
+        else if( m_bBombDefused )
+        {
+            Broadcast( "ctwin" );
+
+            m_iAccountCT += 3250;
+            m_iAccountTerrorist += 800;
+
+            if( !requiredPlayers )
+            {
+                m_iNumCTWins++;
+                UpdateTeamScores();
+            }
+
+            EndRoundMessage( "#Bomb_Defused", Event_Bomb_Defused );
+
+            m_iRoundWinStatus   = WinStatus_CT;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + 5.0;
+
+            if( IsCareer() )
+            {
+                QueueCareerRoundEndMenu( 5.0, WinStatus_CT );
+            }
+        }
+    }
+    else if( m_iNumCT > 0 && m_iNumSpawnableCT > 0 && m_iNumTerrorist > 0 && m_iNumSpawnableTerrorist > 0 )
+    {
+        if( !numAliveTerrorist && numDeadTerrorist )
+        {
+            CGrenade *pGrenade = NULL;
+            bool explodedBomb = false;
+
+            while( ( pGrenade = ( CGrenade* )UTIL_FindEntityByClassname( pGrenade, "grenade" ) ) )
+            {
+                if( pGrenade->m_bIsC4 == true && !pGrenade->m_bJustBlew)
+                {
+                    explodedBomb = true;
+                }
+            }
+
+            if( !explodedBomb )
+            {
+                Broadcast( "ctwin" );
+                m_iAccountCT += m_bMapHasBombTarget ? 3250 : 3000;
+
+                if( !requiredPlayers )
+                {
+                    m_iNumCTWins++;
+                    UpdateTeamScores();
+                }
+
+                EndRoundMessage( "#CTs_Win", Event_CTs_Win );
+
+                m_iRoundWinStatus   = WinStatus_CT;
+                m_bRoundTerminating = true;
+                m_fTeamCount        = gpGlobals->time + 5.0;
+
+                if( IsCareer() )
+                {
+                    QueueCareerRoundEndMenu( 5.0, WinStatus_CT );
+                }
+            }
+        }
+        else if( !numAliveCT && numDeadCT )
+        {
+            Broadcast( "terwin" );
+            m_iAccountTerrorist += m_bMapHasBombTarget ? 3250 : 3000;
+
+            if( !requiredPlayers )
+            {
+                m_iNumTerroristWins++;
+                UpdateTeamScores();
+            }
+
+            EndRoundMessage( "#Terrorists_Win", Event_Terrorists_Win );
+
+            m_iRoundWinStatus   = WinStatus_Terrorist;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + 5.0;
+
+            if( IsCareer() )
+            {
+                QueueCareerRoundEndMenu( 5.0, WinStatus_Terrorist );
+            }
+        }
+    }
+    else if( !numAliveCT && !numAliveTerrorist )
+    {
+        EndRoundMessage( "#Round_Draw", Event_Round_Draw );
+        Broadcast( "rounddraw" );
+
+        m_iRoundWinStatus   = WinStatus_Draw;
+        m_bRoundTerminating = true;
+        m_fTeamCount        = gpGlobals->time + 5.0;
+    }
+    else
+    {
+        int  hostagesCount    = 0;
+        bool hasAliveHostages = false;
+        CBaseEntity *pHostage  = NULL;
+
+        while( ( pHostage = UTIL_FindEntityByClassname( pHostage, "hostage_entity" ) ) != NULL )
+        {
+            hostagesCount++;
+
+            if( pHostage->pev->takedamage == DAMAGE_YES )
+            {
+                hasAliveHostages = true;
+            }
+        }
+
+        if( !hasAliveHostages && hostagesCount > 0 && m_iHostagesRescued >= ( hostagesCount * 0.5 ) )
+        {
+            Broadcast( "ctwin" );
+            m_iAccountCT += 2500;
+
+            if( !requiredPlayers )
+            {
+                m_iNumCTWins++;
+                UpdateTeamScores();
+            }
+
+            EndRoundMessage( "#All_Hostages_Rescued", Event_All_Hostages_Rescued );
+
+            // TODO: Implement me.
+            // TheBots->OnEvent( EVENT_ALL_HOSTAGES_RESCUED, NULL, NULL );
+
+            m_iRoundWinStatus   = WinStatus_CT;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + 5.0;
+
+            if( IsCareer() )
+            {
+                QueueCareerRoundEndMenu( 5.0, WinStatus_CT );
+
+                // TODO: Implement me.
+                // TheCareerTasks->HandleEvent( EVENT_ALL_HOSTAGES_RESCUED, NULL, NULL );
+            }
+        }
+    }
+}
+
+// CS
 void CHalfLifeMultiplay::GiveC4( void )
 {
     int numCurrTerrorist  = m_iNumTerrorist;

@@ -283,6 +283,12 @@ enum EventMessage
     Event_Game_Commencing,
 };
 
+enum WinStatus
+{
+    WinStatus_CT = 1,
+    WinStatus_Terrorist,
+    WinStatus_Draw
+};
 
 class CHalfLifeMultiplay : public CGameRules
 {
