@@ -29,6 +29,7 @@
 #include "animation.h"
 #include "weapons.h"
 #include "func_break.h"
+#include "pm_materials.h"
 
 extern DLL_GLOBAL Vector		g_vecAttackDir;
 extern DLL_GLOBAL int			g_iSkillLevel;
@@ -1489,6 +1490,252 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 	}
 	ApplyMultiDamage(pev, pevAttacker);
 }
+
+// CS
+Vector CBaseEntity::FireBullets3( Vector vecSrc, Vector vecDirShooting, float flSpread, float flDistance, int iPenetration, int iBulletType, int iDamage, float flRangeModifier, entvars_t *pevAttacker, bool bPistol, int shared_rand )
+{
+    int   originalPenetration = iPenetration;
+    int   penetrationPower;
+    float penetrationDistance;
+
+    int   currentDamage = iDamage;
+    float currentDistance;
+
+    TraceResult tr;
+    TraceResult tr2;
+
+    Vector vecRight = gpGlobals->v_right;
+    Vector vecUp    = gpGlobals->v_up;
+
+    bool hitMetal = false;
+
+    switch( iBulletType )
+    {
+        case BULLET_PLAYER_9MM:
+        {
+            penetrationPower    = 21;
+            penetrationDistance = 800;
+            break;
+        }
+        case BULLET_PLAYER_45ACP:
+        {
+            penetrationPower    = 15;
+            penetrationDistance = 500;
+            break;
+        }
+        case BULLET_PLAYER_50AE:
+        {
+            penetrationPower    = 30;
+            penetrationDistance = 1000;
+            break;
+        }
+        case BULLET_PLAYER_762MM:
+        {
+            penetrationPower    = 39;
+            penetrationDistance = 5000;
+            break;
+        }
+        case BULLET_PLAYER_556MM:
+        {
+            penetrationPower    = 35;
+            penetrationDistance = 4000;
+            break;
+        }
+        case BULLET_PLAYER_338MAG:
+        {
+            penetrationPower    = 45;
+            penetrationDistance = 8000;
+            break;
+        }
+        case BULLET_PLAYER_57MM:
+        {
+            penetrationPower    = 30;
+            penetrationDistance = 2000;
+            break;
+        }
+        case BULLET_PLAYER_357SIG:
+        {
+            penetrationPower    = 25;
+            penetrationDistance = 800;
+            break;
+        }
+        default:
+        {
+            penetrationPower    = 0;
+            penetrationDistance = 0;
+            break;
+        }
+    }
+
+    if( !pevAttacker )
+    {
+        pevAttacker = pev;
+    }
+
+    gMultiDamage.type = DMG_BULLET | DMG_NEVERGIB;
+
+    float x, y, z;
+
+    if( IsPlayer() )
+    {
+        x = UTIL_SharedRandomFloat( shared_rand, -0.5, 0.5 ) + UTIL_SharedRandomFloat( shared_rand + 1, -0.5, 0.5 );
+        y = UTIL_SharedRandomFloat (shared_rand + 2, -0.5, 0.5 ) + UTIL_SharedRandomFloat (shared_rand + 3, -0.5, 0.5 );
+    }
+    else
+    {
+        do
+        {
+            x = RANDOM_FLOAT( -0.5, 0.5 ) + RANDOM_FLOAT( -0.5, 0.5 );
+            y = RANDOM_FLOAT( -0.5, 0.5 ) + RANDOM_FLOAT( -0.5, 0.5 );
+            z = x * x + y * y;
+        }
+        while( z > 1 );
+    }
+
+    Vector vecDir = vecDirShooting + x * flSpread * vecRight + y * flSpread * vecUp;
+    Vector vecEnd = vecSrc + vecDir * flDistance;
+
+    float damageModifier = 0.5;
+
+    while( iPenetration )
+    {
+        ClearMultiDamage();
+        UTIL_TraceLine( vecSrc, vecEnd, dont_ignore_monsters, ENT(pev), &tr );
+
+        if( tr.flFraction != 1.0 )
+        {
+            // TODO:Implement me.
+            // TheBots->OnEvent( EVENT_BULLET_IMPACT, this, NULL );
+        }
+
+        switch( UTIL_TextureHit( &tr, vecSrc, vecEnd ) )
+        {
+            case CHAR_TEX_METAL:
+            {
+                hitMetal = true;
+                penetrationPower *= 0.15;
+                damageModifier    = 0.2;
+                break;
+            }
+
+            case CHAR_TEX_CONCRETE:
+            {
+                penetrationPower *= 0.25;
+                break;
+            }
+
+            case CHAR_TEX_GRATE:
+            {
+                hitMetal = true;
+                penetrationPower *= 0.5;
+                damageModifier      = 0.4;
+                break;
+            }
+
+            case CHAR_TEX_VENT:
+            {
+                hitMetal = true;
+                penetrationPower *= 0.5;
+                damageModifier = 0.45;
+                break;
+            }
+
+            case CHAR_TEX_TILE:
+            {
+                penetrationPower *= 0.65;
+                damageModifier    = 0.3;
+                break;
+            }
+
+            case CHAR_TEX_COMPUTER:
+            {
+                hitMetal = true;
+                penetrationPower *= 0.4;
+                damageModifier    = 0.45;
+                break;
+            }
+
+            case CHAR_TEX_WOOD:
+            {
+                damageModifier = 0.6;
+                break;
+            }
+        }
+
+        if( tr.flFraction != 1.0 )
+        {
+            CBaseEntity* pEntity = CBaseEntity::Instance( tr.pHit );
+
+            iPenetration--;
+
+            currentDistance = tr.flFraction * flDistance;
+            currentDamage *= pow( flRangeModifier, currentDistance / 500 );
+
+            if( currentDistance > penetrationDistance )
+            {
+                iPenetration = 0;
+            }
+
+            if( tr.iHitgroup == HITGROUP_SHIELD )
+            {
+                if( tr.flFraction != 1.0 )
+                {
+                    if( RANDOM_LONG( 0, 1 ) )
+                        EMIT_SOUND( pEntity->edict(), CHAN_VOICE, "weapons/ric_metal-1.wav", VOL_NORM, ATTN_NORM );
+                    else
+                        EMIT_SOUND( pEntity->edict(), CHAN_VOICE, "weapons/ric_metal-2.wav", VOL_NORM, ATTN_NORM );
+
+                    UTIL_Sparks( tr.vecEndPos );
+
+                    pEntity->pev->punchangle.x = currentDamage * RANDOM_FLOAT( -0.15, 0.15 );
+                    pEntity->pev->punchangle.z = currentDamage * RANDOM_FLOAT( -0.15, 0.15 );
+
+                    if( pEntity->pev->punchangle.x < 4 )
+                        pEntity->pev->punchangle.x = 4;
+
+                    if( pEntity->pev->punchangle.z < -5 )
+                        pEntity->pev->punchangle.z = -5;
+
+                    else if( pEntity->pev->punchangle.z > 5 )
+                        pEntity->pev->punchangle.z = 5;
+                }
+
+                break;
+            }
+
+            float distanceModifier;
+
+            if( VARS( tr.pHit )->solid != SOLID_BSP || !iPenetration )
+            {
+                penetrationPower = 42.0;
+                distanceModifier = 0.75;
+                damageModifier   = 0.75;
+            }
+            else
+            {
+                distanceModifier = 0.75;
+            }
+
+            DecalGunshot( &tr, iBulletType, bPistol || RANDOM_LONG( 0, 3 ), pev, hitMetal );
+
+            vecSrc = tr.vecEndPos + ( vecDir * penetrationPower );
+            flDistance = ( flDistance - currentDistance ) * distanceModifier;
+            vecEnd = vecSrc + ( vecDir * flDistance );
+
+            pEntity->TraceAttack( pevAttacker, currentDamage, vecDir, &tr, DMG_BULLET | DMG_NEVERGIB);
+            currentDamage *= damageModifier;
+        }
+        else
+        {
+            iPenetration = 0;
+        }
+
+        ApplyMultiDamage( pev, pevAttacker );
+    }
+
+    return Vector( x * flSpread, y * flSpread, 0 );
+}
+
 
 void CBaseEntity :: TraceBleed( float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType )
 {
