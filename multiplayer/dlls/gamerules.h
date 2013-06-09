@@ -311,7 +311,7 @@ class CHalfLifeMultiplay : public CGameRules
         virtual BOOL IsCoOp( void );
 
         // Career
-        BOOL IsCareer( void ) { return FALSE; }
+        BOOL IsCareer( void ) { return IS_CAREER_MATCH(); }
         void QueueCareerRoundEndMenu( float tmDelay, int iWinStatus );
         void SetCareerMatchLimit(int minWins, int winDifference );
         bool IsInCareerRound( void );
