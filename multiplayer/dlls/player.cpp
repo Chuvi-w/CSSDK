@@ -990,7 +990,7 @@ void CBasePlayer::SwitchTeam( void )
                 m_iModelName = MODEL_MILITIA; model = "militia"; 
                 break;
             }
-            default : if( !IsBot() /*|| !TheBotProfiles->GetCustomSkinModelname( m_iModelName )*/ )
+            default : if( !IsBot() /*|| !( model = TheBotProfiles->GetCustomSkinModelname( m_iModelName ) )*/ )
             {
                 m_iModelName = MODEL_LEET; model = "terror"; 
                 break;
@@ -1016,7 +1016,7 @@ void CBasePlayer::SwitchTeam( void )
                 m_iModelName = MODEL_SPETSNAZ; model = "spetsnaz"; 
                 break;
             }
-            default : if( !IsBot() /*|| !TheBotProfiles->GetCustomSkinModelname( m_iModelName )*/ )
+            default : if( !IsBot() /*|| !( model = TheBotProfiles->GetCustomSkinModelname( m_iModelName ) )*/ )
             {
                 m_iModelName = MODEL_URBAN; model = "urban"; 
                 break;
@@ -1070,7 +1070,7 @@ void CBasePlayer::SwitchTeam( void )
         MESSAGE_END();
 
         MESSAGE_BEGIN( MSG_ONE, gmsgItemStatus, NULL, edict() );
-            WRITE_BYTE( m_bHasNightVision | 2 * m_bHasDefuser );
+            WRITE_BYTE( ( int )m_bHasNightVision | 2 * m_bHasDefuser );
         MESSAGE_END();
 
         SetProgressBarTime( 0 );
