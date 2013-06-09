@@ -817,6 +817,67 @@ void CBasePlayer::SetNewPlayerModel( const char *modelName )
     m_modelIndexPlayer = pev->modelindex;
 }
 
+// CS 
+void CBasePlayer::SetPlayerModel( BOOL HasC4 )
+{
+    char *model = NULL;
+
+    if( m_iTeam == CT )
+    {
+        switch( m_iModelName )
+        {
+            case MODEL_URBAN    : model = "urban"; break; 
+            case MODEL_GSG9     : model = "gsg9" ; break;
+            case MODEL_SAS      : model = "sas"  ; break;
+            case MODEL_GIGN     : model = "gign" ; break;
+            case MODEL_VIP      : model = "vip"  ; break;
+            
+            case MODEL_SPETSNAZ : if( UTIL_IsGame( "czero" ) )
+            {
+                model = "vip"; 
+                break;
+            }
+            default : if( !IsBot() /*|| !( model = TheBotProfiles->GetCustomSkinModelname( m_iModelName ) )*/ )
+            {
+                model = "urban"; 
+                break; 
+            }
+        }
+    }
+    else if( m_iTeam == TERRORIST )
+    {
+        switch( m_iModelName )
+        {
+            case MODEL_TERROR   : model = "terror"  ; break;
+            case MODEL_LEET     : model = "leet"    ; break;
+            case MODEL_ARCTIC   : model = "arctic"  ; break;
+            case MODEL_GUERILLA : model = "guerilla"; break;
+
+            case MODEL_MILITIA : if( UTIL_IsGame( "czero" ) )
+            {
+                model = "militia"; 
+                break;
+            }
+            default : if( !IsBot() /*|| !( model = TheBotProfiles->GetCustomSkinModelname( m_iModelName ) )*/ )
+            {
+                model = "terror"; 
+                break; 
+            }
+        }
+    }
+    else
+    {
+        model = "urban";
+    }
+
+    char *infobuffer = g_engfuncs.pfnGetInfoKeyBuffer( edict() );
+
+    if( strcmp( g_engfuncs.pfnInfoKeyValue( infobuffer, "model" ), model ) )
+    {
+        g_engfuncs.pfnSetClientKeyValue( entindex(), infobuffer, "model", model );
+    }
+}
+
 // CS
 void CBasePlayer::SetPrefsFromUserinfo( char *infobuffer )
 {
