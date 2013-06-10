@@ -1082,12 +1082,12 @@ float CBasePlayerWeapon::GetNextAttackDelay( float delay )
         m_flPrevPrimaryAttack = delay;
     }
 
-    float nextFireTime = gpGlobals->time - m_flLastFireTime;
+    float elapsedFireTime = gpGlobals->time - m_flLastFireTime;
     float timeOffset = 0;
 
-    if( nextFireTime > 0 )
+    if( elapsedFireTime > 0 )
     {
-        timeOffset = nextFireTime - m_flPrevPrimaryAttack;
+        timeOffset = elapsedFireTime - m_flPrevPrimaryAttack;
     }
 
     float nextDelay = delay - timeOffset;
