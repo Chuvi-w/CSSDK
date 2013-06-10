@@ -1074,6 +1074,31 @@ BOOL CBasePlayerWeapon::DefaultReload( int iClipSize, int iAnim, float fDelay )
 }
 
 // CS
+float CBasePlayerWeapon::GetNextAttackDelay( float delay )
+{
+    if( m_flLastFireTime == 0.0 || m_flNextPrimaryAttack == -1.0 )
+    {
+        m_flLastFireTime = gpGlobals->time;
+        m_flPrevPrimaryAttack = delay;
+    }
+
+    float nextFireTime = gpGlobals->time - m_flLastFireTime;
+    float timeOffset = 0;
+
+    if( nextFireTime > 0 )
+    {
+        timeOffset = nextFireTime - m_flPrevPrimaryAttack;
+    }
+
+    float nextDelay = delay - timeOffset;
+
+    m_flLastFireTime = gpGlobals->time;
+    m_flPrevPrimaryAttack = nextDelay;
+
+    return nextDelay;
+}
+
+// CS
 void CBasePlayerWeapon::ReloadSound( void )
 {
     CBasePlayer *pPlayer = NULL;
