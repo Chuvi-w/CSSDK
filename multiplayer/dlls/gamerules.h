@@ -450,9 +450,9 @@ class CHalfLifeMultiplay : public CGameRules
 
         inline void TerminateRound( float tmDelay, int iWinStatus )
         {
-            g_pGameRules->m_iRoundWinStatus   = iWinStatus;
-            g_pGameRules->m_bRoundTerminating = true;
-            g_pGameRules->m_fTeamCount        = gpGlobals->time + tmDelay;
+            m_iRoundWinStatus   = iWinStatus;
+            m_bRoundTerminating = true;
+            m_fTeamCount        = gpGlobals->time + tmDelay;
         }
 
     public:
