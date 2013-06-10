@@ -153,7 +153,7 @@ typedef enum
     WEAPON_GALIL,
     WEAPON_FAMAS,
     WEAPON_USP,
-    WEAPON_GLOCK18,,
+    WEAPON_GLOCK18,
     WEAPON_AWP,
     WEAPON_MP5N,
     WEAPON_M249,
@@ -167,7 +167,7 @@ typedef enum
     WEAPON_AK47,
     WEAPON_KNIFE,
     WEAPON_P90,
-    WEAPON_SHIELDGUN,
+    WEAPON_SHIELDGUN = 99,
 
 } WeaponIdType;
 
@@ -313,6 +313,7 @@ enum ClipSizeType
     P90_MAX_CLIP        = 50,
 };
 
+// CS
 typedef enum 
 {
     PRIMARY_WEAPON_SLOT = 1,
@@ -322,6 +323,19 @@ typedef enum
     C4_SLOT,
 
 } InventorySlotType;
+
+// CS
+#define AK47_DISTANCE       8192
+
+// CS
+#define AK47_DAMAGE         36
+
+// CS
+#define AK47_PENETRATION    2
+
+// CS
+#define AK47_RANGE_MODIFER  0.98
+
 
 // bullet types
 typedef	enum
@@ -704,6 +718,55 @@ extern MULTIDAMAGE gMultiDamage;
 #define VECTOR_CONE_10DEGREES	Vector( 0.08716, 0.08716, 0.08716 )
 #define VECTOR_CONE_15DEGREES	Vector( 0.13053, 0.13053, 0.13053 )
 #define VECTOR_CONE_20DEGREES	Vector( 0.17365, 0.17365, 0.17365 )
+
+
+class CAK47 : public CBasePlayerWeapon 
+{
+    public :
+
+	    void Spawn( void );
+	    void Precache( void );
+	    int iItemSlot( void );
+	    int GetItemInfo( ItemInfo *p );
+
+	    void PrimaryAttack( void );
+	    void SecondaryAttack( void );
+	    void AK47Fire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+	    BOOL Deploy( void );
+	    void Reload( void );
+	    void WeaponIdle( void );
+	    float GetMaxSpeed( void );
+	    BOOL UseDecrement( void );
+
+    public :
+
+        int                 m_iShell;       /*   336     4 */
+        int                 iShellOn;       /*   340     4 */
+
+    private:
+
+        short unsigned int  m_usFireAK47;   /*   344     2 */
+
+    /* vtable has 11 entries: 
+    {
+	   [0]  = Spawn
+	   [1]  = Precache
+	   [79] = iItemSlot
+	   [61] = GetItemInfo
+	   [87] = PrimaryAttack
+	   [88] = SecondaryAttack
+	   [64] = Deploy
+	   [89] = Reload
+	   [90] = WeaponIdle
+	   [78] = GetMaxSpeed
+	   [93] = UseDecrement
+	} */
+	/* size: 348, cachelines: 6, members: 4      */
+	/* sum members: 10, holes: 1, sum holes: 336 */
+	/* padding: 2                                */
+	/* last cacheline: 28 bytes                  */
+};
+
 
 //=========================================================
 // CWeaponBox - a single entity that can store weapons
