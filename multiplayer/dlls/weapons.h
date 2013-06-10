@@ -171,123 +171,167 @@ typedef enum
 
 } WeaponIdType;
 
-#define WEAPON_NONE				0
-#define WEAPON_CROWBAR			1
-#define	WEAPON_GLOCK			2
-#define WEAPON_PYTHON			3
-#define WEAPON_MP5				4
-#define WEAPON_CHAINGUN			5
-#define WEAPON_CROSSBOW			6
-#define WEAPON_SHOTGUN			7
-#define WEAPON_RPG				8
-#define WEAPON_GAUSS			9
-#define WEAPON_EGON				10
-#define WEAPON_HORNETGUN		11
-#define WEAPON_HANDGRENADE		12
-#define WEAPON_TRIPMINE			13
-#define	WEAPON_SATCHEL			14
-#define	WEAPON_SNARK			15
-
-#define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
-
-#define WEAPON_SUIT				31	// ?????
-
-#define MAX_WEAPONS			32
-
+#define WEAPON_ALLWEAPONS   ( ~( 1 << WEAPON_SUIT ) )
+#define WEAPON_SUIT         31
+#define MAX_WEAPONS         32
 
 #define MAX_NORMAL_BATTERY	100
+#define WEAPON_NOCLIP       -1
 
+// Weapon weight factors (for auto-switching, -1 = noswitch)
+// CS
+#define AK47_WEIGHT         25
+#define AUG_WEIGHT          25
+#define AWP_WEIGHT          30
+#define C4_WEIGHT           3
+#define DEAGLE_WEIGHT       7
+#define ELITE_WEIGHT        5
+#define FAMAS_WEIGHT        75
+#define FIVESEVEN_WEIGHT    5
+#define FLASHBANG_WEIGHT    1
+#define G3SG1_WEIGHT        20
+#define GALIL_WEIGHT        25
+#define GLOCK18_WEIGHT      5
+#define HEGRENADE_WEIGHT    2
+#define KNIFE_WEIGHT        0
+#define M249_WEIGHT         25
+#define M3_WEIGHT           20
+#define M4A1_WEIGHT         25
+#define MAC10_WEIGHT        25
+#define MP5NAVY_WEIGHT      25
+#define P228_WEIGHT         5
+#define P90_WEIGHT          26
+#define SCOUT_WEIGHT        30
+#define SG550_WEIGHT        20
+#define SG552_WEIGHT        25
+#define SMOKEGRENADE_WEIGHT 1
+#define TMP_WEIGHT          25
+#define UMP45_WEIGHT        25
+#define USP_WEIGHT          5
+#define XM1014_WEIGHT       20
 
-// weapon weight factors (for auto-switching)   (-1 = noswitch)
-#define CROWBAR_WEIGHT		0
-#define GLOCK_WEIGHT		10
-#define PYTHON_WEIGHT		15
-#define MP5_WEIGHT			15
-#define SHOTGUN_WEIGHT		15
-#define CROSSBOW_WEIGHT		10
-#define RPG_WEIGHT			20
-#define GAUSS_WEIGHT		20
-#define EGON_WEIGHT			20
-#define HORNETGUN_WEIGHT	10
-#define HANDGRENADE_WEIGHT	5
-#define SNARK_WEIGHT		5
-#define SATCHEL_WEIGHT		-10
-#define TRIPMINE_WEIGHT		-10
-
+// CS
+enum MaxAmmoType
+{
+    MAX_AMMO_BUCKSHOT   = 32,
+    MAX_AMMO_9MM        = 120,
+    MAX_AMMO_556NATO    = 90,
+    MAX_AMMO_556NATOBOX = 200,
+    MAX_AMMO_762NATO    = 90,
+    MAX_AMMO_45ACP      = 100,
+    MAX_AMMO_50AE       = 35,
+    MAX_AMMO_338MAGNUM  = 30,
+    MAX_AMMO_57MM       = 100,
+    MAX_AMMO_357SIG     = 52
+};
 
 // weapon clip/carry ammo capacities
-#define URANIUM_MAX_CARRY		100
-#define	_9MM_MAX_CARRY			250
-#define _357_MAX_CARRY			36
-#define BUCKSHOT_MAX_CARRY		125
-#define BOLT_MAX_CARRY			50
-#define ROCKET_MAX_CARRY		5
-#define HANDGRENADE_MAX_CARRY	10
-#define SATCHEL_MAX_CARRY		5
-#define TRIPMINE_MAX_CARRY		5
-#define SNARK_MAX_CARRY			15
-#define HORNET_MAX_CARRY		8
-#define M203_GRENADE_MAX_CARRY	10
+// CS
+#define _9MM_MAX_CARRY          MAX_AMMO_9MM
+#define BUCKSHOT_MAX_CARRY      MAX_AMMO_BUCKSHOT
+#define _556NATO_MAX_CARRY      MAX_AMMO_556NATO
+#define _556NATOBOX_MAX_CARRY   MAX_AMMO_556NATOBOX
+#define _762NATO_MAX_CARRY      MAX_AMMO_762NATO
+#define _45ACP_MAX_CARRY        MAX_AMMO_45ACP
+#define _50AE_MAX_CARRY         MAX_AMMO_50AE
+#define _338MAGNUM_MAX_CARRY    MAX_AMMO_338MAGNUM
+#define _57MM_MAX_CARRY         MAX_AMMO_57MM
+#define _357SIG_MAX_CARRY       MAX_AMMO_357SIG
 
-// the maximum amount of ammo each weapon's clip can hold
-#define WEAPON_NOCLIP			-1
-
-//#define CROWBAR_MAX_CLIP		WEAPON_NOCLIP
-#define GLOCK_MAX_CLIP			17
-#define PYTHON_MAX_CLIP			6
-#define MP5_MAX_CLIP			50
-#define MP5_DEFAULT_AMMO		25
-#define SHOTGUN_MAX_CLIP		8
-#define CROSSBOW_MAX_CLIP		5
-#define RPG_MAX_CLIP			1
-#define GAUSS_MAX_CLIP			WEAPON_NOCLIP
-#define EGON_MAX_CLIP			WEAPON_NOCLIP
-#define HORNETGUN_MAX_CLIP		WEAPON_NOCLIP
-#define HANDGRENADE_MAX_CLIP	WEAPON_NOCLIP
-#define SATCHEL_MAX_CLIP		WEAPON_NOCLIP
-#define TRIPMINE_MAX_CLIP		WEAPON_NOCLIP
-#define SNARK_MAX_CLIP			WEAPON_NOCLIP
-
-
-// the default amount of ammo that comes with each gun when it spawns
-#define GLOCK_DEFAULT_GIVE			17
-#define PYTHON_DEFAULT_GIVE			6
-#define MP5_DEFAULT_GIVE			25
-#define MP5_DEFAULT_AMMO			25
-#define MP5_M203_DEFAULT_GIVE		0
-#define SHOTGUN_DEFAULT_GIVE		12
-#define CROSSBOW_DEFAULT_GIVE		5
-#define RPG_DEFAULT_GIVE			1
-#define GAUSS_DEFAULT_GIVE			20
-#define EGON_DEFAULT_GIVE			20
-#define HANDGRENADE_DEFAULT_GIVE	5
-#define SATCHEL_DEFAULT_GIVE		1
-#define TRIPMINE_DEFAULT_GIVE		1
-#define SNARK_DEFAULT_GIVE			5
-#define HIVEHAND_DEFAULT_GIVE		8
+// The default amount of ammo given at weapon spawn.
+// CS
+#define AK47_DEFAULT_GIVE       30
+#define AUG_DEFAULT_GIVE        30
+#define AWP_DEFAULT_GIVE        10
+#define C4_DEFAULT_GIVE         1
+#define DEAGLE_DEFAULT_GIVE     7
+#define ELITE_DEFAULT_GIVE      30
+#define FAMAS_DEFAULT_GIVE      25
+#define FIVESEVEN_DEFAULT_GIVE  20
+#define FLASHBANG_DEFAULT_GIVE  1
+#define G3SG1_DEFAULT_GIVE      20
+#define GALIL_DEFAULT_GIVE      35
+#define GLOCK18_DEFAULT_GIVE    20
+#define HEGRENADE_DEFAULT_GIVE  1
+#define M249_DEFAULT_GIVE       100
+#define M3_DEFAULT_GIVE         8
+#define M4A1_DEFAULT_GIVE       30
+#define MAC10_DEFAULT_GIVE      30
+#define MP5NAVY_DEFAULT_GIVE    30
+#define P228_DEFAULT_GIVE       13
+#define P90_DEFAULT_GIVE        50
+#define SCOUT_DEFAULT_GIVE      10
+#define SG550_DEFAULT_GIVE      30
+#define SG552_DEFAULT_GIVE      30
+#define MAC10_DEFAULT_GIVE      30
+#define SMOKEGRENADE_DEFAULT_GIVE 1
+#define TMP_DEFAULT_GIVE        30
+#define UMP45_DEFAULT_GIVE      25
+#define USP_DEFAULT_GIVE        12
+#define XM1014_DEFAULT_GIVE     7
 
 // The amount of ammo given to a player by an ammo item.
-#define AMMO_URANIUMBOX_GIVE	20
-#define AMMO_GLOCKCLIP_GIVE		GLOCK_MAX_CLIP
-#define AMMO_357BOX_GIVE		PYTHON_MAX_CLIP
-#define AMMO_MP5CLIP_GIVE		MP5_MAX_CLIP
-#define AMMO_CHAINBOX_GIVE		200
-#define AMMO_M203BOX_GIVE		2
-#define AMMO_BUCKSHOTBOX_GIVE	12
-#define AMMO_CROSSBOWCLIP_GIVE	CROSSBOW_MAX_CLIP
-#define AMMO_RPGCLIP_GIVE		RPG_MAX_CLIP
-#define AMMO_URANIUMBOX_GIVE	20
-#define AMMO_SNARKBOX_GIVE		5
+// CS
+#define AMMO_9MM_GIVE           30
+#define AMMO_BUCKSHOT_GIVE      8
+#define AMMO_556NATO_GIVE       30
+#define AMMO_556NATOBOX_GIVE    30
+#define AMMO_762NATO_GIVE       30
+#define AMMO_45ACP_GIVE         12
+#define AMMO_50AE_GIVE          7
+#define AMMO_338MAGNUM_GIVE     10
+#define AMMO_57MM_GIVE          50
+#define AMMO_357SIG_GIVE        13
+
+// The maximum amount of ammo each weapon's clip can hold.
+// CS
+enum ClipSizeType
+{
+    P228_MAX_CLIP       = 13,
+    GLOCK18_MAX_CLIP    = 20,
+    SCOUT_MAX_CLIP      = 10,
+    XM1014_MAX_CLIP     = 7,
+    MAC10_MAX_CLIP      = 30,
+    AUG_MAX_CLIP        = 30,
+    ELITE_MAX_CLIP      = 30,
+    FIVESEVEN_MAX_CLIP  = 20,
+    UMP45_MAX_CLIP      = 25,
+    SG550_MAX_CLIP      = 30,
+    GALIL_MAX_CLIP      = 35,
+    FAMAS_MAX_CLIP      = 25,
+    USP_MAX_CLIP        = 12,
+    AWP_MAX_CLIP        = 10,
+    MP5N_MAX_CLIP       = 30,
+    M249_MAX_CLIP       = 100,
+    M3_MAX_CLIP         = 8,
+    M4A1_MAX_CLIP       = 30,
+    TMP_MAX_CLIP        = 30,
+    G3SG1_MAX_CLIP      = 20,
+    DEAGLE_MAX_CLIP     = 7,
+    SG552_MAX_CLIP      = 30,
+    AK47_MAX_CLIP       = 30,
+    P90_MAX_CLIP        = 50,
+};
+
+typedef enum 
+{
+    PRIMARY_WEAPON_SLOT = 1,
+    PISTOL_SLOT,
+    KNIFE_SLOT,
+    GRENADE_SLOT,
+    C4_SLOT,
+
+} InventorySlotType;
 
 // bullet types
 typedef	enum
 {
 	BULLET_NONE = 0,
-	BULLET_PLAYER_9MM, // glock
-	BULLET_PLAYER_MP5, // mp5
-	BULLET_PLAYER_357, // python
-	BULLET_PLAYER_BUCKSHOT, // shotgun
-	BULLET_PLAYER_CROWBAR, // crowbar swipe
+	BULLET_PLAYER_9MM, 
+	BULLET_PLAYER_MP5, 
+	BULLET_PLAYER_357, 
+	BULLET_PLAYER_BUCKSHOT, 
+	BULLET_PLAYER_CROWBAR,
 
 	BULLET_MONSTER_9MM,
 	BULLET_MONSTER_MP5,
@@ -301,6 +345,7 @@ typedef	enum
 	BULLET_PLAYER_50AE,
 	BULLET_PLAYER_57MM,
 	BULLET_PLAYER_357SIG,
+
 } Bullet;
 
 #define ITEM_FLAG_SELECTONEMPTY		1
@@ -331,16 +376,6 @@ typedef struct
 	const char *pszName;
 	int iId;
 } AmmoInfo;
-
-typedef enum 
-{
-    PRIMARY_WEAPON_SLOT = 1,
-    PISTOL_SLOT,
-    KNIFE_SLOT,
-    GRENADE_SLOT,
-    C4_SLOT,
-
-} InventorySlotType;
 
 // Items that the player has in their inventory that they can use
 class CBasePlayerItem : public CBaseAnimating
