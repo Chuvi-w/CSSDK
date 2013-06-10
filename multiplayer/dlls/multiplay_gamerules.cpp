@@ -16,18 +16,18 @@
 // teamplay_gamerules.cpp
 //
 
-#include	"extdll.h"
-#include	"util.h"
-#include	"cbase.h"
-#include	"player.h"
-#include	"weapons.h"
-#include	"gamerules.h"
+#include "extdll.h"
+#include "util.h"
+#include "cbase.h"
+#include "player.h"
+#include "weapons.h"
+#include "gamerules.h"
  
-#include	"skill.h"
-#include	"game.h"
-#include	"items.h"
-#include	"voice_gamemgr.h"
-#include	"hltv.h"
+#include "skill.h"
+#include "game.h"
+#include "items.h"
+#include "voice_gamemgr.h"
+#include "hltv.h"
 #include "bot.h"
 #include "client.h"
 
@@ -62,7 +62,7 @@ CVoiceGameMgr	g_VoiceGameMgr;
 class CMultiplayGameMgrHelper : public IVoiceGameMgrHelper
 {
 public:
-	virtual bool		CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pTalker)
+	virtual bool CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pTalker)
 	{
 		if ( g_teamplay )
 		{
@@ -2045,10 +2045,8 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
             m_bCompleteReset = true;
 
             EndRoundMessage( "#Game_Commencing", Event_Round_Draw );
+            TerminateRound( IsCareer() ? 0 : 3, WinStatus_Draw );
 
-            m_iRoundWinStatus   = 3;
-            m_bRoundTerminating = true;
-            m_fTeamCount        = gpGlobals->time + IsCareer() ? 0.0 : 3.0;
             m_bFirstConnected   = true;
 
             // TODO: Implement me.
@@ -2081,9 +2079,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
             // TODO: Implement me.
             // TheBots->OnEvent( EVENT_VIP_ESCAPED, NULL, NULL );
             
-            m_iRoundWinStatus   = WinStatus_CT;
-            m_bRoundTerminating = true;
-            m_fTeamCount        = gpGlobals->time + 5.0;
+            TerminateRound( 5, WinStatus_CT );
 
             if( IsCareer() )
             {
@@ -2106,9 +2102,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
             // TODO: Implement me.
             // TheBots->OnEvent( EVENT_VIP_ASSASSINATED, NULL, NULL );
 
-            m_iRoundWinStatus   = WinStatus_Terrorist;
-            m_bRoundTerminating = true;
-            m_fTeamCount        = gpGlobals->time + 5.0;
+            TerminateRound( 5, WinStatus_Terrorist );
 
             if( IsCareer() )
             {
@@ -2132,10 +2126,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
             }
 
             EndRoundMessage( "#Terrorists_Escaped", Event_Terrorists_Escaped );
-
-            m_iRoundWinStatus   = WinStatus_Terrorist;
-            m_bRoundTerminating = true;
-            m_fTeamCount        = gpGlobals->time + 5.0;
+            TerminateRound( 5, WinStatus_Terrorist );
 
             if( IsCareer() )
             {
@@ -2154,10 +2145,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
             }
 
             EndRoundMessage( "#CTs_PreventEscape", Event_CTs_PreventEscape );
-
-            m_iRoundWinStatus   = WinStatus_CT;
-            m_bRoundTerminating = true;
-            m_fTeamCount        = gpGlobals->time + 5.0;
+            TerminateRound( 5, WinStatus_CT );
 
             if( IsCareer() )
             {
@@ -2176,10 +2164,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
             }
 
             EndRoundMessage( "#Escaping_Terrorists_Neutralized", Event_Escaping_Terrorists_Neutralized );
-
-            m_iRoundWinStatus   = WinStatus_CT;
-            m_bRoundTerminating = true;
-            m_fTeamCount        = gpGlobals->time + 5.0;
+            TerminateRound( 5, WinStatus_CT );
 
             if( IsCareer() )
             {
@@ -2201,10 +2186,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
             }
 
             EndRoundMessage( "#Target_Bombed", Event_Target_Bombed );
-
-            m_iRoundWinStatus   = WinStatus_Terrorist;
-            m_bRoundTerminating = true;
-            m_fTeamCount        = gpGlobals->time + 5.0;
+            TerminateRound( 5, WinStatus_Terrorist );
 
             if( IsCareer() )
             {
@@ -2225,10 +2207,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
             }
 
             EndRoundMessage( "#Bomb_Defused", Event_Bomb_Defused );
-
-            m_iRoundWinStatus   = WinStatus_CT;
-            m_bRoundTerminating = true;
-            m_fTeamCount        = gpGlobals->time + 5.0;
+            TerminateRound( 5, WinStatus_CT );
 
             if( IsCareer() )
             {
@@ -2263,10 +2242,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
                 }
 
                 EndRoundMessage( "#CTs_Win", Event_CTs_Win );
-
-                m_iRoundWinStatus   = WinStatus_CT;
-                m_bRoundTerminating = true;
-                m_fTeamCount        = gpGlobals->time + 5.0;
+                TerminateRound( 5, WinStatus_CT );
 
                 if( IsCareer() )
                 {
@@ -2286,10 +2262,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
             }
 
             EndRoundMessage( "#Terrorists_Win", Event_Terrorists_Win );
-
-            m_iRoundWinStatus   = WinStatus_Terrorist;
-            m_bRoundTerminating = true;
-            m_fTeamCount        = gpGlobals->time + 5.0;
+            TerminateRound( 5, WinStatus_Terrorist );
 
             if( IsCareer() )
             {
@@ -2301,10 +2274,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
     {
         EndRoundMessage( "#Round_Draw", Event_Round_Draw );
         Broadcast( "rounddraw" );
-
-        m_iRoundWinStatus   = WinStatus_Draw;
-        m_bRoundTerminating = true;
-        m_fTeamCount        = gpGlobals->time + 5.0;
+        TerminateRound( 5, WinStatus_Draw );
     }
     else
     {
@@ -2338,9 +2308,7 @@ void CHalfLifeMultiplay::CheckWinConditions( void )
             // TODO: Implement me.
             // TheBots->OnEvent( EVENT_ALL_HOSTAGES_RESCUED, NULL, NULL );
 
-            m_iRoundWinStatus   = WinStatus_CT;
-            m_bRoundTerminating = true;
-            m_fTeamCount        = gpGlobals->time + 5.0;
+            TerminateRound( 5, WinStatus_CT );
 
             if( IsCareer() )
             {

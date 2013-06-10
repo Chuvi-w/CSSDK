@@ -448,6 +448,13 @@ class CHalfLifeMultiplay : public CGameRules
 
         void MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound( int iTeam );
 
+        inline void TerminateRound( float tmDelay, int iWinStatus )
+        {
+            g_pGameRules->m_iRoundWinStatus   = iWinStatus;
+            g_pGameRules->m_bRoundTerminating = true;
+            g_pGameRules->m_fTeamCount        = gpGlobals->time + tmDelay;
+        }
+
     public:
 
         CVoiceGameMgr               m_VoiceGameMgr;                     /*    12     0 */
