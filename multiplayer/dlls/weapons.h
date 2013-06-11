@@ -327,24 +327,62 @@ typedef enum
 } InventorySlotType;
 
 // CS
-#define AK47_DISTANCE       8192
-#define AUG_DISTANCE        8192
-#define AWP_DISTANCE        8192
+enum WeaponState
+{
+    WPNSTATE_USP_SILENCED       = ( 1 << 0 ),
+    WPNSTATE_GLOCK18_BURST_MODE = ( 1 << 1 ),
+    WPNSTATE_M4A1_SILENCED      = ( 1 << 2 ),
+    WPNSTATE_ELITE_LEFT         = ( 1 << 3 ),
+    WPNSTATE_FAMAS_BURST_MODE   = ( 1 << 4 ),
+    WPNSTATE_SHIELD_DRAWN       = ( 1 << 5 ),
+};
+
+//CS
+enum shieldgun_e
+{
+    SHIELDGUN_IDLE,
+    SHIELDGUN_SHOOT1,
+    SHIELDGUN_SHOOT2,
+    SHIELDGUN_SHOOT_EMPTY,
+    SHIELDGUN_RELOAD,
+    SHIELDGUN_DRAW,
+    SHIELDGUN_DRAWN_IDLE,
+    SHIELDGUN_UP,
+    SHIELDGUN_DOWN
+};
 
 // CS
-#define AK47_DAMAGE         36
-#define AUG_DAMAGE          32
-#define AWP_DAMAGE          115
+enum shieldren_e
+{
+    SHIELDREN_IDLE = 4,
+    SHIELDREN_UP,
+    SHIELDREN_DOWN
+};
+
 
 // CS
-#define AK47_PENETRATION    2
-#define AUG_PENETRATION     2
-#define AWP_PENETRATION     3
+#define AK47_DISTANCE           8192
+#define AUG_DISTANCE            8192
+#define AWP_DISTANCE            8192
+#define DEAGLE_DISTANCE         4096
 
 // CS
-#define AK47_RANGE_MODIFER  0.98
-#define AUG_RANGE_MODIFER   0.96
-#define AWP_RANGE_MODIFER   0.99
+#define AK47_DAMAGE             36
+#define AUG_DAMAGE              32
+#define AWP_DAMAGE              115
+#define DEAGLE_DAMAGE           54
+
+// CS
+#define AK47_PENETRATION        2
+#define AUG_PENETRATION         2
+#define AWP_PENETRATION         3
+#define DEAGLE_PENETRATION      2
+
+// CS
+#define AK47_RANGE_MODIFER      0.98
+#define AUG_RANGE_MODIFER       0.96
+#define AWP_RANGE_MODIFER       0.99
+#define DEAGLE_RANGE_MODIFER    0.81
 
 
 // bullet types
@@ -920,7 +958,57 @@ class CC4 : public CBasePlayerWeapon
     /* last cacheline: 28 bytes                 */
 };
 
+class CDEAGLE : public CBasePlayerWeapon 
+{
+    public:
 
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        void DEAGLEFire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+
+        void MakeBeam( void );   /* unused */
+        void BeamUpdate( void ); /* unused */
+
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+        BOOL IsPistol( void );
+
+    public:
+
+        int                 m_iShell;             /*   336     4 */
+
+    private:
+
+        short unsigned int  m_usFireDeagle;       /*   340     2 */
+
+    /* vtable has 12 entries: 
+    {
+       [0]  = Spawn
+       [1]  = Precache
+       [79] = iItemSlot
+       [61] = GetItemInfo
+       [87] = PrimaryAttack
+       [88] = SecondaryAttack
+       [64] = Deploy
+       [89] = Reload
+       [90] = WeaponIdle
+       [78] = GetMaxSpeed
+       [93] = UseDecrement
+       [94] = IsPistol
+    } */
+    /* size: 344, cachelines: 6, members: 3     */
+    /* sum members: 6, holes: 1, sum holes: 336 */
+    /* padding: 2                               */
+    /* last cacheline: 24 bytes                 */
+};
 
 
 //=========================================================
