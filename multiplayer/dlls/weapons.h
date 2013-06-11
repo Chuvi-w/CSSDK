@@ -327,18 +327,22 @@ typedef enum
 // CS
 #define AK47_DISTANCE       8192
 #define AUG_DISTANCE        8192
+#define AWP_DISTANCE        8192
 
 // CS
 #define AK47_DAMAGE         36
 #define AUG_DAMAGE          32
+#define AWP_DAMAGE          115
 
 // CS
 #define AK47_PENETRATION    2
 #define AUG_PENETRATION     2
+#define AWP_PENETRATION     3
 
 // CS
 #define AK47_RANGE_MODIFER  0.98
 #define AUG_RANGE_MODIFER   0.96
+#define AWP_RANGE_MODIFER   0.99
 
 
 // bullet types
@@ -817,6 +821,53 @@ class CAUG : public CBasePlayerWeapon
 	/* padding: 2                                */
 	/* last cacheline: 28 bytes                  */
 };
+
+class CAWP : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        void AWPFire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+
+    public:
+
+        int                     m_iShell;       /*   336     4 */
+
+    private:
+            
+        short unsigned int      m_usFireAWP;    /*   340     2 */
+
+    /* vtable has 11 entries: 
+    {
+        [0]  = Spawn
+        [1]  = Precache
+        [79] = iItemSlot
+        [61] = GetItemInfo
+        [87] = PrimaryAttack
+        [88] = SecondaryAttack
+        [64] = Deploy
+        [89] = Reload
+        [90] = WeaponIdle
+        [78] = GetMaxSpeed
+        [93] = UseDecrement
+    } */
+    /* size: 344, cachelines: 6, members: 3     */
+    /* sum members: 6, holes: 1, sum holes: 336 */
+    /* padding: 2                               */
+    /* last cacheline: 24 bytes                 */
+};
+
 
 
 //=========================================================
