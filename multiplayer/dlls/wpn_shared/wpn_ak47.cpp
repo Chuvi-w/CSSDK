@@ -227,7 +227,7 @@ void CAK47::WeaponIdle( void )
     }
 }
 
-BOOL UseDecrement( void )
+BOOL CAK47::UseDecrement( void )
 {
     #if defined( CLIENT_WEAPONS )
         return TRUE;
@@ -236,7 +236,7 @@ BOOL UseDecrement( void )
     #endif
 }
 
-float GetMaxSpeed( void )
+float CAK47::GetMaxSpeed( void )
 {
     return AK47_MAX_SPEED;
 }
