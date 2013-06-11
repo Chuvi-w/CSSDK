@@ -366,6 +366,7 @@ enum shieldren_e
 #define AWP_DISTANCE            8192
 #define DEAGLE_DISTANCE         4096
 #define ELITE_DISTANCE          8192
+#define FAMAS_DISTANCE          8192
 
 // CS
 #define AK47_DAMAGE             36
@@ -373,6 +374,8 @@ enum shieldren_e
 #define AWP_DAMAGE              115
 #define DEAGLE_DAMAGE           54
 #define ELITE_DAMAGE            36
+#define FAMAS_DAMAGE            30
+#define FAMAS_DAMAGE_BURST      34
  
 // CS
 #define AK47_PENETRATION        2
@@ -380,6 +383,7 @@ enum shieldren_e
 #define AWP_PENETRATION         3
 #define DEAGLE_PENETRATION      2
 #define ELITE_PENETRATION       1
+#define FAMAS_PENETRATION       2
 
 // CS
 #define AK47_RANGE_MODIFER      0.98
@@ -387,6 +391,7 @@ enum shieldren_e
 #define AWP_RANGE_MODIFER       0.99
 #define DEAGLE_RANGE_MODIFER    0.81
 #define ELITE_RANGE_MODIFER     0.75
+#define FAMAS_RANGE_MODIFER     0.96
 
 
 // bullet types
@@ -1059,6 +1064,49 @@ class CELITE : public CBasePlayerWeapon
     /* sum members: 8, holes: 1, sum holes: 336 */
     /* last cacheline: 24 bytes                 */
 };
+
+class CFamas : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        void FamasFire( float flSpread, float flCycleTime, BOOL fUseAutoAim, BOOL FireBurst );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+
+    public:
+
+        int     m_iShell;             /*   336     4 */
+        int     iShellOn;             /*   340     4 */
+
+    /* vtable has 11 entries: 
+    {
+        [0]  = Spawn
+        [1]  = Precache
+        [79] = iItemSlot
+        [61] = GetItemInfo
+        [87] = PrimaryAttack
+        [88] = SecondaryAttack
+        [64] = Deploy
+        [89] = Reload
+        [90] = WeaponIdle
+        [78] = GetMaxSpeed
+        [93] = UseDecrement
+    } */
+    /* size: 344, cachelines: 6, members: 3     */
+    /* sum members: 8, holes: 1, sum holes: 336 */
+    /* last cacheline: 24 bytes                 */
+};
+
 
 
 //=========================================================
