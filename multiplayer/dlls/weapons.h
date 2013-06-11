@@ -239,6 +239,7 @@ enum MaxAmmoType
 #define _357SIG_MAX_CARRY       MAX_AMMO_357SIG
 
 #define C4_MAX_CARRY            1
+#define FLASHBANG_MAX_CARRY     2
 
 // The default amount of ammo given at weapon spawn.
 // CS
@@ -1161,6 +1162,53 @@ class CFiveSeven : public CBasePlayerWeapon
     /* sum members: 6, holes: 1, sum holes: 336 */
     /* padding: 2                               */
     /* last cacheline: 24 bytes                 */
+};
+
+class CFlashbang : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        BOOL Deploy( void );
+        void Holster( int skiplocal );
+        void Reload( void );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL CanDeploy( void );
+        BOOL CanDrop( void );
+        BOOL UseDecrement( void );
+        BOOL IsPistol( void );
+    
+        bool ShieldSecondaryFire( int up_anim, int down_anim );
+        void SetPlayerShieldAnim( void );
+        void ResetPlayerShieldAnim( void );
+
+    /* vtable has 14 entries: 
+    {
+        [0]  = Spawn
+        [1]  = Precache
+        [79] = iItemSlot
+        [61] = GetItemInfo
+        [87] = PrimaryAttack
+        [88] = SecondaryAttack
+        [64] = Deploy
+        [67] = Holster
+        [90] = WeaponIdle
+        [78] = GetMaxSpeed
+        [63] = CanDrop
+        [62] = CanDeploy
+        [93] = UseDecrement
+        [94] = IsPistol
+    } */
+    /* size: 336, cachelines: 6, members: 1 */
+    /* padding: 336                         */
+    /* last cacheline: 16 bytes             */
 };
 
 
