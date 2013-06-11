@@ -144,7 +144,7 @@ void CAUG::AUGFire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
 		if( m_fFireOnEmpty )
 		{
 			PlayEmptySound();
-			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.2;
+			m_flNextPrimaryAttack = GetNextAttackDelay( 0.2 );
 		}
 
         // TODO: Implement me.
