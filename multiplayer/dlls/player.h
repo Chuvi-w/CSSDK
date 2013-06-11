@@ -739,6 +739,10 @@ public:
 
 extern int  gmsgHudTextArgs;
 extern int	gmsgHudText;
+
+//CS
+extern int gmsgBombDrop;
+
 extern BOOL gInitHUD;
 
 #endif // PLAYER_H

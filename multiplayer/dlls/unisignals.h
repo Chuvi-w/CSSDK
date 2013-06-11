@@ -15,6 +15,15 @@
 #ifndef UNISIGNALS_H
 #define UNISIGNALS_H
 
+enum SignalState
+{
+    SIGNAL_BUY       = ( 1<<0 ),
+    SIGNAL_BOMB      = ( 1<<1 ),
+    SIGNAL_RESCUE    = ( 1<<2 ),
+    SIGNAL_ESCAPE    = ( 1<<3 ),
+    SIGNAL_VIPSAFETY = ( 1<<4 ),
+};
+
 class CUnifiedSignals 
 {
     public :

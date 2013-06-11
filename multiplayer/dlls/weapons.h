@@ -238,6 +238,8 @@ enum MaxAmmoType
 #define _57MM_MAX_CARRY         MAX_AMMO_57MM
 #define _357SIG_MAX_CARRY       MAX_AMMO_357SIG
 
+#define C4_MAX_CARRY            1
+
 // The default amount of ammo given at weapon spawn.
 // CS
 #define AK47_DEFAULT_GIVE       30
@@ -867,6 +869,57 @@ class CAWP : public CBasePlayerWeapon
     /* padding: 2                               */
     /* last cacheline: 24 bytes                 */
 };
+
+class CC4 : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        BOOL Deploy( void );
+        void Holster( int skiplocal );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+
+        void KeyValue( KeyValueData *pkvd );
+        void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+
+    public:
+
+        bool    m_bStartedArming;       /*   336     1 */
+        bool    m_bBombPlacedAnimation; /*   337     1 */
+        float   m_fArmedTime;           /*   340     4 */
+
+    private:
+
+        bool    m_bHasShield;           /*   344     1 */
+
+    /* vtable has 12 entries: 
+    {
+        [0]  = Spawn
+        [1]  = Precache
+        [79] = iItemSlot
+        [61] = GetItemInfo
+        [87] = PrimaryAttack
+        [64] = Deploy
+        [67] = Holster
+        [90] = WeaponIdle
+        [78] = GetMaxSpeed
+        [93] = UseDecrement
+        [3]  = KeyValue
+        [46] = Use
+    } */
+    /* size: 348, cachelines: 6, members: 5     */
+    /* sum members: 7, holes: 2, sum holes: 338 */
+    /* padding: 3                               */
+    /* last cacheline: 28 bytes                 */
+};
+
 
 
 
