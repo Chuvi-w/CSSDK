@@ -243,7 +243,7 @@ void CAWP::WeaponIdle( void )
     }
 }
 
-BOOL UseDecrement( void )
+BOOL CAWP::UseDecrement( void )
 {
     #if defined( CLIENT_WEAPONS )
         return TRUE;
