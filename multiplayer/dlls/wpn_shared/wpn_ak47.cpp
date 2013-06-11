@@ -81,7 +81,7 @@ int CAK47::GetItemInfo( ItemInfo *p )
     return 1;
 }
 
-int iItemSlot( void )
+int CAK47::iItemSlot( void )
 {
     return PRIMARY_WEAPON_SLOT;
 }
@@ -159,7 +159,7 @@ void CAK47::AK47Fire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
 
     int flags;
 
-    #ifdef CLIENT_WEAPONS
+    #if defined( CLIENT_WEAPONS )
         flags = FEV_NOTHOST;
     #else
         flags = 0;
