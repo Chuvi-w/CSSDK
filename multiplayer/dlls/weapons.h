@@ -369,6 +369,7 @@ enum shieldren_e
 #define ELITE_DISTANCE          8192
 #define FAMAS_DISTANCE          8192
 #define FIVESEVEN_DISTANCE      4096
+#define G3SG1_DISTANCE          8192
 
 // CS
 #define AK47_DAMAGE             36
@@ -379,6 +380,7 @@ enum shieldren_e
 #define FAMAS_DAMAGE            30
 #define FAMAS_DAMAGE_BURST      34
 #define FIVESEVEN_DAMAGE        20
+#define G3SG1_DAMAGE            80
 
 // CS
 #define AK47_PENETRATION        2
@@ -388,6 +390,7 @@ enum shieldren_e
 #define ELITE_PENETRATION       1
 #define FAMAS_PENETRATION       2
 #define FIVESEVEN_PENETRATION   1
+#define G3SG1_PENETRATION       3
 
 // CS
 #define AK47_RANGE_MODIFER      0.98
@@ -397,6 +400,7 @@ enum shieldren_e
 #define ELITE_RANGE_MODIFER     0.75
 #define FAMAS_RANGE_MODIFER     0.96
 #define FIVESEVEN_RANGE_MODIFER 0.885
+#define G3SG1_RANGE_MODIFER     0.98
 
 
 // bullet types
@@ -1209,6 +1213,52 @@ class CFlashbang : public CBasePlayerWeapon
     /* size: 336, cachelines: 6, members: 1 */
     /* padding: 336                         */
     /* last cacheline: 16 bytes             */
+};
+
+class CG3SG1 : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        void G3SG1Fire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+
+    public:
+
+        int                        m_iShell;             /*   336     4 */
+
+    private:
+
+        short unsigned int         m_usFireG3SG1;        /*   340     2 */
+
+    /* vtable has 11 entries: 
+    {
+        [0]  = Spawn
+        [1]  = Precache
+        [79] = iItemSlot
+        [61] = GetItemInfo
+        [87] = PrimaryAttack
+        [88] = SecondaryAttack
+        [64] = Deploy
+        [89] = Reload
+        [90] = WeaponIdle
+        [78] = GetMaxSpeed
+        [93] = UseDecrement
+    } */
+    /* size: 344, cachelines: 6, members: 3     */
+    /* sum members: 6, holes: 1, sum holes: 336 */
+    /* padding: 2                               */
+    /* last cacheline: 24 bytes                 */
 };
 
 
