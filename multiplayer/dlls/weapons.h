@@ -1412,6 +1412,60 @@ class CHEGrenade : public CBasePlayerWeapon
     /* last cacheline: 20 bytes                 */
 };
 
+class CKnife : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int GetItemInfo( ItemInfo *p );
+        int iItemSlot( void );
+
+        void EXPORT SwingAgain(  void );
+        void EXPORT Smack( void );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        void WeaponAnimation( int iAnimation );
+        int Swing( int fFirst );
+        int Stab( int fFirst );
+        BOOL Deploy( void );
+        void Holster( int skiplocal );
+        float GetMaxSpeed( void );
+        void WeaponIdle( void );
+        BOOL CanDrop( void );
+        BOOL UseDecrement( void );
+
+        bool ShieldSecondaryFire( int up_anim, int down_anim );
+        void SetPlayerShieldAnim( void );
+        void ResetPlayerShieldAnim( void );
+
+    public:
+
+        TraceResult                m_trHit;              /*   336    56 */
+        short unsigned int         m_usKnife;            /*   392     2 */
+
+    /* vtable has 12 entries: 
+    {
+       [0]  = Spawn
+       [1]  = Precache
+       [79] = iItemSlot
+       [61] = GetItemInfo
+       [87] = PrimaryAttack
+       [88] = SecondaryAttack
+       [64] = Deploy
+       [67] = Holster
+       [90] = WeaponIdle
+       [78] = GetMaxSpeed
+       [63] = CanDrop
+       [93] = UseDecrement
+    } */
+    /* size: 396, cachelines: 7, members: 3      */
+    /* sum members: 58, holes: 1, sum holes: 336 */
+    /* padding: 2                                */
+    /* last cacheline: 12 bytes                  */
+};
+
 
 //=========================================================
 // CWeaponBox - a single entity that can store weapons
