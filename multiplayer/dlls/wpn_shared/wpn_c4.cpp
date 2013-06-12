@@ -132,8 +132,8 @@ void CC4::PrimaryAttack( void )
         return;
     }
 
-    bool onBombZone = m_pPlayer->m_signals.GetState() & SIGNAL_BOMB;
-    bool onGround   = m_pPlayer->pev->flags & FL_ONGROUND;
+    bool onBombZone = !!( FBitSet( m_pPlayer->m_signals.GetState(), SIGNAL_BOMB ) );
+    bool onGround   = !!( FBitSet( m_pPlayer->pev->flags, FL_ONGROUND ) );
 
     if( !m_bStartedArming )
     {

@@ -48,7 +48,7 @@ void CM4A1::Spawn( void )
 
     Precache();
     m_iId = WEAPON_M4A1;
-    SET_MODEL( edict()), "models/w_m4a1.mdl" );
+    SET_MODEL( edict(), "models/w_m4a1.mdl" );
 
     m_iDefaultAmmo = M4A1_DEFAULT_GIVE;
     m_flAccuracy   = 0.2;
