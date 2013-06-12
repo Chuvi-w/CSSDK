@@ -126,13 +126,14 @@ void CSCOUT::SecondaryAttack( void )
         default: m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 90; break;
     }
 
+    m_pPlayer->ResetMaxSpeed();
+
     // TODO: Implement me.
     // if( TheBots )
     // {
     //     TheBots->OnEvent( EVENT_WEAPON_ZOOMED, m_pPlayer, NULL );
     // }
 
-    m_pPlayer->ResetMaxSpeed();
     EMIT_SOUND( m_pPlayer->edict(), CHAN_ITEM, "weapons/zoom.wav", 0.2, 2.4 );
 
     m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
