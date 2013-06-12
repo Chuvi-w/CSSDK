@@ -371,6 +371,7 @@ enum shieldren_e
 #define FIVESEVEN_DISTANCE      4096
 #define G3SG1_DISTANCE          8192
 #define GALIL_DISTANCE          8192
+#define GLOCK18_DISTANCE        8192
 
 // CS
 #define AK47_DAMAGE             36
@@ -383,6 +384,7 @@ enum shieldren_e
 #define FIVESEVEN_DAMAGE        20
 #define G3SG1_DAMAGE            80
 #define GALIL_DAMAGE            30
+#define GLOCK18_DAMAGE          25
 
 // CS
 #define AK47_PENETRATION        2
@@ -394,6 +396,7 @@ enum shieldren_e
 #define FIVESEVEN_PENETRATION   1
 #define G3SG1_PENETRATION       3
 #define GALIL_PENETRATION       2
+#define GLOCK18_PENETRATION     1
 
 // CS
 #define AK47_RANGE_MODIFER      0.98
@@ -405,7 +408,7 @@ enum shieldren_e
 #define FIVESEVEN_RANGE_MODIFER 0.885
 #define G3SG1_RANGE_MODIFER     0.98
 #define GALIL_RANGE_MODIFER     0.98
-
+#define GLOCK18_RANGE_MODIFER   0.75
 
 // bullet types
 typedef	enum
@@ -1313,6 +1316,50 @@ class CGalil : public CBasePlayerWeapon
     /* last cacheline: 28 bytes                  */
 };
 
+class CGLOCK18 : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        void GLOCK18Fire( float flSpread, float flCycleTime, BOOL fUseBurstMode );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+        BOOL IsPistol( void );
+
+    public:
+
+        int                        m_iShell;             /*   336     4 */
+        bool                       m_bBurstFire;         /*   340     1 */
+
+    /* vtable has 12 entries: 
+    {
+       [0]  = Spawn
+       [1]  = Precache
+       [79] = iItemSlot
+       [61] = GetItemInfo
+       [87] = PrimaryAttack
+       [88] = SecondaryAttack
+       [64] = Deploy
+       [89] = Reload
+       [90] = WeaponIdle
+       [78] = GetMaxSpeed
+       [93] = UseDecrement
+       [94] = IsPistol
+    } */
+    /* size: 344, cachelines: 6, members: 3     */
+    /* sum members: 5, holes: 1, sum holes: 336 */
+    /* padding: 3                               */
+    /* last cacheline: 24 bytes                 */
+};
 
 
 //=========================================================
