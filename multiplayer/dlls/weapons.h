@@ -377,6 +377,7 @@ enum shieldren_e
 #define M4A1_DISTANCE           8192
 #define MAC10_DISTANCE          8192
 #define MP5N_DISTANCE           8192
+#define P228_DISTANCE           4096
 
 // CS
 #define AK47_DAMAGE             36
@@ -395,6 +396,7 @@ enum shieldren_e
 #define M4A1_DAMAGE_SIL         32
 #define MAC10_DAMAGE            29
 #define MP5N_DAMAGE             26
+#define P228_DAMAGE             32
 
 // CS
 #define AK47_PENETRATION        2
@@ -410,7 +412,8 @@ enum shieldren_e
 #define M249_PENETRATION        2
 #define M4A1_PENETRATION        2
 #define MAC10_PENETRATION       1
-#define MP5N_PENETRATION            1
+#define MP5N_PENETRATION        1
+#define P228_PENETRATION        1
 
 // CS
 #define AK47_RANGE_MODIFER      0.98
@@ -428,6 +431,7 @@ enum shieldren_e
 #define M4A1_RANGE_MODIFER_SIL  0.97
 #define MAC10_RANGE_MODIFER     0.82
 #define MP5N_RANGE_MODIFER      0.84
+#define P228_RANGE_MODIFER      0.80
 
 // bullet types
 typedef	enum
@@ -1710,6 +1714,57 @@ class CMP5N : public CBasePlayerWeapon
     /* last cacheline: 28 bytes                  */
 };
 
+class CP228 : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        void P228Fire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+
+        void MakeBeam( void );   /* unused */
+        void BeamUpdate( void ); /* unused */
+
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+        BOOL IsPistol( void );
+
+    public:
+
+        int                 m_iShell;             /*   336     4 */
+
+    private:
+
+        short unsigned int  m_usFireP228;         /*   340     2 */
+
+    /* vtable has 12 entries: 
+    {
+        [0]  = Spawn
+        [1]  = Precache
+        [79] = iItemSlot
+        [61] = GetItemInfo
+        [87] = PrimaryAttack
+        [88] = SecondaryAttack
+        [64] = Deploy
+        [67] = Holster
+        [90] = WeaponIdle
+        [78] = GetMaxSpeed
+        [93] = UseDecrement
+        [94] = IsPistol
+    } */
+    /* size: 344, cachelines: 6, members: 3     */
+    /* sum members: 6, holes: 1, sum holes: 336 */
+    /* padding: 2                               */
+    /* last cacheline: 24 bytes                 */
+};
 
 //=========================================================
 // CWeaponBox - a single entity that can store weapons
