@@ -378,6 +378,7 @@ enum shieldren_e
 #define MAC10_DISTANCE          8192
 #define MP5N_DISTANCE           8192
 #define P228_DISTANCE           4096
+#define P90_DISTANCE            8192
 
 // CS
 #define AK47_DAMAGE             36
@@ -397,6 +398,7 @@ enum shieldren_e
 #define MAC10_DAMAGE            29
 #define MP5N_DAMAGE             26
 #define P228_DAMAGE             32
+#define P90_DAMAGE              21
 
 // CS
 #define AK47_PENETRATION        2
@@ -414,6 +416,7 @@ enum shieldren_e
 #define MAC10_PENETRATION       1
 #define MP5N_PENETRATION        1
 #define P228_PENETRATION        1
+#define P90_PENETRATION         1
 
 // CS
 #define AK47_RANGE_MODIFER      0.98
@@ -432,6 +435,7 @@ enum shieldren_e
 #define MAC10_RANGE_MODIFER     0.82
 #define MP5N_RANGE_MODIFER      0.84
 #define P228_RANGE_MODIFER      0.80
+#define P90_RANGE_MODIFER       0.885
 
 // bullet types
 typedef	enum
@@ -1765,6 +1769,51 @@ class CP228 : public CBasePlayerWeapon
     /* padding: 2                               */
     /* last cacheline: 24 bytes                 */
 };
+
+class CP90 : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void P90Fire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+
+    public:
+
+        int                 m_iShell;             /*   336     4 */
+        int                 iShellOn;             /*   340     4 */
+    private:
+
+        short unsigned int  m_usFireP90;          /*   344     2 */
+
+    /* vtable has 10 entries:
+    {
+       [0]  = Spawn
+       [1]  = Precache
+       [79] = iItemSlot
+       [61] = GetItemInfo
+       [87] = PrimaryAttack
+       [64] = Deploy
+       [67] = Holster
+       [90] = WeaponIdle
+       [78] = GetMaxSpeed
+       [93] = UseDecrement
+    } */
+    /* size: 348, cachelines: 6, members: 4      */
+    /* sum members: 10, holes: 1, sum holes: 336 */
+    /* padding: 2                                */
+    /* last cacheline: 28 bytes                  */
+};
+
 
 //=========================================================
 // CWeaponBox - a single entity that can store weapons
