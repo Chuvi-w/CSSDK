@@ -379,6 +379,7 @@ enum shieldren_e
 #define MP5N_DISTANCE           8192
 #define P228_DISTANCE           4096
 #define P90_DISTANCE            8192
+#define SCOUT_DISTANCE          8192
 
 // CS
 #define AK47_DAMAGE             36
@@ -399,6 +400,7 @@ enum shieldren_e
 #define MP5N_DAMAGE             26
 #define P228_DAMAGE             32
 #define P90_DAMAGE              21
+#define SCOUT_DAMAGE            75
 
 // CS
 #define AK47_PENETRATION        2
@@ -417,6 +419,7 @@ enum shieldren_e
 #define MP5N_PENETRATION        1
 #define P228_PENETRATION        1
 #define P90_PENETRATION         1
+#define SCOUT_PENETRATION       3
 
 // CS
 #define AK47_RANGE_MODIFER      0.98
@@ -436,6 +439,7 @@ enum shieldren_e
 #define MP5N_RANGE_MODIFER      0.84
 #define P228_RANGE_MODIFER      0.80
 #define P90_RANGE_MODIFER       0.885
+#define SCOUT_RANGE_MODIFER     0.98
 
 // bullet types
 typedef	enum
@@ -1812,6 +1816,53 @@ class CP90 : public CBasePlayerWeapon
     /* sum members: 10, holes: 1, sum holes: 336 */
     /* padding: 2                                */
     /* last cacheline: 28 bytes                  */
+};
+
+class CSCOUT : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        void SCOUTFire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+
+    public:
+
+        int                 m_iShell;             /*   336     4 */
+
+    private:
+
+        short unsigned int  m_usFireScout;        /*   340     2 */
+
+    /* vtable has 11 entries: 
+    {
+        [0]  = Spawn
+        [1]  = Precache
+        [79] = iItemSlot
+        [61] = GetItemInfo
+        [87] = PrimaryAttack
+        [88] = SecondaryAttack
+        [64] = Deploy
+        [67] = Holster
+        [90] = WeaponIdle
+        [78] = GetMaxSpeed
+        [93] = UseDecrement
+    } */
+    /* size: 344, cachelines: 6, members: 3     */
+    /* sum members: 6, holes: 1, sum holes: 336 */
+    /* padding: 2                               */
+    /* last cacheline: 24 bytes                 */
 };
 
 
