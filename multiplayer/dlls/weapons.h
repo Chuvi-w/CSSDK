@@ -374,6 +374,7 @@ enum shieldren_e
 #define GALIL_DISTANCE          8192
 #define GLOCK18_DISTANCE        8192
 #define M249_DISTANCE           8192
+#define M4A1_DISTANCE           8192
 
 // CS
 #define AK47_DAMAGE             36
@@ -388,6 +389,8 @@ enum shieldren_e
 #define GALIL_DAMAGE            30
 #define GLOCK18_DAMAGE          25
 #define M249_DAMAGE             32
+#define M4A1_DAMAGE             33
+#define M4A1_DAMAGE_SIL         32
 
 // CS
 #define AK47_PENETRATION        2
@@ -401,6 +404,7 @@ enum shieldren_e
 #define GALIL_PENETRATION       2
 #define GLOCK18_PENETRATION     1
 #define M249_PENETRATION        2
+#define M4A1_PENETRATION        2
 
 // CS
 #define AK47_RANGE_MODIFER      0.98
@@ -414,6 +418,8 @@ enum shieldren_e
 #define GALIL_RANGE_MODIFER     0.98
 #define GLOCK18_RANGE_MODIFER   0.75
 #define M249_RANGE_MODIFER      0.97
+#define M4A1_RANGE_MODIFER      0.95
+#define M4A1_RANGE_MODIFER_SIL  0.97
 
 // bullet types
 typedef	enum
@@ -1540,7 +1546,6 @@ class CM3 : public CBasePlayerWeapon
 
         short unsigned int  m_usFireM3;           /*   344     2 */
 
-
     /* vtable has 10 entries: 
     {
         [0]  = Spawn
@@ -1560,6 +1565,52 @@ class CM3 : public CBasePlayerWeapon
     /* last cacheline: 28 bytes                  */
 };
 
+class CM4A1 : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        void M4A1Fire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+
+    public:
+
+        int                     m_iShell;             /*   336     4 */
+        int                     iShellOn;             /*   340     4 */
+
+    private:
+
+        short unsigned int      m_usFireM4A1;         /*   344     2 */
+
+    /* vtable has 11 entries: 
+    {
+       [0]  = Spawn
+       [1]  = Precache
+       [79] = iItemSlot
+       [61] = GetItemInfo
+       [87] = PrimaryAttack
+       [88] = SecondaryAttack
+       [64] = Deploy
+       [67] = Holster
+       [90] = WeaponIdle
+       [78] = GetMaxSpeed
+       [93] = UseDecrement
+    } */
+    /* size: 348, cachelines: 6, members: 4      */
+    /* sum members: 10, holes: 1, sum holes: 336 */
+    /* padding: 2                                */
+    /* last cacheline: 28 bytes                  */
+};
 
 
 //=========================================================
