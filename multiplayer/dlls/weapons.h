@@ -1515,6 +1515,52 @@ class CM249 : public CBasePlayerWeapon
     /* last cacheline: 28 bytes                  */
 };
 
+class CM3 : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+
+    public:
+
+        int                 m_iShell;             /*   336     4 */
+        float               m_flPumpTime;         /*   340     4 */
+
+    private:
+
+        short unsigned int  m_usFireM3;           /*   344     2 */
+
+
+    /* vtable has 10 entries: 
+    {
+        [0]  = Spawn
+        [1]  = Precache
+        [79] = iItemSlot
+        [61] = GetItemInfo
+        [87] = PrimaryAttack
+        [64] = Deploy
+        [89] = Reload
+        [90] = WeaponIdle
+        [78] = GetMaxSpeed
+        [93] = UseDecrement
+    } */
+    /* size: 348, cachelines: 6, members: 4      */
+    /* sum members: 10, holes: 1, sum holes: 336 */
+    /* padding: 2                                */
+    /* last cacheline: 28 bytes                  */
+};
+
+
 
 //=========================================================
 // CWeaponBox - a single entity that can store weapons
