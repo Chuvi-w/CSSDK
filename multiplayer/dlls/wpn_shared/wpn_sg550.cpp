@@ -251,5 +251,5 @@ BOOL CSG550::UseDecrement( void )
 
 float CSG550::GetMaxSpeed( void )
 {
-    return m_pPlayer->m_iFOV ? SG550_MAX_SPEED : SG550_MAX_SPEED_ZOOM;
+    return m_pPlayer->m_iFOV == 90 ? SG550_MAX_SPEED : SG550_MAX_SPEED_ZOOM;
 }
