@@ -166,7 +166,7 @@ void CAUG::AUGFire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
 
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 
-	Vector vecDir = m_pPlayer->FireBullets3( m_pPlayer->GetGunPosition, gpGlobals->v_forward, flSpread, 
+	Vector vecDir = m_pPlayer->FireBullets3( m_pPlayer->GetGunPosition(), gpGlobals->v_forward, flSpread, 
         AUG_DISTANCE, AUG_PENETRATION, BULLET_PLAYER_556MM, AUG_DAMAGE, AUG_RANGE_MODIFER, m_pPlayer->pev, FALSE, m_pPlayer->random_seed );
 
 	int flags;

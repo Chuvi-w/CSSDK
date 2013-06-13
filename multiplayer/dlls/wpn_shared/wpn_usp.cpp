@@ -358,3 +358,4 @@ BOOL CUSP::IsPistol( void )
 {
     return TRUE;
 }
+
