@@ -324,8 +324,7 @@ void LinkUserMessages( void )  // Last check: 2013, May 29
 LINK_ENTITY_TO_CLASS( player, CBasePlayer );
 
 
-// CS
-void CBasePlayer::AddAccount( int amount, bool bTrackChange )
+void CBasePlayer::AddAccount( int amount, bool bTrackChange ) // Last check : 2013, June 6.
 {
     m_iAccount += amount;
 
