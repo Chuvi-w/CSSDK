@@ -969,8 +969,9 @@ void CGrenade::C4Think( void )
 					ClientPrint( pDefuser->pev, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground" );
 				}
 
-				//pDefuser->ResetMaxSpeed();
-				//pDefuser->SetProgressBarTime( 0 );
+				pDefuser->ResetMaxSpeed();
+				pDefuser->SetProgressBarTime( 0 );
+
 				pDefuser->m_bIsDefusing = false;
 
 				m_bStartDefuse = false;
@@ -1006,7 +1007,7 @@ void CGrenade::C4Think( void )
 			UTIL_Remove( this );
 			m_bJustBlew = true;
 
-			// pDefuser->ResetMaxSpeed();
+			pDefuser->ResetMaxSpeed();
 			pDefuser->m_bIsDefusing = false;
 
 			MESSAGE_BEGIN( MSG_ALL, gmsgScenarioIcon );
