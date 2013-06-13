@@ -477,7 +477,50 @@ void CGrenade :: UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code )
 }
 
 
+// ===============
+//	SMOKE GRENADE
+// ===============
 
+CGrenade *CGrenade::ShootSmokeGrenade( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, unsigned short usEvent )
+{
+    CGrenade *pGrenade = GetClassPtr( ( CGrenade* )NULL );
+    
+    pGrenade->Spawn();
+
+    UTIL_SetOrigin( pGrenade->pev, vecStart );
+
+    pGrenade->pev->velocity = vecVelocity;
+    pGrenade->pev->angles   = pevOwner->angles;
+    pGrenade->pev->owner    = ENT( pevOwner );
+    pGrenade->m_usEvent     = usEvent;
+    pGrenade->m_bLightSmoke = false;
+    pGrenade->m_bDetonated  = false;
+
+    pGrenade->SetTouch( &CGrenade::BounceTouch );
+    pGrenade->SetThink(&CGrenade::SG_TumbleThink);
+
+    pGrenade->pev->dmgtime   = gpGlobals->time + time;
+    pGrenade->pev->nextthink = gpGlobals->time + 0.1;
+
+    if( time < 0.1 )
+    {
+        pGrenade->pev->nextthink = gpGlobals->time;
+        pGrenade->pev->velocity  = Vector( 0, 0, 0 );
+    }
+
+    pGrenade->pev->sequence  = RANDOM_LONG( 3, 6 );
+    pGrenade->pev->framerate = 1;
+    pGrenade->m_bJustBlew    = true;
+    pGrenade->pev->gravity   = 0.5;
+    pGrenade->pev->friction  = 0.8;
+    pGrenade->m_SGSmoke      = 0;
+
+    SET_MODEL( pGrenade->edict(), "models/w_smokegrenade.mdl" );
+
+    pGrenade->pev->dmg = 35;
+
+    return pGrenade;
+}
 
 // ==========
 //	C4 BOMB
