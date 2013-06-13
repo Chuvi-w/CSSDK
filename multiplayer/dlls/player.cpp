@@ -455,6 +455,24 @@ void CBasePlayer::AddPoints( int score, BOOL bAllowNegativeScore ) // Last check
     MESSAGE_END();
 }
 
+void CBasePlayer::AddPointsToTeam( int score, BOOL bAllowNegativeScore ) // Last check : 2013, June 6.
+{
+    int index = entindex();
+
+    for( int i = 1; i <= gpGlobals->maxClients; i++ )
+    {
+        CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
+
+        if( pPlayer && i != index )
+        {
+            if( g_pGameRules->PlayerRelationship( this, pPlayer ) == GR_TEAMMATE )
+            {
+                pPlayer->AddPoints( score, bAllowNegativeScore );
+            }
+        }
+    }
+}
+
 // CS
 void CBasePlayer::Blind( float duration, float holdTime, float fadeTime, int alpha )
 {
@@ -2781,27 +2799,6 @@ int  CBasePlayer::Classify ( void )
     return CLASS_PLAYER;
 }
 
-
-
-
-
-void CBasePlayer::AddPointsToTeam( int score, BOOL bAllowNegativeScore )
-{
-    int index = entindex();
-
-    for ( int i = 1; i <= gpGlobals->maxClients; i++ )
-    {
-        CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
-
-        if ( pPlayer && i != index )
-        {
-            if ( g_pGameRules->PlayerRelationship( this, pPlayer ) == GR_TEAMMATE )
-            {
-                pPlayer->AddPoints( score, bAllowNegativeScore );
-            }
-        }
-    }
-}
 
 //Player ID
 void CBasePlayer::InitStatusBar()
