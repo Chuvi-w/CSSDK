@@ -253,7 +253,7 @@ void CG3SG1::WeaponIdle( void )
     }
 }
 
-BOOL CDEAGLE::UseDecrement( void )
+BOOL CG3SG1::UseDecrement( void )
 {
     #if defined( CLIENT_WEAPONS )
         return TRUE;

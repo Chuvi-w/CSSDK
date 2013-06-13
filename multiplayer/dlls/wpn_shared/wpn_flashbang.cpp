@@ -78,7 +78,7 @@ int CFlashbang::GetItemInfo( ItemInfo *p )
     return 1;
 }
 
-int CFiveSeven::iItemSlot( void )
+int CFlashbang::iItemSlot( void )
 {
     return GRENADE_SLOT;
 }

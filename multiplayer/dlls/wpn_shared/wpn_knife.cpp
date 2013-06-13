@@ -512,17 +512,17 @@ void CKnife::WeaponIdle( void )
     }
 }
 
-float CFlashbang::GetMaxSpeed( void )
+float CKnife::GetMaxSpeed( void )
 {
     return m_fMaxSpeed;
 }
 
-BOOL CFlashbang::CanDrop( void )
+BOOL CKnife::CanDrop( void )
 {
     return FALSE;
 }
 
-BOOL CFlashbang::UseDecrement( void )
+BOOL CKnife::UseDecrement( void )
 {
     #if defined( CLIENT_WEAPONS )
         return TRUE;

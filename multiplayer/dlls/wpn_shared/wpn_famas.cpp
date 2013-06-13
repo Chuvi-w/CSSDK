@@ -275,7 +275,7 @@ void CFamas::WeaponIdle( void )
     }
 }
 
-BOOL CDEAGLE::UseDecrement( void )
+BOOL CFamas::UseDecrement( void )
 {
     #if defined( CLIENT_WEAPONS )
         return TRUE;
@@ -284,7 +284,7 @@ BOOL CDEAGLE::UseDecrement( void )
     #endif
 }
 
-float CDEAGLE::GetMaxSpeed( void )
+float CFamas::GetMaxSpeed( void )
 {
     return FAMAS_MAX_SPEED;
 }

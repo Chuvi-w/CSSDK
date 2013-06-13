@@ -244,7 +244,7 @@ void CAUG::WeaponIdle( void )
 	SendWeaponAnim( AUG_IDLE1, UseDecrement() != FALSE );
 }
 
-BOOL UseDecrement( void )
+BOOL CAUG::UseDecrement( void )
 {
     #if defined( CLIENT_WEAPONS )
         return TRUE;
@@ -253,7 +253,7 @@ BOOL UseDecrement( void )
     #endif
 }
 
-float GetMaxSpeed( void )
+float CAUG::GetMaxSpeed( void )
 {
     return AUG_MAX_SPEED;
 }

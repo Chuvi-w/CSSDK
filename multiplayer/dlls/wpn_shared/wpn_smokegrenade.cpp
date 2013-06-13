@@ -297,6 +297,11 @@ void CSmokeGrenade::ResetPlayerShieldAnim( void )
     }
 }
 
+float CSmokeGrenade::GetMaxSpeed( void )
+{
+    return m_fMaxSpeed;
+}
+
 BOOL CSmokeGrenade::CanDeploy( void )
 {
     return m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] != 0;

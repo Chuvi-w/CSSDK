@@ -250,7 +250,7 @@ void CFiveSeven::WeaponIdle( void )
     }
 }
 
-BOOL CDEAGLE::UseDecrement( void )
+BOOL CFiveSeven::UseDecrement( void )
 {
     #if defined( CLIENT_WEAPONS )
         return TRUE;
@@ -259,12 +259,12 @@ BOOL CDEAGLE::UseDecrement( void )
     #endif
 }
 
-float CDEAGLE::GetMaxSpeed( void )
+float CFiveSeven::GetMaxSpeed( void )
 {
     return m_fMaxSpeed;
 }
 
-BOOL CDEAGLE::IsPistol( void )
+BOOL CFiveSeven::IsPistol( void )
 {
     return TRUE;
 }

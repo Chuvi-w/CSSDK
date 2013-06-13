@@ -255,7 +255,7 @@ void CELITE::WeaponIdle( void )
     }
 }
 
-BOOL CDEAGLE::UseDecrement( void )
+BOOL CELITE::UseDecrement( void )
 {
     #if defined( CLIENT_WEAPONS )
         return TRUE;
@@ -264,12 +264,12 @@ BOOL CDEAGLE::UseDecrement( void )
     #endif
 }
 
-float CDEAGLE::GetMaxSpeed( void )
+float CELITE::GetMaxSpeed( void )
 {
     return ELITE_MAX_SPEED;
 }
 
-BOOL CDEAGLE::IsPistol( void )
+BOOL CELITE::IsPistol( void )
 {
     return TRUE;
 }

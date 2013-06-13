@@ -288,6 +288,11 @@ void CHEGrenade::ResetPlayerShieldAnim( void )
     }
 }
 
+float CHEGrenade::GetMaxSpeed( void )
+{
+    return m_fMaxSpeed;
+}
+
 BOOL CHEGrenade::CanDeploy( void )
 {
     return m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] != 0;

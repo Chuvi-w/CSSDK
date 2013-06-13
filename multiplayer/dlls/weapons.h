@@ -1241,7 +1241,6 @@ class CFlashbang : public CBasePlayerWeapon
         void SecondaryAttack( void );
         BOOL Deploy( void );
         void Holster( int skiplocal );
-        void Reload( void );
         void WeaponIdle( void );
         float GetMaxSpeed( void );
         BOOL CanDeploy( void );
@@ -1427,7 +1426,6 @@ class CHEGrenade : public CBasePlayerWeapon
         void SecondaryAttack( void );
         BOOL Deploy( void );
         void Holster( int skiplocal );
-        void Reload( void );
         void WeaponIdle( void );
         float GetMaxSpeed( void );
         BOOL CanDeploy( void );
@@ -1995,7 +1993,6 @@ class CSmokeGrenade : public CBasePlayerWeapon
         void SecondaryAttack( void );
         BOOL Deploy( void );
         void Holster( int skiplocal );
-        void Reload( void );
         void WeaponIdle( void );
         float GetMaxSpeed( void );
         BOOL CanDeploy( void );
