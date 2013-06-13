@@ -385,6 +385,7 @@ enum shieldren_e
 #define SG552_DISTANCE          8192
 #define TMP_DISTANCE            8192
 #define UMP45_DISTANCE          8192
+#define USP_DISTANCE            4096
 
 // CS
 #define AK47_DAMAGE             36
@@ -410,6 +411,8 @@ enum shieldren_e
 #define SG552_DAMAGE            33
 #define TMP_DAMAGE              20
 #define UMP45_DAMAGE            30
+#define USP_DAMAGE              34
+#define USP_DAMAGE_SIL          30
 
 // CS
 #define AK47_PENETRATION        2
@@ -433,6 +436,7 @@ enum shieldren_e
 #define SG552_PENETRATION       2
 #define TMP_PENETRATION         1
 #define UMP45_PENETRATION       1
+#define USP_PENETRATION         1
 
 // CS
 #define AK47_RANGE_MODIFER      0.98
@@ -457,6 +461,7 @@ enum shieldren_e
 #define SG552_RANGE_MODIFER     0.955
 #define TMP_RANGE_MODIFER       0.85
 #define UMP45_RANGE_MODIFER     0.82
+#define USP_RANGE_MODIFER       0.79
 
 // bullet types
 typedef	enum
@@ -2115,6 +2120,58 @@ class CUMP45 : public CBasePlayerWeapon
     /* sum members: 10, holes: 1, sum holes: 336 */
     /* padding: 2                                */
     /* last cacheline: 28 bytes                  */
+};
+
+class CUSP : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        void USPFire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+
+        void MakeBeam( void );   /* unused */
+        void BeamUpdate( void ); /* unused */
+
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+        BOOL IsPistol( void );
+
+    public:
+
+        int                 m_iShell;             /*   336     4 */
+
+    private:
+
+        short unsigned int  m_usFireUSP;          /*   340     2 */
+
+    /* vtable has 12 entries: 
+    {
+        [0]  = Spawn
+        [1]  = Precache
+        [79] = iItemSlot
+        [61] = GetItemInfo
+        [87] = PrimaryAttack
+        [88] = SecondaryAttack
+        [64] = Deploy
+        [67] = Holster
+        [90] = WeaponIdle
+        [78] = GetMaxSpeed
+        [93] = UseDecrement
+        [94] = IsPistol
+    } */
+    /* size: 344, cachelines: 6, members: 3     */
+    /* sum members: 6, holes: 1, sum holes: 336 */
+    /* padding: 2                               */
+    /* last cacheline: 24 bytes                 */
 };
 
 

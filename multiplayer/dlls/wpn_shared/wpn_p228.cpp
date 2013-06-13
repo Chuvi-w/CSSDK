@@ -179,8 +179,8 @@ void CP228::P228Fire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
         // if( TheBots )
         // {
         //     TheBots->OnEvent( EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer, NULL );
-
         // }
+
         return;
     }
 
