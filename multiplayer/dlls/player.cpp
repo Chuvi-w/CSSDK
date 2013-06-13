@@ -343,6 +343,21 @@ void CBasePlayer::AddAccount( int amount, bool bTrackChange ) // Last check : 20
     MESSAGE_END();
 }
 
+void CBasePlayer::AddAutoBuyData( const char *string ) // Last check : 2013, June 6.
+{
+    int length = strlen( m_autoBuyString );
+
+    if( length < sizeof( m_autoBuyString ) )
+    {
+        if( length > 0 )
+        {
+            m_autoBuyString[ length ] = ' ';
+        }
+
+        strncat( m_autoBuyString, string, sizeof( m_autoBuyString ) - length );
+    }
+}
+
 // CS
 void CBasePlayer::Blind( float duration, float holdTime, float fadeTime, int alpha )
 {
