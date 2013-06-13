@@ -473,6 +473,16 @@ void CBasePlayer::AddPointsToTeam( int score, BOOL bAllowNegativeScore ) // Last
     }
 }
 
+int CBasePlayer::AmmoInventory( int iAmmoIndex ) // Last check : 2013, June 6.
+{
+    if( iAmmoIndex == -1 )
+    {
+        return -1;
+    }
+
+    return m_rgAmmo[ iAmmoIndex ];
+}
+
 // CS
 void CBasePlayer::Blind( float duration, float holdTime, float fadeTime, int alpha )
 {
@@ -4878,15 +4888,7 @@ void CBasePlayer::ItemPostFrame()
     m_pActiveItem->ItemPostFrame( );
 }
 
-int CBasePlayer::AmmoInventory( int iAmmoIndex )
-{
-    if (iAmmoIndex == -1)
-    {
-        return -1;
-    }
 
-    return m_rgAmmo[ iAmmoIndex ];
-}
 
 int CBasePlayer::GetAmmoIndex(const char *psz)
 {
