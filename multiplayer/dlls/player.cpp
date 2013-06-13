@@ -426,6 +426,35 @@ int CBasePlayer::AddPlayerItem( CBasePlayerItem *pItem ) // Last check : 2013, J
     return FALSE;
 }
 
+void CBasePlayer::AddPoints( int score, BOOL bAllowNegativeScore ) // Last check : 2013, June 6.
+{
+    if( score < 0 )
+    {
+        if( !bAllowNegativeScore )
+        {
+            if( pev->frags < 0 )
+            {
+                return;
+            }
+
+            if( -score > pev->frags )
+            {
+                score = static_cast< int >( -pev->frags );
+            }
+        }
+    }
+
+    pev->frags += score;
+
+    MESSAGE_BEGIN( MSG_ALL, gmsgScoreInfo );
+        WRITE_BYTE( entindex() );
+        WRITE_SHORT( static_cast< int >( pev->frags ) );
+        WRITE_SHORT( m_iDeaths );
+        WRITE_SHORT( 0 );
+        WRITE_SHORT( m_iTeam );
+    MESSAGE_END();
+}
+
 // CS
 void CBasePlayer::Blind( float duration, float holdTime, float fadeTime, int alpha )
 {
@@ -2753,33 +2782,7 @@ int  CBasePlayer::Classify ( void )
 }
 
 
-void CBasePlayer::AddPoints( int score, BOOL bAllowNegativeScore )
-{
-	// Positive score always adds
-	if ( score < 0 )
-	{
-		if ( !bAllowNegativeScore )
-		{
-			if ( pev->frags < 0 )		// Can't go more negative
-				return;
-			
-			if ( -score > pev->frags )	// Will this go negative?
-			{
-				score = static_cast<int>(-pev->frags);		// Sum will be 0
-			}
-		}
-	}
 
-	pev->frags += score;
-
-	MESSAGE_BEGIN( MSG_ALL, gmsgScoreInfo );
-		WRITE_BYTE( ENTINDEX(edict()) );
-		WRITE_SHORT( static_cast<int>(pev->frags) );
-		WRITE_SHORT( m_iDeaths );
-		WRITE_SHORT( 0 );
-		WRITE_SHORT( g_pGameRules->GetTeamIndex( m_szTeamName ) + 1 );
-	MESSAGE_END();
-}
 
 
 void CBasePlayer::AddPointsToTeam( int score, BOOL bAllowNegativeScore )
