@@ -614,8 +614,7 @@ void CGrenade::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useT
 			barTime = 10;
 		}
 
-		// TODO: Implements this.
-		// pPlayer->SetProgressBarTime( barTime );
+		pPlayer->SetProgressBarTime( barTime );
 	}
 }
 
