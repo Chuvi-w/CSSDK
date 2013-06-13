@@ -358,6 +358,74 @@ void CBasePlayer::AddAutoBuyData( const char *string ) // Last check : 2013, Jun
     }
 }
 
+/**
+ * Add a weapon to the player (Item == Weapon == Selectable Object)
+ */
+int CBasePlayer::AddPlayerItem( CBasePlayerItem *pItem ) // Last check : 2013, June 6.
+{
+    CBasePlayerItem *pInsert = m_rgpPlayerItems[ pItem->iItemSlot() ];
+
+    while( pInsert )
+    {
+        if( FClassnameIs( pInsert->pev, STRING( pItem->pev->classname ) ) )
+        {
+            if( pItem->AddDuplicate( pInsert ) )
+            {
+                g_pGameRules->PlayerGotWeapon( this, pItem );
+
+                pItem->CheckRespawn();
+                pItem->UpdateItemInfo();
+
+                if( m_pActiveItem )
+                    m_pActiveItem->UpdateItemInfo();
+
+                pItem->Kill();
+            }
+            else if( gEvilImpulse101 )
+            {
+                pItem->Kill();
+            }
+
+            return FALSE;
+        }
+
+        pInsert = pInsert->m_pNext;
+    }
+
+    if( pItem->AddToPlayer( this ) )
+    {
+        g_pGameRules->PlayerGotWeapon( this, pItem );
+
+        if( pItem->iItemSlot() == PRIMARY_WEAPON_SLOT )
+        {
+            m_bHasPrimary = true;
+        }
+
+        pItem->CheckRespawn();
+
+        pItem->m_pNext = m_rgpPlayerItems[ pItem->iItemSlot() ];
+        m_rgpPlayerItems[ pItem->iItemSlot() ] = pItem;
+
+        if( HasShield() )
+        {
+            pev->gamestate = 0;
+        }
+
+        if( g_pGameRules->FShouldSwitchWeapon( this, pItem ) && !m_bShieldDrawn )
+        {
+            SwitchWeapon( pItem );
+        }
+
+        return TRUE;
+    }
+    else if( gEvilImpulse101 )
+    {
+        pItem->Kill();
+    }
+
+    return FALSE;
+}
+
 // CS
 void CBasePlayer::Blind( float duration, float holdTime, float fadeTime, int alpha )
 {
@@ -4669,67 +4737,6 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 	}
 #endif	// HLDEMO_BUILD
 }
-
-//
-// Add a weapon to the player (Item == Weapon == Selectable Object)
-//
-int CBasePlayer::AddPlayerItem( CBasePlayerItem *pItem )
-{
-	CBasePlayerItem *pInsert;
-	
-	pInsert = m_rgpPlayerItems[pItem->iItemSlot()];
-
-	while (pInsert)
-	{
-		if (FClassnameIs( pInsert->pev, STRING( pItem->pev->classname) ))
-		{
-			if (pItem->AddDuplicate( pInsert ))
-			{
-				g_pGameRules->PlayerGotWeapon ( this, pItem );
-				pItem->CheckRespawn();
-
-				// ugly hack to update clip w/o an update clip message
-				pInsert->UpdateItemInfo( );
-				if (m_pActiveItem)
-					m_pActiveItem->UpdateItemInfo( );
-
-				pItem->Kill( );
-			}
-			else if (gEvilImpulse101)
-			{
-				// FIXME: remove anyway for deathmatch testing
-				pItem->Kill( );
-			}
-			return FALSE;
-		}
-		pInsert = pInsert->m_pNext;
-	}
-
-
-	if (pItem->AddToPlayer( this ))
-	{
-		g_pGameRules->PlayerGotWeapon ( this, pItem );
-		pItem->CheckRespawn();
-
-		pItem->m_pNext = m_rgpPlayerItems[pItem->iItemSlot()];
-		m_rgpPlayerItems[pItem->iItemSlot()] = pItem;
-
-		// should we switch to this item?
-		if ( g_pGameRules->FShouldSwitchWeapon( this, pItem ) )
-		{
-			SwitchWeapon( pItem );
-		}
-
-		return TRUE;
-	}
-	else if (gEvilImpulse101)
-	{
-		// FIXME: remove anyway for deathmatch testing
-		pItem->Kill( );
-	}
-	return FALSE;
-}
-
 
 
 int CBasePlayer::RemovePlayerItem( CBasePlayerItem *pItem )
