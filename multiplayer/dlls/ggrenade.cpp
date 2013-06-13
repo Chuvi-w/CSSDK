@@ -477,6 +477,44 @@ void CGrenade :: UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code )
 }
 
 
+// ============
+//	HE GRENADE
+// ============
+
+CGrenade *CGrenade::ShootTimed2( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time, int iTeam, unsigned short usEvent )
+{
+    CGrenade *pGrenade = GetClassPtr( ( CGrenade* )NULL );
+   
+    pGrenade->Spawn();
+
+    UTIL_SetOrigin( pGrenade->pev, vecStart );
+
+    pGrenade->pev->velocity  = vecVelocity;
+    pGrenade->pev->angles    = pevOwner->angles;
+    pGrenade->pev->owner     = ENT( pevOwner );
+    pGrenade->m_usEvent      = usEvent;
+
+    pGrenade->SetTouch( &CGrenade::BounceTouch );
+    pGrenade->SetThink( &CGrenade::TumbleThink );
+
+    pGrenade->pev->dmgtime   = gpGlobals->time + time;
+    pGrenade->pev->nextthink = gpGlobals->time + 0.1;
+
+    pGrenade->pev->sequence  = RANDOM_LONG( 3, 6 );
+    pGrenade->pev->framerate = 1;
+    pGrenade->m_bJustBlew    = true;
+    pGrenade->pev->gravity   = 0.55;
+    pGrenade->pev->friction  = 0.7;
+    pGrenade->m_iTeam        = iTeam;
+
+    SET_MODEL( pGrenade->edict(), "models/w_hegrenade.mdl" );
+
+    pGrenade->pev->dmg = 100;
+
+    return pGrenade;
+}
+
+
 // ===============
 //	SMOKE GRENADE
 // ===============
