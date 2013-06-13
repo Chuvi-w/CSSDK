@@ -383,6 +383,7 @@ enum shieldren_e
 #define SCOUT_DISTANCE          8192
 #define SG550_DISTANCE          8192
 #define SG552_DISTANCE          8192
+#define TMP_DISTANCE            8192
 
 // CS
 #define AK47_DAMAGE             36
@@ -406,6 +407,7 @@ enum shieldren_e
 #define SCOUT_DAMAGE            75
 #define SG550_DAMAGE            70
 #define SG552_DAMAGE            33
+#define TMP_DAMAGE              20
 
 // CS
 #define AK47_PENETRATION        2
@@ -427,6 +429,7 @@ enum shieldren_e
 #define SCOUT_PENETRATION       3
 #define SG550_PENETRATION       2
 #define SG552_PENETRATION       2
+#define TMP_PENETRATION         1
 
 // CS
 #define AK47_RANGE_MODIFER      0.98
@@ -449,6 +452,7 @@ enum shieldren_e
 #define SCOUT_RANGE_MODIFER     0.98
 #define SG550_RANGE_MODIFER     0.98
 #define SG552_RANGE_MODIFER     0.955
+#define TMP_RANGE_MODIFER       0.85
 
 // bullet types
 typedef	enum
@@ -2019,6 +2023,50 @@ class CSmokeGrenade : public CBasePlayerWeapon
     /* last cacheline: 20 bytes                 */
 };
 
+class CTMP : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void TMPFire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+        BOOL Deploy( void );
+        void Reload( void );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL UseDecrement( void );
+
+    public:
+
+        int                 m_iShell;             /*   336     4 */
+        int                 iShellOn;             /*   340     4 */
+
+    private:
+
+        short unsigned int  m_usFireTMP;          /*   344     2 */
+
+    /* vtable has 10 entries: 
+    {
+       [0]  = Spawn
+       [1]  = Precache
+       [79] = iItemSlot
+       [61] = GetItemInfo
+       [87] = PrimaryAttack
+       [64] = Deploy
+       [67] = Holster
+       [90] = WeaponIdle
+       [78] = GetMaxSpeed
+       [93] = UseDecrement
+    } */
+    /* size: 348, cachelines: 6, members: 4      */
+    /* sum members: 10, holes: 1, sum holes: 336 */
+    /* padding: 2                                */
+    /* last cacheline: 28 bytes                  */
+};
 
 
 //=========================================================
