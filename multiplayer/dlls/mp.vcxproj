@@ -196,6 +196,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\game_shared\shared_util.cpp" />
+    <ClCompile Include="..\public\MemPool.cpp" />
     <ClCompile Include="airtank.cpp" />
     <ClCompile Include="animating.cpp" />
     <ClCompile Include="animation.cpp" />
@@ -220,7 +222,6 @@
     <ClCompile Include="h_cycler.cpp" />
     <ClCompile Include="h_export.cpp" />
     <ClCompile Include="healthkit.cpp" />
-    <ClCompile Include="wpn_shared\hl_wpn_glock.cpp" />
     <ClCompile Include="..\common\interface.cpp" />
     <ClCompile Include="items.cpp" />
     <ClCompile Include="lights.cpp" />
@@ -247,9 +248,42 @@
     <ClCompile Include="..\game_shared\voice_gamemgr.cpp" />
     <ClCompile Include="weapons.cpp" />
     <ClCompile Include="world.cpp" />
+    <ClCompile Include="wpn_shared\wpn_ak47.cpp" />
+    <ClCompile Include="wpn_shared\wpn_aug.cpp" />
+    <ClCompile Include="wpn_shared\wpn_awp.cpp" />
+    <ClCompile Include="wpn_shared\wpn_c4.cpp" />
+    <ClCompile Include="wpn_shared\wpn_deagle.cpp" />
+    <ClCompile Include="wpn_shared\wpn_elite.cpp" />
+    <ClCompile Include="wpn_shared\wpn_famas.cpp" />
+    <ClCompile Include="wpn_shared\wpn_fiveseven.cpp" />
+    <ClCompile Include="wpn_shared\wpn_flashbang.cpp" />
+    <ClCompile Include="wpn_shared\wpn_g3sg1.cpp" />
+    <ClCompile Include="wpn_shared\wpn_galil.cpp" />
+    <ClCompile Include="wpn_shared\wpn_glock18.cpp" />
+    <ClCompile Include="wpn_shared\wpn_hegrenade.cpp" />
+    <ClCompile Include="wpn_shared\wpn_knife.cpp" />
+    <ClCompile Include="wpn_shared\wpn_m249.cpp" />
+    <ClCompile Include="wpn_shared\wpn_m3.cpp" />
+    <ClCompile Include="wpn_shared\wpn_m4a1.cpp" />
+    <ClCompile Include="wpn_shared\wpn_mac10.cpp" />
+    <ClCompile Include="wpn_shared\wpn_mp5navy.cpp" />
+    <ClCompile Include="wpn_shared\wpn_p228.cpp" />
+    <ClCompile Include="wpn_shared\wpn_p90.cpp" />
+    <ClCompile Include="wpn_shared\wpn_scout.cpp" />
+    <ClCompile Include="wpn_shared\wpn_sg550.cpp" />
+    <ClCompile Include="wpn_shared\wpn_sg552.cpp" />
+    <ClCompile Include="wpn_shared\wpn_smokegrenade.cpp" />
+    <ClCompile Include="wpn_shared\wpn_tmp.cpp" />
+    <ClCompile Include="wpn_shared\wpn_ump45.cpp" />
+    <ClCompile Include="wpn_shared\wpn_usp.cpp" />
+    <ClCompile Include="wpn_shared\wpn_xm1014.cpp" />
     <ClCompile Include="xen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\game_shared\shared_util.h" />
+    <ClInclude Include="..\public\MemPool.h" />
+    <ClInclude Include="..\public\UtlMemory.h" />
+    <ClInclude Include="..\public\UtlVector.h" />
     <ClInclude Include="activity.h" />
     <ClInclude Include="activitymap.h" />
     <ClInclude Include="animation.h" />
