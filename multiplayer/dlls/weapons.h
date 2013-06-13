@@ -798,6 +798,10 @@ extern DLL_GLOBAL	short	g_sModelIndexFireball2;
 extern DLL_GLOBAL	short	g_sModelIndexFireball3;
 extern DLL_GLOBAL	short	g_sModelIndexFireball4;
 extern DLL_GLOBAL   short   g_sModelIndexC4Glow;
+extern DLL_GLOBAL   short   g_sModelIndexRadio;
+extern DLL_GLOBAL   short   g_sModelIndexSmokePuff;
+extern DLL_GLOBAL   short   g_sModelIndexCTGhost;
+extern DLL_GLOBAL   short   g_sModelIndexTGhost;
 
 extern void ClearMultiDamage(void);
 extern void ApplyMultiDamage(entvars_t* pevInflictor, entvars_t* pevAttacker );

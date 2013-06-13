@@ -643,7 +643,9 @@ void CBasePlayer::Pain( int m_LastHitGroup, bool HasArmour )
 void CBasePlayer::Radio( const char *msg_id, const char *msg_verbose, short pitch, bool showIcon )
 {
     if( !IsPlayer() || ( pev->deadflag != DEAD_NO && !IsBot() ) )
+    {
         return;
+    }
 
     CBaseEntity *pEntity = NULL;
 
