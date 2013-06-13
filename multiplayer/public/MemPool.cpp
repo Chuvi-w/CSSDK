@@ -84,7 +84,7 @@ void CMemoryPool::Free( void *memblock )
 
 void CMemoryPool::AddNewBlob( void )
 {
-    int sizeMultiplier = pow( 2.0, _numBlobs );
+    int sizeMultiplier = ( int )pow( 2.0, _numBlobs );
     int nElements = _blocksPerBlob * sizeMultiplier;
     int blobSize  = nElements * _blockSize;
 
