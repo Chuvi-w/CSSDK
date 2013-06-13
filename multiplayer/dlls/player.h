@@ -742,6 +742,7 @@ extern int	gmsgHudText;
 
 //CS
 extern int gmsgBombDrop;
+extern int gmsgCZCareer;
 
 extern BOOL gInitHUD;
 

@@ -21,52 +21,55 @@
 
 class CCareerTask 
 {
-protected:
+    public:
 
-    CCareerTask( const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete );
+        CCareerTask( const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete );
 
-    static CCareerTask *NewTask( const char  * taskName, enum GameEventType event, const char  * weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete );
+    public:
 
-    virtual void OnEvent( GameEventType event, class CBasePlayer * pAttacker, class CBasePlayer * pVictim );
+        static CCareerTask *NewTask( const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete );
 
-    void OnWeaponKill( int weaponId, int weaponClassId, bool headshot, bool killerHasShield, class CBasePlayer * pAttacker, class CBasePlayer * pVictim );
-    void OnWeaponInjury( int weaponId, int weaponClassId, bool attackerHasShield, class CBasePlayer * pAttacker );
+        virtual void OnEvent( GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim );
 
-    bool IsComplete( void );
-    const char GetTaskName( void );
+        void OnWeaponKill( int weaponId, int weaponClassId, bool headshot, bool killerHasShield, CBasePlayer *pAttacker, CBasePlayer *pVictim );
+        void OnWeaponInjury( int weaponId, int weaponClassId, bool attackerHasShield, CBasePlayer *pAttacker );
 
-    int GetWeaponId( void );
-    int GetWeaponClassId( void );
+        bool IsComplete( void ) { return m_isComplete; }
+        const char *GetTaskName( void ) { return m_name; }
 
-    virtual void Reset( void );
+        int GetWeaponId( void ) { return m_weaponId; }
+        int GetWeaponClassId( void ) { return m_weaponClassId; }
 
-    bool IsValidFor( CBasePlayer *pPlayer );
-    void SendPartialNotification( void );
+        virtual void Reset( void );
 
-    virtual bool IsTaskCompletableThisRound( void );
+        bool IsValidFor( CBasePlayer *pPlayer );
+        void SendPartialNotification( void );
 
-	bool                        m_isComplete;         /*     4     1 */
+        virtual bool IsTaskCompletableThisRound( void );
 
-	const char  *               m_name;               /*     8     4 */
-	int                         m_id;                 /*    12     4 */
-	GameEventType               m_event;              /*    16     4 */
-	int                         m_eventsNeeded;       /*    20     4 */
-	int                         m_eventsSeen;         /*    24     4 */
-	bool                        m_mustLive;           /*    28     1 */
-	bool                        m_crossRounds;        /*    29     1 */
-	bool                        m_diedThisRound;      /*    30     1 */
+    private:
 
-	int                         m_weaponId;           /*    32     4 */
-	int                         m_weaponClassId;      /*    36     4 */
-	bool                        m_rescuer;            /*    40     1 */
-	bool                        m_defuser;            /*    41     1 */
-	bool                        m_vip;                /*    42     1 */
+	    bool                        m_isComplete;         /*     4     1 */
+	    const char                 *m_name;               /*     8     4 */
+	    int                         m_id;                 /*    12     4 */
+	    GameEventType               m_event;              /*    16     4 */
+	    int                         m_eventsNeeded;       /*    20     4 */
+	    int                         m_eventsSeen;         /*    24     4 */
+	    bool                        m_mustLive;           /*    28     1 */
+	    bool                        m_crossRounds;        /*    29     1 */
+	    bool                        m_diedThisRound;      /*    30     1 */
+
+	    int                         m_weaponId;           /*    32     4 */
+	    int                         m_weaponClassId;      /*    36     4 */
+	    bool                        m_rescuer;            /*    40     1 */
+	    bool                        m_defuser;            /*    41     1 */
+	    bool                        m_vip;                /*    42     1 */
 
 	/* vtable has 3 entries: 
     {
-	   [0] = OnEvent(_ZN11CCareerTask7OnEventE13GameEventTypeP11CBasePlayerS2_), 
-	   [1] = Reset(_ZN11CCareerTask5ResetEv), 
-	   [2] = IsTaskCompletableThisRound(_ZNK11CCareerTask26IsTaskCompletableThisRoundEv), 
+	   [0] = OnEvent
+	   [1] = Reset
+	   [2] = IsTaskCompletableThisRound
 	} */
 	/* size: 44, cachelines: 1, members: 15 */
 	/* sum members: 39, holes: 2, sum holes: 4 */
@@ -78,6 +81,10 @@ typedef std::list< CCareerTask* > CareerTaskList;
 
 class CCareerTaskManager 
 {
+    public:
+
+        CCareerTaskManager( void );
+
     public:
 
         void Create( void );
@@ -93,14 +100,14 @@ class CCareerTaskManager
 
         bool AreAllTasksComplete( void );
         int GetNumRemainingTasks( void );
-        float GetRoundElapsedTime( void );
+        float GetRoundElapsedTime( void ) { return gpGlobals->time - m_taskTime; }
 
-        int GetTaskTime( void );
-        void SetFinishedTaskTime( int val );
-        int GetFinishedTaskTime( void );
-        int GetFinishedTaskRound( void );
+        int GetTaskTime( void ) { return m_taskTime; }
+        void SetFinishedTaskTime( int val ) { m_finishedTaskTime = val;/* m_finishedTaskRound = g_pGameRules->m_iTotalRoundsPlayed;*/ }
+        int GetFinishedTaskTime( void ) { return m_finishedTaskTime; }
+        int GetFinishedTaskRound( void ) { return m_finishedTaskRound; }
 
-        CareerTaskList *GetTasks( void );
+        CareerTaskList *GetTasks( void ) { return &m_tasks; }
 
         void LatchRoundEndMessage( void );
         void UnlatchRoundEndMessage( void );
@@ -116,13 +123,13 @@ class CCareerTaskManager
         GameEventType               m_roundEndMessage;              /*    28     4 */
         bool                        m_shouldLatchRoundEndMessage;   /*    32     1 */
 
-        /* size: 36, cachelines: 1, members: 8 */
-        /* sum members: 25, holes: 1, sum holes: 8 */
-        /* padding: 3 */
-        /* last cacheline: 36 bytes */
+        /* size: 36, cachelines: 1, members: 8      */
+        /* sum members: 25, holes: 1, sum holes: 8  */
+        /* padding: 3                               */
+        /* last cacheline: 36 bytes                 */
 };
 
-typedef CCareerTask* ( *TaskFactoryFunction )( const char  *, enum GameEventType, const char  *, int, bool, bool, int, bool );
+typedef CCareerTask* ( *TaskFactoryFunction )( const char* , GameEventType, const char* , int, bool, bool, int, bool );
 
 struct TaskInfo 
 {
@@ -133,18 +140,22 @@ struct TaskInfo
 
 class CPreventDefuseTask : public CCareerTask 
 {
-protected:
+    public:
 
-	CPreventDefuseTask( const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete );
+	    CPreventDefuseTask( const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete );
 
-	static CCareerTask *NewTask( const char  * taskName, enum GameEventType event, const char  * weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete );
+    public:
 
-	virtual void OnEvent( GameEventType event, class CBasePlayer * pAttacker, class CBasePlayer * pVictim );
-	virtual void Reset( void );
-	virtual bool IsTaskCompletableThisRound( void );
+	    static CCareerTask *NewTask( const char *taskName, GameEventType event, const char *weaponName, int n, bool mustLive, bool crossRounds, int id, bool isComplete );
 
-    bool                        m_bombPlantedThisRound;      /*    43     1 */
-    bool                        m_defuseStartedThisRound;    /*    44     1 */
+	    virtual void OnEvent( GameEventType event, CBasePlayer *pAttacker, CBasePlayer *pVictim );
+	    virtual void Reset( void );
+        virtual bool IsTaskCompletableThisRound( void );
+
+    protected:
+
+        bool                        m_bombPlantedThisRound;      /*    43     1 */
+        bool                        m_defuseStartedThisRound;    /*    44     1 */
 
 	/* vtable has 3 entries: 
     {
@@ -153,9 +164,9 @@ protected:
 	   [2] = IsTaskCompletableThisRound
 	} */
 	/* size: 48, cachelines: 1, members: 3 */
-	/* padding: 3 */
-	/* paddings: 1, sum paddings: 1 */
-	/* last cacheline: 48 bytes */
+	/* padding: 3                          */
+	/* paddings: 1, sum paddings: 1        */
+	/* last cacheline: 48 bytes            */
 };
 
 extern CCareerTaskManager *TheCareerTasks;
