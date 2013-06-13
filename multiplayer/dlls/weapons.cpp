@@ -1207,7 +1207,7 @@ bool CBasePlayerWeapon::ShieldSecondaryFire( int up_anim, int down_anim )
     m_pPlayer->UpdateShieldCrosshair( FBitSet( m_iWeaponState, WPNSTATE_SHIELD_DRAWN ) ? true : false );
     m_pPlayer->ResetMaxSpeed();
 
-    m_flNextPrimaryAttack   = GetNextAttackDelay( 0.4 );
+    m_flNextPrimaryAttack   = UTIL_WeaponTimeBase() + 0.4;
     m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4;
     m_flTimeWeaponIdle      = UTIL_WeaponTimeBase() + 0.6;
 
