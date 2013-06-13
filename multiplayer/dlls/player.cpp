@@ -483,6 +483,59 @@ int CBasePlayer::AmmoInventory( int iAmmoIndex ) // Last check : 2013, June 6.
     return m_rgAmmo[ iAmmoIndex ];
 }
 
+void CBasePlayer::AutoBuy( void ) // Last check : 2013, June 6.
+{
+    bool boughtPrimary   = false;
+    bool boughtSecondary = false;
+
+    const char *weapon = NULL;
+    char string[ sizeof( m_autoBuyString ) ];
+    
+    weapon = PickFlashKillWeaponString();
+
+    if( ( weapon = PickFlashKillWeaponString() ) )
+    {
+        ParseAutoBuyString( weapon, boughtPrimary, boughtSecondary );
+    }
+
+    if( ( weapon = PickGrenadeKillWeaponString() ) )
+    {
+        ParseAutoBuyString( weapon, boughtPrimary, boughtSecondary );
+    }
+
+    if( ( weapon = PickPrimaryCareerTaskWeapon() ) )
+    {
+        strcpy( string, weapon );
+
+        PrioritizeAutoBuyString( string, m_autoBuyString );
+        ParseAutoBuyString( string, boughtPrimary, boughtSecondary );
+    }
+
+    if( ( weapon = PickSecondaryCareerTaskWeapon() ) )
+    {
+        strcpy( string, weapon );
+
+        PrioritizeAutoBuyString( string, m_autoBuyString );
+        ParseAutoBuyString( string, boughtPrimary, boughtSecondary );
+    }
+    
+    if( m_autoBuyString[ 0 ] )
+    {
+        ParseAutoBuyString( m_autoBuyString, boughtPrimary, boughtSecondary );
+    }
+
+    if( ( weapon = PickFlashKillWeaponString() ) )
+    {
+        ParseAutoBuyString( weapon, boughtPrimary, boughtSecondary );
+    }
+
+    // TODO: Implement me.
+    // if( TheTutor )
+    // {
+    //     TheTutor->OnEvent( EVENT_PLAYER_LEFT_BUY_ZONE, NULL, NULL );
+    // }
+}
+
 // CS
 void CBasePlayer::Blind( float duration, float holdTime, float fadeTime, int alpha )
 {
