@@ -1176,6 +1176,22 @@ void CBasePlayerWeapon::ResetPlayerShieldAnim( void )
 }
 
 // CS
+void CBasePlayerWeapon::SetPlayerShieldAnim( void )
+{
+    if( m_pPlayer->HasShield() )
+    {
+        if ( FBitSet( m_iWeaponState, WPNSTATE_SHIELD_DRAWN ) )
+        {
+            strcpy( m_pPlayer->m_szAnimExtention, "shield" );
+        }
+        else
+        {
+            strcpy( m_pPlayer->m_szAnimExtention, "shieldgun" );
+        }
+    }
+}
+
+// CS
 bool CBasePlayerWeapon::ShieldSecondaryFire( int up_anim, int down_anim )
 {
     if( m_pPlayer->HasShield() )
