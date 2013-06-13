@@ -601,6 +601,51 @@ void CGrenade::SG_Detonate( void )
     SetThink( &CGrenade::SG_Smoke );
 }
 
+void CGrenade::SG_Smoke( void )
+{
+    if( UTIL_PointContents( pev->origin ) != CONTENTS_WATER )
+    {
+        Vector  vecDir;
+        float   interval[2];
+        int     maxSmokePuffs;
+
+        UTIL_MakeVectors( pev->angles );
+
+        vecDir = gpGlobals->v_forward * RANDOM_FLOAT( 3, 8 );
+
+        maxSmokePuffs = ( int )(RANDOM_FLOAT( 1.5, 3.5 ) * 100 );
+
+        interval[0] = vecDir.x * cos( ( float )m_angle * ( 180 / M_PI ) ) - vecDir.y * sin( ( float )m_angle * ( 180 / M_PI ) );
+        interval[1] = vecDir.x * sin( ( float )m_angle * ( 180 / M_PI ) ) + vecDir.y * cos( ( float )m_angle * ( 180 / M_PI ) );
+        
+        m_angle = ( m_angle + 30 ) % 360;
+        
+        PLAYBACK_EVENT_FULL( 0, NULL, m_usEvent, 0, pev->origin, m_vSmokeDetonate, interval[0], interval[1], maxSmokePuffs, 4, m_bLightSmoke, 6 );
+    }
+    else
+    {
+        UTIL_Bubbles( pev->origin - Vector( 64, 64, 64 ), pev->origin + Vector( 64, 64, 64 ), 100 );
+    }
+
+    if( m_SGSmoke <= 20 )
+    {
+        pev->nextthink = gpGlobals->time + 1.0;
+        SetThink( &CGrenade::SG_Smoke );
+
+        m_SGSmoke++;
+    }
+    else
+    {
+        pev->effects |= EF_NODRAW;
+        
+        // TODO: Implement me
+        // TheBots->CBotManager::RemoveGrenade( this );
+
+        UTIL_Remove( this );
+    }
+}
+
+
 // ==========
 //	C4 BOMB
 // ==========
