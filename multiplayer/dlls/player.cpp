@@ -640,6 +640,71 @@ void CBasePlayer::Pain( int m_LastHitGroup, bool HasArmour )
 }
 
 // CS
+void CBasePlayer::Radio( const char *msg_id, const char *msg_verbose, short pitch, bool showIcon )
+{
+    if( !IsPlayer() || ( pev->deadflag != DEAD_NO && !IsBot() ) )
+        return;
+
+    CBaseEntity *pEntity = NULL;
+
+    while( ( pEntity = UTIL_FindEntityByClassname( pEntity, "player" ) ) != NULL )
+    {
+        if( FNullEnt( pEntity->edict() ) )
+        {
+            break;
+        }
+
+        CBasePlayer *pTarget = GetClassPtr( ( CBasePlayer* )pEntity->pev );
+
+        if( !pTarget->IsPlayer() )
+        {
+            if( pTarget->pev->iuser1 == OBS_CHASE_LOCKED || pTarget->pev->iuser1 == OBS_CHASE_FREE || pTarget->pev->iuser1 == OBS_IN_EYE )
+            {
+                if( !FNullEnt( m_hObserverTarget->edict() ) )
+                    pTarget = ( CBasePlayer* )( ( CBaseEntity* )m_hObserverTarget );
+                else
+                    pTarget = NULL;
+            }
+        }
+        else if( pTarget->IsDormant() )
+        {
+            pTarget = NULL;
+        }
+
+        if( !pTarget || pTarget->m_iTeam != m_iTeam || pTarget->m_bIgnoreRadio )
+        {
+            continue;
+        }
+
+        MESSAGE_BEGIN( MSG_ONE, gmsgSendAudio, NULL, pTarget->edict() );
+            WRITE_BYTE( entindex() );
+            WRITE_STRING( msg_id );
+            WRITE_SHORT( pitch );
+        MESSAGE_END();
+
+        if( msg_verbose )
+        {
+            // TODO: Implements me.
+            // Place index = TheNavAreaGrid->GetPlace( pev->origin );
+            // ...
+
+            ClientPrint( pTarget->pev, HUD_PRINTRADIO, NumAsString( entindex() ), "#Game_radio", STRING( pev->netname), msg_verbose );
+        }
+
+        if( showIcon )
+        {
+            MESSAGE_BEGIN( MSG_ONE, SVC_TEMPENTITY, NULL, pTarget->edict() );
+                WRITE_BYTE( TE_PLAYERATTACHMENT );
+                WRITE_BYTE( entindex() );
+                WRITE_COORD( 35 );
+                WRITE_SHORT( g_sModelIndexRadio );
+                WRITE_SHORT( 15 );
+            MESSAGE_END();
+        }
+    }
+}
+
+// CS
 void CBasePlayer::Reset( void )
 {
     pev->frags = 0.0;

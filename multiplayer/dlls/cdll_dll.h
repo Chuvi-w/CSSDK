@@ -43,7 +43,7 @@
 #define HUD_PRINTCONSOLE	2
 #define HUD_PRINTTALK		3
 #define HUD_PRINTCENTER		4
-
+#define HUD_PRINTRADIO      5
 
 #define WEAPON_SUIT			31
 
