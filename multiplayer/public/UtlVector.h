@@ -1,12 +1,16 @@
-//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======//
+//=========== (C) Copyright 1999 Valve, L.L.C. All rights reserved. ===========
 //
-// Purpose: 
+// The copyright to the contents herein is the property of Valve, L.L.C.
+// The contents may be used and/or copied only with the written permission of
+// Valve, L.L.C., or in accordance with the terms and conditions stipulated in
+// the agreement/contract under which the contents have been supplied.
 //
+// $Header: $
 // $NoKeywords: $
 //
 // A growable array class that maintains a free list and keeps elements
 // in the same location
-//=============================================================================//
+//=============================================================================
 
 #ifndef UTLVECTOR_H
 #define UTLVECTOR_H
@@ -15,652 +19,554 @@
 #pragma once
 #endif
 
-#include <string.h>
-// #include "tier0/platform.h"
-// #include "tier0/dbg.h"
-// #include "tier1/utlmemory.h"
-// #include "vstdlib/strtools.h"
-#include "../public/UtlMemory.h"
-
-#define FOR_EACH_VEC( vecName, iteratorName ) \
-	for ( int iteratorName = 0; iteratorName < vecName.Count(); iteratorName++ )
-
-#define  Assert( _exp )										((void)0)
-
-template <class T> 
-inline void Construct( T* pMemory )
-{
-    ::new( pMemory ) T;
-}
-
-template <class T> 
-inline void CopyConstruct( T* pMemory, T const& src )
-{
-    //new( pMemory ) T(src);
-}
-
-template <class T> 
-inline void Destruct( T* pMemory )
-{
-    pMemory->~T();
-
-#ifdef _DEBUG
-    memset( pMemory, 0xDD, sizeof(T) );
-#endif
-}
+#include "utlmemory.h"
 
 //-----------------------------------------------------------------------------
 // The CUtlVector class:
 // A growable array class which doubles in size by default.
 // It will always keep all elements consecutive in memory, and may move the
-// elements around in memory (via a PvRealloc) when elements are inserted or
+// elements around in memory (via a realloc) when elements are inserted or
 // removed. Clients should therefore refer to the elements of the vector
 // by index (they should *never* maintain pointers to elements in the vector).
 //-----------------------------------------------------------------------------
-template< class T, class A = CUtlMemory<T> >
+
+template< class T >
 class CUtlVector
 {
-	typedef A CAllocator;
 public:
-	typedef T ElemType_t;
+    typedef T ElemType_t;
 
-	// constructor, destructor
-	CUtlVector( int growSize = 0, int initSize = 0 );
-	CUtlVector( T* pMemory, int allocationCount, int numElements = 0 );
-	~CUtlVector();
-	
-	// Copy the array.
-	CUtlVector<T, A>& operator=( const CUtlVector<T, A> &other );
+    // constructor, destructor
+    CUtlVector( int growSize = 0, int initSize = 0 );
+    CUtlVector( T* pMemory, int numElements );
+    ~CUtlVector();
 
-	// element access
-	T& operator[]( int i );
-	const T& operator[]( int i ) const;
-	T& Element( int i );
-	const T& Element( int i ) const;
+    // Copy the array.
+    CUtlVector<T>& operator=( const CUtlVector<T> &other );
 
-	// Gets the base address (can change when adding elements!)
-	T* Base()								{ return m_Memory.Base(); }
-	const T* Base() const					{ return m_Memory.Base(); }
-	
-	// Returns the number of elements in the vector
-	// SIZE IS DEPRECATED!
-	int Count() const;
-	int Size() const;	// don't use me!
+    // element access
+    T& operator[]( int i );
+    T const& operator[]( int i ) const;
+    T& Element( int i );
+    T const& Element( int i ) const;
 
-	// Is element index valid?
-	bool IsValidIndex( int i ) const;
-	static int InvalidIndex();
+    // Gets the base address (can change when adding elements!)
+    T* Base();
+    T const* Base() const;
 
-	// Adds an element, uses default constructor
-	int AddToHead();
-	int AddToTail();
-	int InsertBefore( int elem );
-	int InsertAfter( int elem );
+    // Returns the number of elements in the vector
+    // SIZE IS DEPRECATED!
+    int Count() const;
+    int Size() const;	// don't use me!
 
-	// Adds an element, uses copy constructor
-	int AddToHead( const T& src );
-	int AddToTail( const T& src );
-	int InsertBefore( int elem, const T& src );
-	int InsertAfter( int elem, const T& src );
+    // Is element index valid?
+    bool IsValidIndex( int i ) const;
+    static int InvalidIndex( void );
 
-	// Adds multiple elements, uses default constructor
-	int AddMultipleToHead( int num );
-	int AddMultipleToTail( int num, const T *pToCopy=NULL );	   
-	int InsertMultipleBefore( int elem, int num, const T *pToCopy=NULL );	// If pToCopy is set, then it's an array of length 'num' and
-	int InsertMultipleAfter( int elem, int num );
+    // Adds an element, uses default constructor
+    int AddToHead();
+    int AddToTail();
+    int InsertBefore( int elem );
+    int InsertAfter( int elem );
 
-	// Calls RemoveAll() then AddMultipleToTail.
-	void SetSize( int size );
-	void SetCount( int count );
-	
-	// Calls SetSize and copies each element.
-	void CopyArray( const T *pArray, int size );
+    // Adds an element, uses copy constructor
+    int AddToHead( T const& src );
+    int AddToTail( T const& src );
+    int InsertBefore( int elem, T const& src );
+    int InsertAfter( int elem, T const& src );
 
-	// Fast swap
-	void Swap( CUtlVector< T, A > &vec );
-	
-	// Add the specified array to the tail.
-	int AddVectorToTail( CUtlVector<T, A> const &src );
+    // Adds multiple elements, uses default constructor
+    int AddMultipleToHead( int num );
+    int AddMultipleToTail( int num, const T *pToCopy=NULL );	   
+    int InsertMultipleBefore( int elem, int num, const T *pToCopy=NULL );	// If pToCopy is set, then it's an array of length 'num' and
+    int InsertMultipleAfter( int elem, int num );
 
-	// Finds an element (element needs operator== defined)
-	int Find( const T& src ) const;
+    // Calls RemoveAll() then AddMultipleToTail.
+    void SetSize( int size );
+    void SetCount( int count );
 
-	bool HasElement( const T& src ) const;
+    // Calls SetSize and copies each element.
+    void CopyArray( T const *pArray, int size );
 
-	// Makes sure we have enough memory allocated to store a requested # of elements
-	void EnsureCapacity( int num );
+    // Add the specified array to the tail.
+    int AddVectorToTail( CUtlVector<T> const &src );
 
-	// Makes sure we have at least this many elements
-	void EnsureCount( int num );
+    // Finds an element (element needs operator== defined)
+    int Find( T const& src ) const;
 
-	// Element removal
-	void FastRemove( int elem );	// doesn't preserve order
-	void Remove( int elem );		// preserves order, shifts elements
-	void FindAndRemove( const T& src );	// removes first occurrence of src, preserves order, shifts elements
-	void RemoveMultiple( int elem, int num );	// preserves order, shifts elements
-	void RemoveAll();				// doesn't deallocate memory
+    bool HasElement( T const& src );
 
-	// Memory deallocation
-	void Purge();
+    // Makes sure we have enough memory allocated to store a requested # of elements
+    void EnsureCapacity( int num );
 
-	// Purges the list and calls delete on each element in it.
-	void PurgeAndDeleteElements();
+    // Makes sure we have at least this many elements
+    void EnsureCount( int num );
 
-	// Compacts the vector to the number of elements actually in use 
-	void Compact();
+    // Element removal
+    void FastRemove( int elem );	// doesn't preserve order
+    void Remove( int elem );		// preserves order, shifts elements
+    void FindAndRemove( T const& src );	// removes first occurrence of src, preserves order, shifts elements
+    void RemoveMultiple( int elem, int num );	// preserves order, shifts elements
+    void RemoveAll();				// doesn't deallocate memory
 
-	// Set the size by which it grows when it needs to allocate more memory.
-	void SetGrowSize( int size )			{ m_Memory.SetGrowSize( size ); }
+    // Memory deallocation
+    void Purge();
 
-	int NumAllocated() const;	// Only use this if you really know what you're doing!
+    // Purges the list and calls delete on each element in it.
+    void PurgeAndDeleteElements();
 
-	void Sort( int (__cdecl *pfnCompare)(const T *, const T *) );
-
-#ifdef DBGFLAG_VALIDATE
-	void Validate( CValidator &validator, char *pchName );		// Validate our internal structures
-#endif // DBGFLAG_VALIDATE
+    // Set the size by which it grows when it needs to allocate more memory.
+    void SetGrowSize( int size );
 
 protected:
-	// Can't copy this unless we explicitly do it!
-	CUtlVector( CUtlVector const& vec ) { Assert(0); }
+    // Can't copy this unless we explicitly do it!
+    CUtlVector( CUtlVector const& vec ) { assert(0); 
+    }
 
-	// Grows the vector
-	void GrowVector( int num = 1 );
+    // Grows the vector
+    void GrowVector( int num = 1 );
 
-	// Shifts elements....
-	void ShiftElementsRight( int elem, int num = 1 );
-	void ShiftElementsLeft( int elem, int num = 1 );
+    // Shifts elements....
+    void ShiftElementsRight( int elem, int num = 1 );
+    void ShiftElementsLeft( int elem, int num = 1 );
 
-	CAllocator m_Memory;
-	int m_Size;
+    // For easier access to the elements through the debugger
+    void ResetDbgInfo();
 
-#if !defined(_XBOX) || defined(_DEBUG)
-	// For easier access to the elements through the debugger
-	// it's in release builds so this can be used in libraries correctly
-	T *m_pElements;
+    CUtlMemory<T> m_Memory;
+    int m_Size;
 
-	inline void ResetDbgInfo()
-	{
-		m_pElements = Base();
-	}
-#else
-	void ResetDbgInfo() {}
-#endif
+    // For easier access to the elements through the debugger
+    // it's in release builds so this can be used in libraries correctly
+    T *m_pElements;
 };
 
+
 //-----------------------------------------------------------------------------
-// The CUtlVectorFixed class:
-// A array class with a fixed allocation scheme
+// For easier access to the elements through the debugger
 //-----------------------------------------------------------------------------
 
-template< class T, size_t MAX_SIZE >
-class CUtlVectorFixed : public CUtlVector< T, CUtlMemoryFixed<T, MAX_SIZE > >
+template< class T >
+inline void CUtlVector<T>::ResetDbgInfo()
 {
-	typedef CUtlVector< T, CUtlMemoryFixed<T, MAX_SIZE > > BaseClass;
-public:
-
-	// constructor, destructor
-	CUtlVectorFixed( int growSize = 0, int initSize = 0 ) : BaseClass( growSize, initSize ) {}
-	CUtlVectorFixed( T* pMemory, int numElements ) : BaseClass( pMemory, numElements ) {}
-};
-
-
-//-----------------------------------------------------------------------------
-// The CCopyableUtlVector class:
-// A array class that allows copy construction (so you can nest a CUtlVector inside of another one of our containers)
-//  WARNING - this class lets you copy construct which can be an expensive operation if you don't carefully control when it happens
-// Only use this when nesting a CUtlVector() inside of another one of our container classes (i.e a CUtlMap)
-//-----------------------------------------------------------------------------
-template< class T, class A = CUtlMemory<T> >
-class CCopyableUtlVector : public CUtlVector< T, A >
-{
-	typedef CUtlVector< T, A > BaseClass;
-public:
-	CCopyableUtlVector( int growSize = 0, int initSize = 0 ) : BaseClass( growSize, initSize ) {}
-	CCopyableUtlVector( T* pMemory, int numElements ) : BaseClass( pMemory, numElements ) {}
-	virtual ~CCopyableUtlVector() {}
-	CCopyableUtlVector( CCopyableUtlVector const& vec ) { CopyArray( vec.Base(), vec.Count() ); }
-};
+    m_pElements = m_Memory.Base();
+}
 
 //-----------------------------------------------------------------------------
 // constructor, destructor
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-inline CUtlVector<T, A>::CUtlVector( int growSize, int initSize )	: 
-	m_Memory(growSize, initSize), m_Size(0)
+
+template< class T >
+inline CUtlVector<T>::CUtlVector( int growSize, int initSize )	: 
+m_Memory(growSize, initSize), m_Size(0)
 {
-	ResetDbgInfo();
+    ResetDbgInfo();
 }
 
-template< typename T, class A >
-inline CUtlVector<T, A>::CUtlVector( T* pMemory, int allocationCount, int numElements )	: 
-	m_Memory(pMemory, allocationCount), m_Size(numElements)
+template< class T >
+inline CUtlVector<T>::CUtlVector( T* pMemory, int numElements )	: 
+m_Memory(pMemory, numElements), m_Size(0)
 {
-	ResetDbgInfo();
+    ResetDbgInfo();
 }
 
-template< typename T, class A >
-inline CUtlVector<T, A>::~CUtlVector()
+template< class T >
+inline CUtlVector<T>::~CUtlVector()
 {
-	Purge();
+    Purge();
 }
 
-template< typename T, class A >
-inline CUtlVector<T, A>& CUtlVector<T, A>::operator=( const CUtlVector<T, A> &other )
+template<class T>
+inline CUtlVector<T>& CUtlVector<T>::operator=( const CUtlVector<T> &other )
 {
-	CopyArray( other.Base(), other.Count() );
-	return *this;
+    CopyArray( other.Base(), other.Count() );
+    return *this;
 }
-
 
 //-----------------------------------------------------------------------------
 // element access
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-inline T& CUtlVector<T, A>::operator[]( int i )
+
+template< class T >
+inline T& CUtlVector<T>::operator[]( int i )
 {
-	Assert( IsValidIndex(i) );
-	return Base()[i];
+    assert( IsValidIndex(i) );
+    return m_Memory[i];
 }
 
-template< typename T, class A >
-inline const T& CUtlVector<T, A>::operator[]( int i ) const
+template< class T >
+inline T const& CUtlVector<T>::operator[]( int i ) const
 {
-	Assert( IsValidIndex(i) );
-	return Base()[i];
+    assert( IsValidIndex(i) );
+    return m_Memory[i];
 }
 
-template< typename T, class A >
-inline T& CUtlVector<T, A>::Element( int i )
+template< class T >
+inline T& CUtlVector<T>::Element( int i )
 {
-	Assert( IsValidIndex(i) );
-	return Base()[i];
+    assert( IsValidIndex(i) );
+    return m_Memory[i];
 }
 
-template< typename T, class A >
-inline const T& CUtlVector<T, A>::Element( int i ) const
+template< class T >
+inline T const& CUtlVector<T>::Element( int i ) const
 {
-	Assert( IsValidIndex(i) );
-	return Base()[i];
+    assert( IsValidIndex(i) );
+    return m_Memory[i];
 }
 
+
+//-----------------------------------------------------------------------------
+// Gets the base address (can change when adding elements!)
+//-----------------------------------------------------------------------------
+
+template< class T >
+inline T* CUtlVector<T>::Base()
+{
+    return m_Memory.Base();
+}
+
+template< class T >
+inline T const* CUtlVector<T>::Base() const
+{
+    return m_Memory.Base();
+}
 
 //-----------------------------------------------------------------------------
 // Count
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-inline int CUtlVector<T, A>::Size() const
+
+template< class T >
+inline int CUtlVector<T>::Size() const
 {
-	return m_Size;
+    return m_Size;
 }
 
-template< typename T, class A >
-inline int CUtlVector<T, A>::Count() const
+template< class T >
+inline int CUtlVector<T>::Count() const
 {
-	return m_Size;
+    return m_Size;
 }
 
 
 //-----------------------------------------------------------------------------
 // Is element index valid?
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-inline bool CUtlVector<T, A>::IsValidIndex( int i ) const
+
+template< class T >
+inline bool CUtlVector<T>::IsValidIndex( int i ) const
 {
-	return (i >= 0) && (i < m_Size);
+    return (i >= 0) && (i < m_Size);
 }
- 
+
 
 //-----------------------------------------------------------------------------
 // Returns in invalid index
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-inline int CUtlVector<T, A>::InvalidIndex()
+template< class T >
+inline int CUtlVector<T>::InvalidIndex( void )
 {
-	return -1;
+    return -1;
 }
 
 
 //-----------------------------------------------------------------------------
 // Grows the vector
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-void CUtlVector<T, A>::GrowVector( int num )
+template< class T >
+void CUtlVector<T>::GrowVector( int num )
 {
-	if (m_Size + num > m_Memory.NumAllocated())
-	{
-		//MEM_ALLOC_CREDIT_CLASS();
-		m_Memory.Grow( m_Size + num - m_Memory.NumAllocated() );
-	}
+    if (m_Size + num - 1 >= m_Memory.NumAllocated())
+    {
+        m_Memory.Grow( m_Size + num - m_Memory.NumAllocated() );
+    }
 
-	m_Size += num;
-	ResetDbgInfo();
+    m_Size += num;
+    ResetDbgInfo();
 }
 
-
-//-----------------------------------------------------------------------------
-// Sorts the vector
-//-----------------------------------------------------------------------------
-template< typename T, class A >
-void CUtlVector<T, A>::Sort( int (__cdecl *pfnCompare)(const T *, const T *) )
-{
-	typedef int (__cdecl *QSortCompareFunc_t)(const void *, const void *);
-	if ( Count() > 1 )
-		qsort( Base(), Count(), sizeof(T), (QSortCompareFunc_t)(pfnCompare) );
-}
 
 //-----------------------------------------------------------------------------
 // Makes sure we have enough memory allocated to store a requested # of elements
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-void CUtlVector<T, A>::EnsureCapacity( int num )
+template< class T >
+void CUtlVector<T>::EnsureCapacity( int num )
 {
-	MEM_ALLOC_CREDIT_CLASS();
-	m_Memory.EnsureCapacity(num);
-	ResetDbgInfo();
+    m_Memory.EnsureCapacity(num);
+    ResetDbgInfo();
 }
 
 
 //-----------------------------------------------------------------------------
 // Makes sure we have at least this many elements
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-void CUtlVector<T, A>::EnsureCount( int num )
+template< class T >
+void CUtlVector<T>::EnsureCount( int num )
 {
-	if (Count() < num)
-		AddMultipleToTail( num - Count() );
+    if (Count() < num)
+        AddMultipleToTail( num - Count() );
 }
 
 
 //-----------------------------------------------------------------------------
 // Shifts elements
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-void CUtlVector<T, A>::ShiftElementsRight( int elem, int num )
+template< class T >
+void CUtlVector<T>::ShiftElementsRight( int elem, int num )
 {
-	Assert( IsValidIndex(elem) || ( m_Size == 0 ) || ( num == 0 ));
-	int numToMove = m_Size - elem - num;
-	//if ((numToMove > 0) && (num > 0))
-		//Q_memmove( &Element(elem+num), &Element(elem), numToMove * sizeof(T) );
+    assert( IsValidIndex(elem) || ( m_Size == 0 ) || ( num == 0 ));
+    int numToMove = m_Size - elem - num;
+    if ((numToMove > 0) && (num > 0))
+        memmove( &Element(elem+num), &Element(elem), numToMove * sizeof(T) );
 }
 
-template< typename T, class A >
-void CUtlVector<T, A>::ShiftElementsLeft( int elem, int num )
+template< class T >
+void CUtlVector<T>::ShiftElementsLeft( int elem, int num )
 {
-	Assert( IsValidIndex(elem) || ( m_Size == 0 ) || ( num == 0 ));
-	int numToMove = m_Size - elem - num;
-	if ((numToMove > 0) && (num > 0))
-	{
-		//Q_memmove( &Element(elem), &Element(elem+num), numToMove * sizeof(T) );
+    assert( IsValidIndex(elem) || ( m_Size == 0 ) || ( num == 0 ));
+    int numToMove = m_Size - elem - num;
+    if ((numToMove > 0) && (num > 0))
+    {
+        memmove( &Element(elem), &Element(elem+num), numToMove * sizeof(T) );
 
 #ifdef _DEBUG
-		//Q_memset( &Element(m_Size-num), 0xDD, num * sizeof(T) );
+        memset( &Element(m_Size-num), 0xDD, num * sizeof(T) );
 #endif
-	}
+    }
 }
-
 
 //-----------------------------------------------------------------------------
 // Adds an element, uses default constructor
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-inline int CUtlVector<T, A>::AddToHead()
+
+template< class T >
+inline int CUtlVector<T>::AddToHead()
 {
-	return InsertBefore(0);
+    return InsertBefore(0);
 }
 
-template< typename T, class A >
-inline int CUtlVector<T, A>::AddToTail()
+template< class T >
+inline int CUtlVector<T>::AddToTail()
 {
-	return InsertBefore( m_Size );
+    return InsertBefore( m_Size );
 }
 
-template< typename T, class A >
-inline int CUtlVector<T, A>::InsertAfter( int elem )
+template< class T >
+inline int CUtlVector<T>::InsertAfter( int elem )
 {
-	return InsertBefore( elem + 1 );
+    return InsertBefore( elem + 1 );
 }
 
-template< typename T, class A >
-int CUtlVector<T, A>::InsertBefore( int elem )
+template< class T >
+int CUtlVector<T>::InsertBefore( int elem )
 {
-	// Can insert at the end
-	Assert( (elem == Count()) || IsValidIndex(elem) );
+    // Can insert at the end
+    assert( (elem == Count()) || IsValidIndex(elem) );
 
-	GrowVector();
-	ShiftElementsRight(elem);
-	Construct( &Element(elem) );
-	return elem;
+    GrowVector();
+    ShiftElementsRight(elem);
+    Construct( &Element(elem) );
+    return elem;
 }
 
 
 //-----------------------------------------------------------------------------
 // Adds an element, uses copy constructor
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-inline int CUtlVector<T, A>::AddToHead( const T& src )
+
+template< class T >
+inline int CUtlVector<T>::AddToHead( T const& src )
 {
-	// Can't insert something that's in the list... reallocation may hose us
-	Assert( (&src < Base()) || (&src >= (Base() + Count()) ) ); 
-	return InsertBefore( 0, src );
+    return InsertBefore( 0, src );
 }
 
-template< typename T, class A >
-inline int CUtlVector<T, A>::AddToTail( const T& src )
+template< class T >
+inline int CUtlVector<T>::AddToTail( T const& src )
 {
-	// Can't insert something that's in the list... reallocation may hose us
-	Assert( (&src < Base()) || (&src >= (Base() + Count()) ) ); 
-	return InsertBefore( m_Size, src );
+    return InsertBefore( m_Size, src );
 }
 
-template< typename T, class A >
-inline int CUtlVector<T, A>::InsertAfter( int elem, const T& src )
+template< class T >
+inline int CUtlVector<T>::InsertAfter( int elem, T const& src )
 {
-	// Can't insert something that's in the list... reallocation may hose us
-	Assert( (&src < Base()) || (&src >= (Base() + Count()) ) ); 
-	return InsertBefore( elem + 1, src );
+    return InsertBefore( elem + 1, src );
 }
 
-template< typename T, class A >
-int CUtlVector<T, A>::InsertBefore( int elem, const T& src )
+template< class T >
+int CUtlVector<T>::InsertBefore( int elem, T const& src )
 {
-	// Can't insert something that's in the list... reallocation may hose us
-	Assert( (&src < Base()) || (&src >= (Base() + Count()) ) ); 
+    // Can insert at the end
+    assert( (elem == Count()) || IsValidIndex(elem) );
 
-	// Can insert at the end
-	Assert( (elem == Count()) || IsValidIndex(elem) );
-
-	GrowVector();
-	ShiftElementsRight(elem);
-	CopyConstruct( &Element(elem), src );
-	return elem;
+    GrowVector();
+    ShiftElementsRight(elem);
+    CopyConstruct( &Element(elem), src );
+    return elem;
 }
 
 
 //-----------------------------------------------------------------------------
 // Adds multiple elements, uses default constructor
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-inline int CUtlVector<T, A>::AddMultipleToHead( int num )
+
+template< class T >
+inline int CUtlVector<T>::AddMultipleToHead( int num )
 {
-	return InsertMultipleBefore( 0, num );
+    return InsertMultipleBefore( 0, num );
 }
 
-template< typename T, class A >
-inline int CUtlVector<T, A>::AddMultipleToTail( int num, const T *pToCopy )
+template< class T >
+inline int CUtlVector<T>::AddMultipleToTail( int num, const T *pToCopy )
 {
-	// Can't insert something that's in the list... reallocation may hose us
-	Assert( !pToCopy || (pToCopy + num < Base()) || (pToCopy >= (Base() + Count()) ) ); 
-
-	return InsertMultipleBefore( m_Size, num, pToCopy );
+    return InsertMultipleBefore( m_Size, num, pToCopy );
 }
 
-template< typename T, class A >
-int CUtlVector<T, A>::InsertMultipleAfter( int elem, int num )
+template< class T >
+int CUtlVector<T>::InsertMultipleAfter( int elem, int num )
 {
-	return InsertMultipleBefore( elem + 1, num );
+    return InsertMultipleBefore( elem + 1, num );
 }
 
 
-template< typename T, class A >
-void CUtlVector<T, A>::SetCount( int count )
+template< class T >
+void CUtlVector<T>::SetCount( int count )
 {
-	RemoveAll();
-	AddMultipleToTail( count );
+    RemoveAll();
+    AddMultipleToTail( count );
 }
 
-template< typename T, class A >
-inline void CUtlVector<T, A>::SetSize( int size )
+template< class T >
+inline void CUtlVector<T>::SetSize( int size )
 {
-	SetCount( size );
+    SetCount( size );
 }
 
-template< typename T, class A >
-void CUtlVector<T, A>::CopyArray( const T *pArray, int size )
+template< class T >
+void CUtlVector<T>::CopyArray( T const *pArray, int size )
 {
-	// Can't insert something that's in the list... reallocation may hose us
-	Assert( !pArray || (Base() >= (pArray + size)) || (pArray >= (Base() + Count()) ) ); 
-
-	SetSize( size );
-	for( int i=0; i < size; i++ )
-	{
-		(*this)[i] = pArray[i];
-	}
+    SetSize( size );
+    for( int i=0; i < size; i++ )
+        (*this)[i] = pArray[i];
 }
 
-template< typename T, class A >
-void CUtlVector<T, A>::Swap( CUtlVector< T, A > &vec )
+template< class T >
+int CUtlVector<T>::AddVectorToTail( CUtlVector const &src )
 {
-	m_Memory.Swap( vec.m_Memory );
-	swap( m_Size, vec.m_Size );
-	swap( m_pElements, vec.m_pElements );
+    int base = Count();
+
+    // Make space.
+    AddMultipleToTail( src.Count() );
+
+    // Copy the elements.	
+    for ( int i=0; i < src.Count(); i++ )
+        (*this)[base + i] = src[i];
+
+    return base;
 }
 
-template< typename T, class A >
-int CUtlVector<T, A>::AddVectorToTail( CUtlVector const &src )
+template< class T >
+inline int CUtlVector<T>::InsertMultipleBefore( int elem, int num, const T *pToInsert )
 {
-	Assert( &src != this );
+    if( num == 0 )
+        return elem;
 
-	int base = Count();
-	
-	// Make space.
-	AddMultipleToTail( src.Count() );
+    // Can insert at the end
+    assert( (elem == Count()) || IsValidIndex(elem) );
 
-	// Copy the elements.	
-	for ( int i=0; i < src.Count(); i++ )
-	{
-		(*this)[base + i] = src[i];
-	}
+    GrowVector(num);
+    ShiftElementsRight(elem, num);
 
-	return base;
+    // Invoke default constructors
+    for (int i = 0; i < num; ++i)
+        Construct( &Element(elem+i) );
+
+    // Copy stuff in?
+    if ( pToInsert )
+    {
+        for ( int i=0; i < num; i++ )
+        {
+            Element( elem+i ) = pToInsert[i];
+        }
+    }
+
+    return elem;
 }
-
-template< typename T, class A >
-inline int CUtlVector<T, A>::InsertMultipleBefore( int elem, int num, const T *pToInsert )
-{
-	if( num == 0 )
-		return elem;
-	
-	// Can insert at the end
-	Assert( (elem == Count()) || IsValidIndex(elem) );
-
-	GrowVector(num);
-	ShiftElementsRight(elem, num);
-
-	// Invoke default constructors
-	for (int i = 0; i < num; ++i)
-		Construct( &Element(elem+i) );
-
-	// Copy stuff in?
-	if ( pToInsert )
-	{
-		for ( int i=0; i < num; i++ )
-		{
-			Element( elem+i ) = pToInsert[i];
-		}
-	}
-
-	return elem;
-}
-
 
 //-----------------------------------------------------------------------------
 // Finds an element (element needs operator== defined)
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-int CUtlVector<T, A>::Find( const T& src ) const
+template< class T >
+int CUtlVector<T>::Find( T const& src ) const
 {
-	for ( int i = 0; i < Count(); ++i )
-	{
-		if (Element(i) == src)
-			return i;
-	}
-	return -1;
+    for ( int i = 0; i < Count(); ++i )
+    {
+        if (Element(i) == src)
+            return i;
+    }
+    return -1;
 }
 
-template< typename T, class A >
-bool CUtlVector<T, A>::HasElement( const T& src ) const
+template< class T >
+bool CUtlVector<T>::HasElement( T const& src )
 {
-	return ( Find(src) >= 0 );
+    return ( Find(src) >= 0 );
 }
-
 
 //-----------------------------------------------------------------------------
 // Element removal
 //-----------------------------------------------------------------------------
-template< typename T, class A >
-void CUtlVector<T, A>::FastRemove( int elem )
-{
-	Assert( IsValidIndex(elem) );
 
-	Destruct( &Element(elem) );
-	if (m_Size > 0)
-	{
-		memcpy( &Element(elem), &Element(m_Size-1), sizeof(T) );
-		--m_Size;
-	}
+template< class T >
+void CUtlVector<T>::FastRemove( int elem )
+{
+    assert( IsValidIndex(elem) );
+
+    Destruct( &Element(elem) );
+    if (m_Size > 0)
+    {
+        memcpy( &Element(elem), &Element(m_Size-1), sizeof(T) );
+        --m_Size;
+    }
 }
 
-template< typename T, class A >
-void CUtlVector<T, A>::Remove( int elem )
+template< class T >
+void CUtlVector<T>::Remove( int elem )
 {
-	Destruct( &Element(elem) );
-	ShiftElementsLeft(elem);
-	--m_Size;
+    Destruct( &Element(elem) );
+    ShiftElementsLeft(elem);
+    --m_Size;
 }
 
-template< typename T, class A >
-void CUtlVector<T, A>::FindAndRemove( const T& src )
+template< class T >
+void CUtlVector<T>::FindAndRemove( T const& src )
 {
-	int elem = Find( src );
-	if ( elem != -1 )
-	{
-		Remove( elem );
-	}
+    int elem = Find( src );
+    if ( elem != -1 )
+    {
+        Remove( elem );
+    }
 }
 
-template< typename T, class A >
-void CUtlVector<T, A>::RemoveMultiple( int elem, int num )
+template< class T >
+void CUtlVector<T>::RemoveMultiple( int elem, int num )
 {
-	Assert( elem >= 0 );
-	Assert( elem + num <= Count() );
+    assert( IsValidIndex(elem) );
+    assert( elem + num <= Count() );
 
-	for (int i = elem + num; --i >= elem; )
-		Destruct(&Element(i));
+    for (int i = elem + num; --i >= elem; )
+        Destruct(&Element(i));
 
-	ShiftElementsLeft(elem, num);
-	m_Size -= num;
+    ShiftElementsLeft(elem, num);
+    m_Size -= num;
 }
 
-template< typename T, class A >
-void CUtlVector<T, A>::RemoveAll()
+template< class T >
+void CUtlVector<T>::RemoveAll()
 {
-	for (int i = m_Size; --i >= 0; )
-	{
-		Destruct(&Element(i));
-	}
+    for (int i = m_Size; --i >= 0; )
+        Destruct(&Element(i));
 
-	m_Size = 0;
+    m_Size = 0;
 }
 
 
@@ -668,52 +574,30 @@ void CUtlVector<T, A>::RemoveAll()
 // Memory deallocation
 //-----------------------------------------------------------------------------
 
-template< typename T, class A >
-inline void CUtlVector<T, A>::Purge()
+template< class T >
+void CUtlVector<T>::Purge()
 {
-	RemoveAll();
-	m_Memory.Purge();
-	ResetDbgInfo();
+    RemoveAll();
+    m_Memory.Purge( );
+    ResetDbgInfo();
 }
 
 
-template< typename T, class A >
-inline void CUtlVector<T, A>::PurgeAndDeleteElements()
+template<class T>
+inline void CUtlVector<T>::PurgeAndDeleteElements()
 {
-	for( int i=0; i < m_Size; i++ )
-	{
-		delete Element(i);
-	}
-	Purge();
-}
+    for( int i=0; i < m_Size; i++ )
+        delete Element(i);
 
-template< typename T, class A >
-inline void CUtlVector<T, A>::Compact()
-{
-	m_Memory.Purge(m_Size);
-}
-
-template< typename T, class A >
-inline int CUtlVector<T, A>::NumAllocated() const
-{
-	return m_Memory.NumAllocated();
+    Purge();
 }
 
 
-//-----------------------------------------------------------------------------
-// Data and memory validation
-//-----------------------------------------------------------------------------
-#ifdef DBGFLAG_VALIDATE
-template< typename T, class A >
-void CUtlVector<T, A>::Validate( CValidator &validator, char *pchName )
+template< class T >
+void CUtlVector<T>::SetGrowSize( int size )
 {
-	validator.Push( typeid(*this).name(), this, pchName );
-
-	m_Memory.Validate( validator, "m_Memory" );
-
-	validator.Pop();
+    m_Memory.SetGrowSize( size );
 }
-#endif // DBGFLAG_VALIDATE
 
 
 #endif // CCVECTOR_H
