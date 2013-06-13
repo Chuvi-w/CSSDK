@@ -144,7 +144,7 @@ void CAUG::AUGFire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
 		if( m_fFireOnEmpty )
 		{
 			PlayEmptySound();
-			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.2;
+			m_flNextPrimaryAttack = GetNextAttackDelay( 0.2 );
 		}
 
         // TODO: Implement me.
@@ -166,8 +166,7 @@ void CAUG::AUGFire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
 
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 
-	Vector vecSrc = m_pPlayer->GetGunPosition();
-	Vector vecDir = m_pPlayer->FireBullets3( vecSrc, gpGlobals->v_forward, flSpread, 
+	Vector vecDir = m_pPlayer->FireBullets3( m_pPlayer->GetGunPosition, gpGlobals->v_forward, flSpread, 
         AUG_DISTANCE, AUG_PENETRATION, BULLET_PLAYER_556MM, AUG_DAMAGE, AUG_RANGE_MODIFER, m_pPlayer->pev, FALSE, m_pPlayer->random_seed );
 
 	int flags;
@@ -181,9 +180,9 @@ void CAUG::AUGFire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireAug, 0, ( float* )&g_vecZero, ( float* )&g_vecZero, 
         vecDir.x, vecDir.y, ( int )( m_pPlayer->pev->punchangle.x * 100 ), ( int )( m_pPlayer->pev->punchangle.y * 100 ), FALSE, FALSE );
 
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay( flCycleTime);
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay( flCycleTime );
 
-	if( !m_iClip && m_pPlayer->m_rgAmmo [m_iPrimaryAmmoType ] <= 0 )
+	if( !m_iClip && m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] <= 0 )
 	{
         m_pPlayer->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 );
     }
