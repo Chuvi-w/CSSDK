@@ -241,6 +241,7 @@ enum MaxAmmoType
 #define C4_MAX_CARRY            1
 #define FLASHBANG_MAX_CARRY     2
 #define HEGRENADE_MAX_CARRY     1
+#define SMOKEGRENADE_MAX_CARRY  1
 
 // The default amount of ammo given at weapon spawn.
 // CS
@@ -1966,6 +1967,56 @@ class CSG552 : public CBasePlayerWeapon
     /* sum members: 10, holes: 1, sum holes: 336 */
     /* padding: 2                                */
     /* last cacheline: 28 bytes                  */
+};
+
+class CSmokeGrenade : public CBasePlayerWeapon 
+{
+    public:
+
+        void Spawn( void );
+        void Precache( void );
+        int iItemSlot( void );
+        int GetItemInfo( ItemInfo *p );
+
+        void PrimaryAttack( void );
+        void SecondaryAttack( void );
+        BOOL Deploy( void );
+        void Holster( int skiplocal );
+        void Reload( void );
+        void WeaponIdle( void );
+        float GetMaxSpeed( void );
+        BOOL CanDeploy( void );
+        BOOL CanDrop( void );
+        BOOL UseDecrement( void );
+
+        bool ShieldSecondaryFire( int up_anim, int down_anim );
+        void SetPlayerShieldAnim( void );
+        void ResetPlayerShieldAnim( void );
+
+    public:
+
+        short unsigned int  m_usCreateSmoke;      /*   336     2 */
+
+    /* vtable has 13 entries: 
+    {
+       [0]  = Spawn
+       [1]  = Precache
+       [79] = iItemSlot
+       [61] = GetItemInfo
+       [87] = PrimaryAttack
+       [88] = SecondaryAttack
+       [64] = Deploy
+       [67] = Holster
+       [90] = WeaponIdle
+       [78] = GetMaxSpeed
+       [63] = CanDrop
+       [62] = CanDeploy
+       [93] = UseDecrement
+    } */
+    /* size: 340, cachelines: 6, members: 2     */
+    /* sum members: 2, holes: 1, sum holes: 336 */
+    /* padding: 2                               */
+    /* last cacheline: 20 bytes                 */
 };
 
 

@@ -492,7 +492,7 @@ public:
 
     void PlantC4( void );
 
-    void Radio( const char *msg_id, const char *msg_verbose, short int pitch, bool showIcon );
+    void Radio( const char *msg_id, const char *msg_verbose, short int pitch = PITCH_NORM, bool showIcon = true );
     CBasePlayer*  GetNextRadioRecipient( CBasePlayer *pStartPlayer );
     void SmartRadio( void );
 
