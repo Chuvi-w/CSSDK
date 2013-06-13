@@ -1166,6 +1166,45 @@ void CBasePlayerWeapon::ReloadSound( void )
     }
 }
 
+// CS
+bool CBasePlayerWeapon::ShieldSecondaryFire( int up_anim, int down_anim )
+{
+    if( m_pPlayer->HasShield() )
+    {
+        return false;
+    }
+
+    if( FBitSet( m_iWeaponState, WPNSTATE_SHIELD_DRAWN ) )
+    {
+        ClearBits( m_iWeaponState, WPNSTATE_SHIELD_DRAWN );
+
+        SendWeaponAnim( down_anim, UseDecrement() != FALSE );
+        strcpy( m_pPlayer->m_szAnimExtention, "shieldgun" );
+
+        m_fMaxSpeed = 250;
+        m_pPlayer->m_bShieldDrawn = false;
+    }
+    else
+    {
+        SetBits( m_iWeaponState, WPNSTATE_SHIELD_DRAWN );
+
+        SendWeaponAnim( up_anim, UseDecrement() != FALSE );
+        strcpy( m_pPlayer->m_szAnimExtention, "shielded" );
+
+        m_fMaxSpeed = 180;
+        m_pPlayer->m_bShieldDrawn = true;
+    }
+
+    m_pPlayer->UpdateShieldCrosshair( FBitSet( m_iWeaponState, WPNSTATE_SHIELD_DRAWN ) ? true : false );
+    m_pPlayer->ResetMaxSpeed();
+
+    m_flNextPrimaryAttack   = GetNextAttackDelay( 0.4 );
+    m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.4;
+    m_flTimeWeaponIdle      = UTIL_WeaponTimeBase() + 0.6;
+
+    return true;
+}
+
 
 BOOL CBasePlayerWeapon :: PlayEmptySound( void )
 {
