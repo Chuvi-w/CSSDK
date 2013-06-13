@@ -558,6 +558,49 @@ void CGrenade::SG_TumbleThink( void )
     }
 }
 
+void CGrenade::SG_Detonate( void )
+{
+    TraceResult tr;
+    Vector vecSpot = pev->origin + Vector( 0, 0, 8 );
+
+    UTIL_TraceLine( vecSpot, vecSpot + Vector( 0, 0, -40 ), ignore_monsters, edict(), &tr );
+
+    EMIT_SOUND( edict(), CHAN_WEAPON, "weapons/sg_explode.wav", VOL_NORM, ATTN_NORM );
+    
+    edict_t *pentGrenade = NULL;
+
+    while( ( pentGrenade = FIND_ENTITY_BY_STRING( pentGrenade, "classname", "grenade" ) ) != NULL )
+    {
+        if( FNullEnt( pentGrenade ) )
+        {
+            break;
+        }
+
+        CBaseEntity *pGrenade = CBaseEntity::Instance( pentGrenade );
+
+        if( pGrenade )
+        {
+            float fDistance = ( pGrenade->pev->origin - pev->origin ).Length();
+
+            if( fDistance != 0 && fDistance <= 250 && gpGlobals->time < pGrenade->pev->dmgtime )
+            {
+                m_bLightSmoke = true;
+            }
+        }
+    }
+
+    m_bDetonated = true;
+
+    PLAYBACK_EVENT_FULL( FEV_CLIENT, NULL, m_usEvent, 0, pev->origin, ( float* )&g_vecZero, 0, 0, 0, 1, m_bLightSmoke, FALSE );
+
+    m_vSmokeDetonate = pev->origin;
+
+    pev->velocity = Vector( RANDOM_FLOAT( -175.0, 175.0 ), RANDOM_FLOAT( -175.0, 175.0 ), RANDOM_FLOAT( 250.0, 350.0 ) );
+    pev->nextthink = gpGlobals->time + 0.1;
+
+    SetThink( &CGrenade::SG_Smoke );
+}
+
 // ==========
 //	C4 BOMB
 // ==========
