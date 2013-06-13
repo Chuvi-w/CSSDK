@@ -497,7 +497,7 @@ CGrenade *CGrenade::ShootSmokeGrenade( entvars_t *pevOwner, Vector vecStart, Vec
     pGrenade->m_bDetonated  = false;
 
     pGrenade->SetTouch( &CGrenade::BounceTouch );
-    pGrenade->SetThink(&CGrenade::SG_TumbleThink);
+    pGrenade->SetThink( &CGrenade::SG_TumbleThink );
 
     pGrenade->pev->dmgtime   = gpGlobals->time + time;
     pGrenade->pev->nextthink = gpGlobals->time + 0.1;
@@ -520,6 +520,42 @@ CGrenade *CGrenade::ShootSmokeGrenade( entvars_t *pevOwner, Vector vecStart, Vec
     pGrenade->pev->dmg = 35;
 
     return pGrenade;
+}
+
+void CGrenade::SG_TumbleThink( void )
+{
+    if( !IsInWorld() )
+    {
+        UTIL_Remove( this );
+        return;
+    }
+
+    if( FBitSet( pev->flags, FL_ONGROUND ) )
+    {
+        pev->velocity = pev->velocity * 0.95;
+    }
+
+    StudioFrameAdvance();
+    pev->nextthink = gpGlobals->time + 0.1;
+
+    if( pev->dmgtime - 1.0 < gpGlobals->time )
+    {
+        CSoundEnt::InsertSound( bits_SOUND_DANGER, pev->origin + pev->velocity * ( pev->dmgtime - gpGlobals->time ), 400, 0.1 );
+    }
+
+    if( pev->dmgtime <= gpGlobals->time )
+    {
+        if( FBitSet(  pev->flags, FL_ONGROUND ) )
+        {
+            SetThink( &CGrenade::SG_Detonate );
+        }
+    }
+
+    if( pev->waterlevel != 0 )
+    {
+        pev->velocity = pev->velocity * 0.5;
+        pev->framerate = 0.2;
+    }
 }
 
 // ==========
