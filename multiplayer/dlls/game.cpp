@@ -46,7 +46,7 @@ cvar_t  startmoney = { "mp_starmtoney", "800", FCVAR_SERVER };
 
 // Engine Cvars
 cvar_t 	*g_psv_gravity = NULL;
-cvar_t	*g_psv_aim = NULL;
+cvar_t	*sv_aim = NULL;
 cvar_t	*g_footsteps = NULL;
 
 //CVARS FOR SKILL LEVEL SETTINGS
@@ -458,7 +458,7 @@ void GameDLLInit( void )
 	// Register cvars here:
 
 	g_psv_gravity = CVAR_GET_POINTER( "sv_gravity" );
-	g_psv_aim = CVAR_GET_POINTER( "sv_aim" );
+	sv_aim = CVAR_GET_POINTER( "sv_aim" );
 	g_footsteps = CVAR_GET_POINTER( "mp_footsteps" );
 
 	CVAR_REGISTER (&displaysoundlist);
