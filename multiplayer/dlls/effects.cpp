@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -77,7 +77,7 @@ void CBubbling::Spawn( void )
 	pev->solid = SOLID_NOT;							// Remove model & collisions
 	pev->renderamt = 0;								// The engine won't draw this model if this is set to 0 and blending is on
 	pev->rendermode = kRenderTransTexture;
-	int speed = pev->speed > 0 ? static_cast<int>(pev->speed) : static_cast<int>(-pev->speed);
+	int speed = pev->speed > 0 ? pev->speed : -pev->speed;
 
 	// HACKHACK!!! - Speed in rendercolor
 	pev->rendercolor.x = speed >> 8;
@@ -459,7 +459,7 @@ void CLightning::Spawn( void )
 {
 	if ( FStringNull( m_iszSpriteName ) )
 	{
-		SetThink( &CBaseEntity::SUB_Remove );
+		SetThink( &CLightning::SUB_Remove );
 		return;
 	}
 	pev->solid = SOLID_NOT;							// Remove model & collisions
@@ -728,7 +728,7 @@ void CLightning::StrikeThink( void )
 			WRITE_BYTE( (int)pev->rendercolor.x );   // r, g, b
 			WRITE_BYTE( (int)pev->rendercolor.y );   // r, g, b
 			WRITE_BYTE( (int)pev->rendercolor.z );   // r, g, b
-			WRITE_BYTE( (int)pev->renderamt );	// brightness
+			WRITE_BYTE( pev->renderamt );	// brightness
 			WRITE_BYTE( m_speed );		// speed
 		MESSAGE_END();
 		DoSparks( pStart->pev->origin, pEnd->pev->origin );
@@ -794,7 +794,7 @@ void CLightning::Zap( const Vector &vecSrc, const Vector &vecDest )
 		WRITE_BYTE( (int)pev->rendercolor.x );   // r, g, b
 		WRITE_BYTE( (int)pev->rendercolor.y );   // r, g, b
 		WRITE_BYTE( (int)pev->rendercolor.z );   // r, g, b
-		WRITE_BYTE( (int)pev->renderamt );	// brightness
+		WRITE_BYTE( pev->renderamt );	// brightness
 		WRITE_BYTE( m_speed );		// speed
 	MESSAGE_END();
 #else
@@ -961,7 +961,7 @@ void CLaser::Spawn( void )
 {
 	if ( FStringNull( pev->model ) )
 	{
-		SetThink( &CBaseEntity::SUB_Remove );
+		SetThink( &CLaser::SUB_Remove );
 		return;
 	}
 	pev->solid = SOLID_NOT;							// Remove model & collisions
@@ -978,7 +978,7 @@ void CLaser::Spawn( void )
 		m_pSprite = NULL;
 
 	if ( m_pSprite )
-		m_pSprite->SetTransparency( kRenderGlow, static_cast<int>(pev->rendercolor.x), static_cast<int>(pev->rendercolor.y), static_cast<int>(pev->rendercolor.z), static_cast<int>(pev->renderamt), static_cast<int>(pev->renderfx) );
+		m_pSprite->SetTransparency( kRenderGlow, pev->rendercolor.x, pev->rendercolor.y, pev->rendercolor.z, pev->renderamt, pev->renderfx );
 
 	if ( pev->targetname && !(pev->spawnflags & SF_BEAM_STARTON) )
 		TurnOff();
@@ -1003,7 +1003,7 @@ void CLaser::KeyValue( KeyValueData *pkvd )
 	}
 	else if (FStrEq(pkvd->szKeyName, "width"))
 	{
-		SetWidth( atoi(pkvd->szValue) );
+		SetWidth( (int) atof(pkvd->szValue) );
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "NoiseAmplitude"))
@@ -1516,7 +1516,7 @@ void CGibShooter :: ShootThink ( void )
 		}
 		else
 		{
-			SetThink ( &CBaseEntity::SUB_Remove );
+			SetThink ( &CGibShooter::SUB_Remove );
 			pev->nextthink = gpGlobals->time;
 		}
 	}
@@ -1687,7 +1687,7 @@ void CTestEffect::TestThink( void )
 		for (i = 0; i < m_iBeam; i++)
 		{
 			t = (gpGlobals->time - m_flBeamTime[i]) / ( 3 + m_flStartTime - m_flBeamTime[i]);
-			m_pBeam[i]->SetBrightness( static_cast<int>(255 * t) );
+			m_pBeam[i]->SetBrightness( 255 * t );
 			// m_pBeam[i]->SetScrollRate( 20 * t );
 		}
 		pev->nextthink = gpGlobals->time + 0.1;
@@ -1813,9 +1813,9 @@ Vector CBlood::BloodPosition( CBaseEntity *pActivator )
 void CBlood::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	if ( pev->spawnflags & SF_BLOOD_STREAM )
-		UTIL_BloodStream( BloodPosition(pActivator), Direction(), (Color() == BLOOD_COLOR_RED) ? 70 : Color(), static_cast<int>(BloodAmount()) );
+		UTIL_BloodStream( BloodPosition(pActivator), Direction(), (Color() == BLOOD_COLOR_RED) ? 70 : Color(), BloodAmount() );
 	else
-		UTIL_BloodDrips( BloodPosition(pActivator), Direction(), Color(), static_cast<int>(BloodAmount()) );
+		UTIL_BloodDrips( BloodPosition(pActivator), Direction(), Color(), BloodAmount() );
 
 	if ( pev->spawnflags & SF_BLOOD_DECAL )
 	{
@@ -1973,12 +1973,12 @@ void CFade::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType
 	{
 		if ( pActivator->IsNetClient() )
 		{
-			UTIL_ScreenFade( pActivator, pev->rendercolor, Duration(), HoldTime(), static_cast<int>(pev->renderamt), fadeFlags );
+			UTIL_ScreenFade( pActivator, pev->rendercolor, Duration(), HoldTime(), pev->renderamt, fadeFlags );
 		}
 	}
 	else
 	{
-		UTIL_ScreenFadeAll( pev->rendercolor, Duration(), HoldTime(), static_cast<int>(pev->renderamt), fadeFlags );
+		UTIL_ScreenFadeAll( pev->rendercolor, Duration(), HoldTime(), pev->renderamt, fadeFlags );
 	}
 	SUB_UseTargets( this, USE_TOGGLE, 0 );
 }
@@ -2129,7 +2129,7 @@ void CEnvFunnel::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 
 	MESSAGE_END();
 
-	SetThink( &CBaseEntity::SUB_Remove );
+	SetThink( &CEnvFunnel::SUB_Remove );
 	pev->nextthink = gpGlobals->time;
 }
 
@@ -2263,6 +2263,6 @@ void CItemSoda::CanTouch ( CBaseEntity *pOther )
 	pev->movetype = MOVETYPE_NONE;
 	pev->effects = EF_NODRAW;
 	SetTouch ( NULL );
-	SetThink ( &CBaseEntity::SUB_Remove );
+	SetThink ( &CItemSoda::SUB_Remove );
 	pev->nextthink = gpGlobals->time;
 }

@@ -1,0 +1,374 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <ProjectGuid>{83F16DD0-3E23-4A48-84A2-E4CB31F4F943}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v90</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Releasehl\</OutDir>
+    <IntDir>.\Releasehl\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\debughl\</OutDir>
+    <IntDir>.\debughl\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories>..\dlls;..\engine;..\common;..\pm_shared;..\game_shared;..\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_WINDOWS;QUIVER;VOXEL;QUAKE2;VALVE_DLL;CLIENT_WEAPONS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Releasehl\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\Releasehl\hl.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Releasehl\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Releasehl\</ProgramDataBaseFileName>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Releasehl\hl.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Releasehl\hl.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkDLL>true</LinkDLL>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>.\hl.def</ModuleDefinitionFile>
+      <OutputFile>.\Releasehl\hl.dll</OutputFile>
+      <ImportLibrary>.\Releasehl\hl.lib</ImportLibrary>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <CustomBuildStep>
+      <Command>call ..\filecopy.bat %(FullPath) $(ProjectDir)..\..\game\mod\dlls\%(Filename).dll  
+call ..\filecopy.bat %(RootDir)%(Directory)\%(Filename).pdb $(ProjectDir)..\..\game\moddlls\%(Filename).pdb</Command>
+      <Outputs>$(ProjectDir)..\..\game\mod\dlls\$(InputName).dll;$(ProjectDir)..\..\game\mod\dlls\$(InputName).pdb;%(Outputs)</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\;..\dlls;..\engine;..\common;..\pm_shared;..\game_shared;..\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;QUIVER;VOXEL;QUAKE2;VALVE_DLL;CLIENT_WEAPONS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\debughl\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\debughl\hl.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\debughl\</ObjectFileName>
+      <ProgramDataBaseFileName>.\debughl\</ProgramDataBaseFileName>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\debughl\hl.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>..\engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\debughl\hl.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkDLL>true</LinkDLL>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>.\hl.def</ModuleDefinitionFile>
+      <OutputFile>.\debughl\hl.dll</OutputFile>
+      <ImportLibrary>.\Debug\hl.lib</ImportLibrary>
+      <AdditionalDependencies>user32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <CustomBuildStep>
+      <Command>call ..\filecopy.bat %(FullPath) $(ProjectDir)..\..\game\mod\dlls\%(Filename).dll</Command>
+      <Outputs>$(ProjectDir)..\..\game\mod\dlls\$(InputName).dll;%(Outputs)</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="airtank.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="animating.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="animation.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="bmodels.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="buttons.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="career_tasks.cpp" />
+    <ClCompile Include="cbase.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="client.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="combat.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="doors.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="effects.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="explode.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="func_break.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="func_tank.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="gamerules.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="ggrenade.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="globals.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="hintmessage.cpp" />
+    <ClCompile Include="h_ai.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="h_battery.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="h_cycler.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="h_export.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="healthkit.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="items.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="lights.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="maprules.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="mortar.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="mpstubb.cpp" />
+    <ClCompile Include="multiplay_gamerules.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="pathcorner.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="plane.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="plats.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="..\pm_shared\pm_debug.c">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="..\pm_shared\pm_math.c">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="..\pm_shared\pm_shared.c">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="singleplay_gamerules.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="skill.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="sound.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="soundent.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="spectator.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="subs.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="teamplay_gamerules.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="triggers.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="util.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="..\game_shared\voice_gamemgr.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="weapons.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="world.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+    <ClCompile Include="wpn_shared\wpn_ak47.cpp" />
+    <ClCompile Include="wpn_shared\wpn_aug.cpp" />
+    <ClCompile Include="wpn_shared\wpn_awp.cpp" />
+    <ClCompile Include="wpn_shared\wpn_c4.cpp" />
+    <ClCompile Include="wpn_shared\wpn_deagle.cpp" />
+    <ClCompile Include="wpn_shared\wpn_elite.cpp" />
+    <ClCompile Include="wpn_shared\wpn_famas.cpp" />
+    <ClCompile Include="wpn_shared\wpn_fiveseven.cpp" />
+    <ClCompile Include="wpn_shared\wpn_flashbang.cpp" />
+    <ClCompile Include="wpn_shared\wpn_g3sg1.cpp" />
+    <ClCompile Include="wpn_shared\wpn_galil.cpp" />
+    <ClCompile Include="wpn_shared\wpn_glock18.cpp" />
+    <ClCompile Include="wpn_shared\wpn_hegrenade.cpp" />
+    <ClCompile Include="wpn_shared\wpn_knife.cpp" />
+    <ClCompile Include="wpn_shared\wpn_m249.cpp" />
+    <ClCompile Include="wpn_shared\wpn_m3.cpp" />
+    <ClCompile Include="wpn_shared\wpn_m4a1.cpp" />
+    <ClCompile Include="wpn_shared\wpn_mac10.cpp" />
+    <ClCompile Include="wpn_shared\wpn_mp5navy.cpp" />
+    <ClCompile Include="wpn_shared\wpn_p228.cpp" />
+    <ClCompile Include="wpn_shared\wpn_p90.cpp" />
+    <ClCompile Include="wpn_shared\wpn_scout.cpp" />
+    <ClCompile Include="wpn_shared\wpn_sg550.cpp" />
+    <ClCompile Include="wpn_shared\wpn_sg552.cpp" />
+    <ClCompile Include="wpn_shared\wpn_smokegrenade.cpp" />
+    <ClCompile Include="wpn_shared\wpn_tmp.cpp" />
+    <ClCompile Include="wpn_shared\wpn_ump45.cpp" />
+    <ClCompile Include="wpn_shared\wpn_usp.cpp" />
+    <ClCompile Include="xen.cpp">
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="activity.h" />
+    <ClInclude Include="activitymap.h" />
+    <ClInclude Include="animation.h" />
+    <ClInclude Include="basemonster.h" />
+    <ClInclude Include="bot.h" />
+    <ClInclude Include="career_tasks.h" />
+    <ClInclude Include="cbase.h" />
+    <ClInclude Include="cdll_dll.h" />
+    <ClInclude Include="client.h" />
+    <ClInclude Include="decals.h" />
+    <ClInclude Include="doors.h" />
+    <ClInclude Include="effects.h" />
+    <ClInclude Include="..\engine\eiface.h" />
+    <ClInclude Include="enginecallback.h" />
+    <ClInclude Include="explode.h" />
+    <ClInclude Include="extdll.h" />
+    <ClInclude Include="func_break.h" />
+    <ClInclude Include="gamerules.h" />
+    <ClInclude Include="hintmessage.h" />
+    <ClInclude Include="hornet.h" />
+    <ClInclude Include="items.h" />
+    <ClInclude Include="monsterevent.h" />
+    <ClInclude Include="monsters.h" />
+    <ClInclude Include="nodes.h" />
+    <ClInclude Include="plane.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="..\pm_shared\pm_debug.h" />
+    <ClInclude Include="..\pm_shared\pm_defs.h" />
+    <ClInclude Include="..\pm_shared\pm_info.h" />
+    <ClInclude Include="..\pm_shared\pm_materials.h" />
+    <ClInclude Include="..\pm_shared\pm_movevars.h" />
+    <ClInclude Include="..\pm_shared\pm_shared.h" />
+    <ClInclude Include="saverestore.h" />
+    <ClInclude Include="schedule.h" />
+    <ClInclude Include="scriptevent.h" />
+    <ClInclude Include="skill.h" />
+    <ClInclude Include="soundent.h" />
+    <ClInclude Include="spectator.h" />
+    <ClInclude Include="talkmonster.h" />
+    <ClInclude Include="teamplay_gamerules.h" />
+    <ClInclude Include="trains.h" />
+    <ClInclude Include="util.h" />
+    <ClInclude Include="vector.h" />
+    <ClInclude Include="weapons.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -2330,7 +2330,7 @@ void CHalfLifeMultiplay::GiveC4( void )
     ++m_iC4Guy;
 
     // TODO: Implement me.
-    bool botDeferToHuman; // = cv_bot_defer_to_human.value > 0.0;
+    bool botDeferToHuman = false; // = cv_bot_defer_to_human.value > 0.0;
 
     if( botDeferToHuman )
     {

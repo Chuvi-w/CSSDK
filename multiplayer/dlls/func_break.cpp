@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -104,7 +104,7 @@ void CBreakable::KeyValue( KeyValueData* pkvd )
 	else if (FStrEq(pkvd->szKeyName, "spawnobject") )
 	{
 		int object = atoi( pkvd->szValue );
-		if ( object > 0 && object < static_cast<int>(ARRAYSIZE(pSpawnObjects)) )
+		if ( object > 0 && object < ARRAYSIZE(pSpawnObjects) )
 			m_iszSpawnObject = MAKE_STRING( pSpawnObjects[object] );
 		pkvd->fHandled = TRUE;
 	}
@@ -283,7 +283,7 @@ void CBreakable::MaterialSoundRandom( edict_t *pEdict, Materials soundMaterial, 
 
 void CBreakable::Precache( void )
 {
-	const char *pGibName = NULL;
+	const char *pGibName;
 
     switch (m_Material) 
 	{
@@ -338,8 +338,6 @@ void CBreakable::Precache( void )
 		
 		PRECACHE_SOUND ("debris/bustceiling.wav");  
 		break;
-	default:
-		break;
 	}
 	MaterialSoundPrecache( m_Material );
 	if ( m_iszGibModel )
@@ -361,7 +359,7 @@ void CBreakable::DamageSound( void )
 	int pitch;
 	float fvol;
 	char *rgpsz[6];
-	int i = 0;
+	int i;
 	int material = m_Material;
 
 //	if (RANDOM_LONG(0,1))
@@ -517,9 +515,6 @@ void CBreakable::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vec
 			case matUnbreakableGlass:
 				UTIL_Ricochet( ptr->vecEndPos, RANDOM_FLOAT(0.5,1.5) );
 			break;
-
-			default:
-				break;
 		}
 	}
 
@@ -588,6 +583,7 @@ void CBreakable::Die( void )
 {
 	Vector vecSpot;// shard origin
 	Vector vecVelocity;// shard velocity
+	CBaseEntity *pEntity = NULL;
 	char cFlag = 0;
 	int pitch;
 	float fvol;
@@ -600,7 +596,7 @@ void CBreakable::Die( void )
 	// The more negative pev->health, the louder
 	// the sound should be.
 
-	fvol = RANDOM_FLOAT(0.85, 1.0) + (abs(static_cast<int>(pev->health)) / 100.0);
+	fvol = RANDOM_FLOAT(0.85, 1.0) + (abs(pev->health) / 100.0);
 
 	if (fvol > 1.0)
 		fvol = 1.0;
@@ -667,9 +663,6 @@ void CBreakable::Die( void )
 
 	case matCeilingTile:
 		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustceiling.wav", fvol, ATTN_NORM, 0, pitch);
-		break;
-
-	default:
 		break;
 	}
     
@@ -750,7 +743,7 @@ void CBreakable::Die( void )
 	// Fire targets on break
 	SUB_UseTargets( NULL, USE_TOGGLE, 0 );
 
-	SetThink( &CBaseEntity::SUB_Remove );
+	SetThink( &CBreakable::SUB_Remove );
 	pev->nextthink = pev->ltime + 0.1;
 	if ( m_iszSpawnObject )
 		CBaseEntity::Create( (char *)STRING(m_iszSpawnObject), VecBModelOrigin(pev), pev->angles, edict() );
@@ -846,7 +839,7 @@ void CPushable :: Spawn( void )
 	UTIL_SetOrigin( pev, pev->origin );
 
 	// Multiply by area of the box's cross-section (assume 1000 units^3 standard volume)
-	pev->skin = static_cast<int>(( pev->skin * (pev->maxs.x - pev->mins.x) * (pev->maxs.y - pev->mins.y) ) * 0.0005);
+	pev->skin = ( pev->skin * (pev->maxs.x - pev->mins.x) * (pev->maxs.y - pev->mins.y) ) * 0.0005;
 	m_soundTime = 0;
 }
 
@@ -891,7 +884,7 @@ void CPushable :: KeyValue( KeyValueData *pkvd )
 	}
 	else if ( FStrEq(pkvd->szKeyName, "buoyancy") )
 	{
-		pev->skin = atoi(pkvd->szValue);
+		pev->skin = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else

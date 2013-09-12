@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -15,14 +15,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#if defined _MSC_VER && _MSC_VER >= 1400
-	#ifndef _CRT_SECURE_NO_DEPRECATE
-		#define _CRT_SECURE_NO_DEPRECATE
-	#endif
-
-	#pragma warning(disable: 4996) // deprecated functions
-#endif
 
 #include "../common/nowin.h"
 
@@ -61,9 +53,8 @@ typedef unsigned char byte;
 
 extern globalvars_t				*gpGlobals;
 
-#ifdef _MSC_VER
 #pragma warning( disable : 4244 )
-#endif
+
 
 
 int ExtractBbox( void *pmodel, int sequence, float *mins, float *maxs )
@@ -288,6 +279,8 @@ int GetAnimationEvent( void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEve
 	if ( !pstudiohdr || pev->sequence >= pstudiohdr->numseq || !pMonsterEvent )
 		return 0;
 
+	int events = 0;
+
 	mstudioseqdesc_t	*pseqdesc;
 	mstudioevent_t		*pevent;
 
@@ -328,14 +321,13 @@ int GetAnimationEvent( void *pmodel, entvars_t *pev, MonsterEvent_t *pMonsterEve
 float SetController( void *pmodel, entvars_t *pev, int iController, float flValue )
 {
 	studiohdr_t *pstudiohdr;
+	int i;
 	
 	pstudiohdr = (studiohdr_t *)pmodel;
 	if (! pstudiohdr)
 		return flValue;
 
 	mstudiobonecontroller_t	*pbonecontroller = (mstudiobonecontroller_t *)((byte *)pstudiohdr + pstudiohdr->bonecontrollerindex);
-
-	int i = 0;
 
 	// find first controller that matches the index
 	for (i = 0; i < pstudiohdr->numbonecontrollers; i++, pbonecontroller++)
@@ -371,7 +363,7 @@ float SetController( void *pmodel, entvars_t *pev, int iController, float flValu
 		}
 	}
 
-	int setting = static_cast<int>(255 * (flValue - pbonecontroller->start) / (pbonecontroller->end - pbonecontroller->start));
+	int setting = 255 * (flValue - pbonecontroller->start) / (pbonecontroller->end - pbonecontroller->start);
 
 	if (setting < 0) setting = 0;
 	if (setting > 255) setting = 255;
@@ -412,7 +404,7 @@ float SetBlending( void *pmodel, entvars_t *pev, int iBlender, float flValue )
 		}
 	}
 
-	int setting = static_cast<int>(255 * (flValue - pseqdesc->blendstart[iBlender]) / (pseqdesc->blendend[iBlender] - pseqdesc->blendstart[iBlender]));
+	int setting = 255 * (flValue - pseqdesc->blendstart[iBlender]) / (pseqdesc->blendend[iBlender] - pseqdesc->blendstart[iBlender]);
 
 	if (setting < 0) setting = 0;
 	if (setting > 255) setting = 255;

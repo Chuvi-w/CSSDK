@@ -44,8 +44,10 @@ local.properties
 # Build results
 [Dd]ebug/
 [Dd]ebugmp/
+[Dd]ebughl/
 [Rr]elease/
 [Rr]eleasemp/
+[Rr]eleasehl/
 *_i.c
 *_p.c
 *.ilk
@@ -65,6 +67,10 @@ local.properties
 .builds
 *.dotCover
 *.tlog
+
+# PVS
+*PVS-Studio.cfg
+mrgtmp0
 
 ## TODO: If you have NuGet Package Restore enabled, uncomment this
 #packages/

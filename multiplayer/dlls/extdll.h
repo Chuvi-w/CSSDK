@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -26,21 +26,13 @@
 #endif
 
 // Silence certain warnings
-#ifdef _MSC_VER
 	#pragma warning(disable : 4244)		// int or float down-conversion
 	#pragma warning(disable : 4305)		// int or float data truncation
 	#pragma warning(disable : 4201)		// nameless struct/union
 	#pragma warning(disable : 4514)		// unreferenced inline function removed
 	#pragma warning(disable : 4100)		// unreferenced formal parameter
 
-	#if _MSC_VER >= 1400
-		#ifndef _CRT_SECURE_NO_DEPRECATE
-			#define _CRT_SECURE_NO_DEPRECATE
-		#endif
-
-		#pragma warning(disable: 4996) // deprecated functions
-	#endif
-#endif
+#include "archtypes.h"     // DAL
 
 // Prevent tons of unused windows definitions
 #ifdef _WIN32
@@ -51,19 +43,15 @@
 #define NOIME
 #include "windows.h"
 #else // _WIN32
-#ifndef FALSE
 #define FALSE 0
-#endif
-#ifndef TRUE
 #define TRUE (!FALSE)
-#endif
-typedef unsigned long ULONG;
+typedef uint32 ULONG;
 typedef unsigned char BYTE;
 typedef int BOOL;
 #define MAX_PATH PATH_MAX
 #include <limits.h>
 #include <stdarg.h>
-#include <ctype.h>
+#include <string.h> // memset 
 #ifndef min
 #define min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
@@ -79,8 +67,8 @@ typedef int BOOL;
 #include "math.h"
 
 // Header file containing definition of globalvars_t and entvars_t
-typedef int	func_t;					//
-typedef int	string_t;				// from engine's pr_comp.h;
+typedef unsigned int func_t;					//
+typedef unsigned int string_t;				// from engine's pr_comp.h;
 typedef float vec_t;				// needed before including progdefs.h
 
 // Vector class

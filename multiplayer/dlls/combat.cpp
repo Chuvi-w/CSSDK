@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -332,7 +332,7 @@ void CBaseMonster :: GibMonster( void )
 		if ( gibbed )
 		{
 			// don't remove players!
-			SetThink ( &CBaseEntity::SUB_Remove );
+			SetThink ( &CBaseMonster::SUB_Remove );
 			pev->nextthink = gpGlobals->time;
 		}
 		else
@@ -591,6 +591,9 @@ Killed
 */
 void CBaseMonster :: Killed( entvars_t *pevAttacker, int iGib )
 {
+	unsigned int	cCount = 0;
+	BOOL			fDone = FALSE;
+
 	if ( HasMemory( bits_MEMORY_KILLED ) )
 	{
 		if ( ShouldGibMonster( iGib ) )
@@ -686,7 +689,7 @@ void CGib :: WaitTillLand ( void )
 
 	if ( pev->velocity == g_vecZero )
 	{
-		SetThink (&CBaseEntity::SUB_StartFadeOut);
+		SetThink (&CGib::SUB_StartFadeOut);
 		pev->nextthink = gpGlobals->time + m_lifeTime;
 
 		// If you bleed, you stink!
@@ -754,7 +757,7 @@ void CGib :: StickyGibTouch ( CBaseEntity *pOther )
 	Vector	vecSpot;
 	TraceResult	tr;
 	
-	SetThink ( &CBaseEntity::SUB_Remove );
+	SetThink ( &CGib::SUB_Remove );
 	pev->nextthink = gpGlobals->time + 10;
 
 	if ( !FClassnameIs( pOther->pev, "worldspawn" ) )
@@ -935,7 +938,7 @@ int CBaseMonster :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker,
 			// enemy's last known position is somewhere down the vector that the attack came from.
 			if (pevInflictor)
 			{
-				if (m_hEnemy == 0 || pevInflictor == m_hEnemy->pev || !HasConditions(bits_COND_SEE_ENEMY))
+				if (m_hEnemy == NULL || pevInflictor == m_hEnemy->pev || !HasConditions(bits_COND_SEE_ENEMY))
 				{
 					m_vecEnemyLKP = pevInflictor->origin;
 				}
@@ -1486,7 +1489,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 			}
 		}
 		// make bullet trails
-		UTIL_BubbleTrail( vecSrc, tr.vecEndPos, static_cast<int>((flDistance * tr.flFraction) / 64.0) );
+		UTIL_BubbleTrail( vecSrc, tr.vecEndPos, (flDistance * tr.flFraction) / 64.0 );
 	}
 	ApplyMultiDamage(pev, pevAttacker);
 }

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -82,12 +82,12 @@ void CBasePlatTrain :: KeyValue( KeyValueData *pkvd )
 	}
 	else if (FStrEq(pkvd->szKeyName, "movesnd"))
 	{
-		m_bMoveSnd = atoi(pkvd->szValue);
+		m_bMoveSnd = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "stopsnd"))
 	{
-		m_bStopSnd = atoi(pkvd->szValue);
+		m_bStopSnd = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "volume"))
@@ -385,7 +385,7 @@ void CPlatTrigger :: Touch( CBaseEntity *pOther )
 		return;
 
 	// Ignore touches by corpses
-	if (!pOther->IsAlive())
+	if (!pOther->IsAlive()||!m_pPlatform||!m_pPlatform->pev)
 		return;
 	
 	// Make linked platform go up/down.
@@ -1126,7 +1126,7 @@ void CFuncTrackTrain :: UpdateSound( void )
 	if (!pev->noise)
 		return;
 
-	flpitch = TRAIN_STARTPITCH + (abs(static_cast<int>(pev->speed)) * (TRAIN_MAXPITCH - TRAIN_STARTPITCH) / TRAIN_MAXSPEED);
+	flpitch = TRAIN_STARTPITCH + (abs(pev->speed) * (TRAIN_MAXPITCH - TRAIN_STARTPITCH) / TRAIN_MAXSPEED);
 
 	if (!m_soundPlaying)
 	{
@@ -1492,7 +1492,7 @@ void CFuncTrackTrain :: Spawn( void )
 	pev->speed = 0;
 	pev->velocity = g_vecZero;
 	pev->avelocity = g_vecZero;
-	pev->impulse = static_cast<int>(m_speed);
+	pev->impulse = m_speed;
 
 	m_dir = 1;
 
@@ -1862,14 +1862,14 @@ void CFuncTrackChange :: GoDown( void )
 	// If ROTMOVE, move & rotate
 	if ( FBitSet( pev->spawnflags, SF_TRACK_DONT_MOVE ) )
 	{
-		SetMoveDone( &CFuncPlat::CallHitBottom );
+		SetMoveDone( &CFuncTrackChange::CallHitBottom );
 		m_toggle_state = TS_GOING_DOWN;
 		AngularMove( m_start, pev->speed );
 	}
 	else
 	{
 		CFuncPlat :: GoDown();
-		SetMoveDone( &CFuncPlat::CallHitBottom );
+		SetMoveDone( &CFuncTrackChange::CallHitBottom );
 		RotMove( m_start, pev->nextthink - pev->ltime );
 	}
 	// Otherwise, rotate first, move second
@@ -1898,14 +1898,14 @@ void CFuncTrackChange :: GoUp( void )
 	if ( FBitSet( pev->spawnflags, SF_TRACK_DONT_MOVE ) )
 	{
 		m_toggle_state = TS_GOING_UP;
-		SetMoveDone( &CFuncPlat::CallHitTop );
+		SetMoveDone( &CFuncTrackChange::CallHitTop );
 		AngularMove( m_end, pev->speed );
 	}
 	else
 	{
 		// If ROTMOVE, move & rotate
 		CFuncPlat :: GoUp();
-		SetMoveDone( &CFuncPlat::CallHitTop );
+		SetMoveDone( &CFuncTrackChange::CallHitTop );
 		RotMove( m_end, pev->nextthink - pev->ltime );
 	}
 	
@@ -2274,7 +2274,7 @@ void CGunTarget::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 	{
 		pev->takedamage = DAMAGE_AIM;
 		m_hTargetEnt = GetNextTarget();
-		if ( m_hTargetEnt == 0 )
+		if ( m_hTargetEnt == NULL )
 			return;
 		pev->health = pev->max_health;
 		Next();

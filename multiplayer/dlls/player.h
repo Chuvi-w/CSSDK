@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -21,10 +21,10 @@
 #include "weapons.h"
 #include "shared_util.h"
 
-#define PLAYER_FATAL_FALL_SPEED		 ( float )1100
-#define PLAYER_MAX_SAFE_FALL_SPEED	 ( float )500
+#define PLAYER_FATAL_FALL_SPEED		 1100
+#define PLAYER_MAX_SAFE_FALL_SPEED	 500
 #define DAMAGE_FOR_FALL_SPEED		 ( float )100 / ( PLAYER_FATAL_FALL_SPEED - PLAYER_MAX_SAFE_FALL_SPEED ) // damage per unit per second.
-#define PLAYER_MIN_BOUNCE_SPEED		 ( float )350
+#define PLAYER_MIN_BOUNCE_SPEED		 350
 #define PLAYER_FALL_PUNCH_THRESHHOLD ( float )350 // won't punch player's screen/make scrape noise unless player falling at least this fast.
 
 //

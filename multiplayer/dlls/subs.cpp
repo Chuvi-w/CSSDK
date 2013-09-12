@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -427,6 +427,14 @@ After moving, set origin to exact final destination, call "move done" function
 */
 void CBaseToggle :: LinearMoveDone( void )
 {
+	Vector delta = m_vecFinalDest - pev->origin;
+	float error = delta.Length();
+	if ( error > 0.03125 )
+	{
+		LinearMove( m_vecFinalDest, 100 );
+		return;
+	}
+
 	UTIL_SetOrigin(pev, m_vecFinalDest);
 	pev->velocity = g_vecZero;
 	pev->nextthink = -1;

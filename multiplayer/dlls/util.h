@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -12,10 +12,11 @@
 *   without written permission from Valve LLC.
 *
 ****/
+#include "archtypes.h"     // DAL
+
 //
 // Misc utility code
 //
-#include <string.h>
 #ifndef ACTIVITY_H
 #include "activity.h"
 #endif
@@ -31,8 +32,8 @@ inline void MESSAGE_BEGIN( int msg_dest, int msg_type, const float *pOrigin, ent
 extern globalvars_t				*gpGlobals;
 
 // Use this instead of ALLOC_STRING on constant strings
-#define STRING(offset)		reinterpret_cast<const char *>(gpGlobals->pStringBase + (uintp)offset)
-#define MAKE_STRING(str)	(reinterpret_cast<uintp>(str) - reinterpret_cast<uintp>(STRING(0)))
+#define STRING(offset)		((const char *)(gpGlobals->pStringBase + (unsigned int)(offset)))
+#define MAKE_STRING(str)	((uint64)(str) - (uint64)(STRING(0)))
 
 inline edict_t *FIND_ENTITY_BY_CLASSNAME(edict_t *entStart, const char *pszName) 
 {
@@ -79,24 +80,26 @@ typedef int EOFFSET;
 typedef int BOOL;
 
 // In case this ever changes
-#ifndef M_PI
 #define M_PI			3.14159265358979323846
-#endif
 
 // Keeps clutter down a bit, when declaring external entity/global method prototypes
-#define DECLARE_GLOBAL_METHOD(MethodName)  extern void DLLEXPORT MethodName( void )
-#define GLOBAL_METHOD(funcname)					void DLLEXPORT funcname(void)
+#define DECLARE_GLOBAL_METHOD(MethodName)  extern void UTIL_DLLEXPORT MethodName( void )
+#define GLOBAL_METHOD(funcname)					void UTIL_DLLEXPORT funcname(void)
+
+#ifndef UTIL_DLLEXPORT
+#ifdef _WIN32
+#define UTIL_DLLEXPORT _declspec( dllexport )
+#else
+#define UTIL_DLLEXPORT __attribute__ ((visibility("default")))
+#endif
+#endif
 
 // This is the glue that hooks .MAP entity class names to our CPP classes
 // The _declspec forces them to be exported by name so we can do a lookup with GetProcAddress()
 // The function is used to intialize / allocate the object for the entity
-#ifdef _WIN32
 #define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName) \
-	extern "C" _declspec( dllexport ) void mapClassName( entvars_t *pev ); \
+	extern "C" UTIL_DLLEXPORT void mapClassName( entvars_t *pev ); \
 	void mapClassName( entvars_t *pev ) { GetClassPtr( (DLLClassName *)pev ); }
-#else
-#define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName) extern "C" void mapClassName( entvars_t *pev ); void mapClassName( entvars_t *pev ) { GetClassPtr( (DLLClassName *)pev ); }
-#endif
 
 
 //
@@ -113,7 +116,7 @@ inline edict_t *ENT(EOFFSET eoffset)			{ return (*g_engfuncs.pfnPEntityOfEntOffs
 inline EOFFSET OFFSET(EOFFSET eoffset)			{ return eoffset; }
 inline EOFFSET OFFSET(const edict_t *pent)	
 { 
-#ifdef _DEBUG
+#if _DEBUG
 	if ( !pent )
 		ALERT( at_error, "Bad ent in OFFSET()\n" );
 #endif
@@ -121,7 +124,7 @@ inline EOFFSET OFFSET(const edict_t *pent)
 }
 inline EOFFSET OFFSET(entvars_t *pev)				
 { 
-#ifdef _DEBUG
+#if _DEBUG
 	if ( !pev )
 		ALERT( at_error, "Bad pev in OFFSET()\n" );
 #endif
@@ -251,7 +254,7 @@ typedef enum { ignore_monsters=1, dont_ignore_monsters=0, missile=2 } IGNORE_MON
 typedef enum { ignore_glass=1, dont_ignore_glass=0 } IGNORE_GLASS;
 extern void			UTIL_TraceLine			(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, edict_t *pentIgnore, TraceResult *ptr);
 extern void			UTIL_TraceLine			(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, IGNORE_GLASS ignoreGlass, edict_t *pentIgnore, TraceResult *ptr);
-typedef enum { point_hull=0, human_hull=1, large_hull=2, head_hull=3 } HULL_TYPE;
+typedef enum { point_hull=0, human_hull=1, large_hull=2, head_hull=3 };
 extern void			UTIL_TraceHull			(const Vector &vecStart, const Vector &vecEnd, IGNORE_MONSTERS igmon, int hullNumber, edict_t *pentIgnore, TraceResult *ptr);
 extern TraceResult	UTIL_GetGlobalTrace		(void);
 extern void			UTIL_TraceModel			(const Vector &vecStart, const Vector &vecEnd, int hullNumber, edict_t *pentModel, TraceResult *ptr);
@@ -516,7 +519,7 @@ void EMIT_GROUPID_SUIT(edict_t *entity, int isentenceg);
 void EMIT_GROUPNAME_SUIT(edict_t *entity, const char *groupname);
 
 #define PRECACHE_SOUND_ARRAY( a ) \
-	{ for (int i = 0; i < static_cast<int>(ARRAYSIZE( a )); i++ ) PRECACHE_SOUND((char *) a [i]); }
+	{ for (int i = 0; i < ARRAYSIZE( a ); i++ ) PRECACHE_SOUND((char *) a [i]); }
 
 #define EMIT_SOUND_ARRAY_DYN( chan, array ) \
 	EMIT_SOUND_DYN ( ENT(pev), chan , array [ RANDOM_LONG(0,ARRAYSIZE( array )-1) ], 1.0, ATTN_NORM, 0, RANDOM_LONG(95,105) ); 
