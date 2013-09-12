@@ -39,6 +39,12 @@ BOOL CServerCtrlApp::InitInstance()
 {
 	// Standard initialization
 
+#ifdef _AFXDLL
+	Enable3dControls();			// Call this when using MFC in a shared DLL
+#else
+	Enable3dControlsStatic();	// Call this when linking to MFC statically
+#endif
+
 	CServerCtrlDlg dlg;
 	m_pMainWnd = &dlg;
 	int nResponse = dlg.DoModal();

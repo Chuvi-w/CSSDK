@@ -12,15 +12,6 @@
 // 2-8-99	fixed demand loaded sequence bug (thanks to Frans 'Otis' Bouma)
 
 ////////////////////////////////////////////////////////////////////////
-
-#if defined _MSC_VER && _MSC_VER >= 1400
-	#ifndef _CRT_SECURE_NO_DEPRECATE
-		#define _CRT_SECURE_NO_DEPRECATE
-	#endif
-
-	#pragma warning(disable: 4996) // deprecated functions
-#endif
-
 #include <stdio.h>
 
 #include <windows.h>
@@ -47,14 +38,13 @@ void StudioModel::UploadTexture(mstudiotexture_t *ptexture, byte *data, byte *pa
 	byte	*tex, *out;
 
 	// convert texture to power of 2
-	int outwidth, outheight;
-	for (outwidth = 1; outwidth < ptexture->width; outwidth <<= 1)
+	for (int outwidth = 1; outwidth < ptexture->width; outwidth <<= 1)
 		;
 
 	if (outwidth > 256)
 		outwidth = 256;
 
-	for (outheight = 1; outheight < ptexture->height; outheight <<= 1)
+	for (int outheight = 1; outheight < ptexture->height; outheight <<= 1)
 		;
 
 	if (outheight > 256)
@@ -279,8 +269,7 @@ float StudioModel::SetController( int iController, float flValue )
 	mstudiobonecontroller_t	*pbonecontroller = (mstudiobonecontroller_t *)((byte *)m_pstudiohdr + m_pstudiohdr->bonecontrollerindex);
 
 	// find first controller that matches the index
-	int i;
-	for (i = 0; i < m_pstudiohdr->numbonecontrollers; i++, pbonecontroller++)
+	for (int i = 0; i < m_pstudiohdr->numbonecontrollers; i++, pbonecontroller++)
 	{
 		if (pbonecontroller->index == iController)
 			break;

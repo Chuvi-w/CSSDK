@@ -50,7 +50,7 @@ W_OpenWad
 void W_OpenWad (char *filename)
 {
 	lumpinfo_t		*lump_p;
-	unsigned int	i;
+	unsigned		i;
 	int				length;
 	
 //
@@ -79,7 +79,7 @@ void W_OpenWad (char *filename)
 // Fill in lumpinfo
 //
 	
-	for (i = 0 ; i < (unsigned int)numlumps ; i++,lump_p++)
+	for (i=0 ; i<numlumps ; i++,lump_p++)
 	{
 		lump_p->filepos = LittleLong(lump_p->filepos);
 		lump_p->size = LittleLong(lump_p->size);
@@ -209,7 +209,7 @@ void	*W_LoadLumpNum (int lump)
 {
 	void	*buf;
 	
-	if (lump >= numlumps)
+	if ((unsigned)lump >= numlumps)
 		Error ("W_CacheLumpNum: %i >= numlumps",lump);
 		
 	buf = malloc (W_LumpLength (lump));
