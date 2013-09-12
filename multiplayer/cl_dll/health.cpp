@@ -18,9 +18,9 @@
 // implementation of CHudHealth class
 //
 
-#include "STDIO.H"
-#include "STDLIB.H"
-#include "MATH.H"
+#include "stdio.h"
+#include "stdlib.h"
+#include "math.h"
 
 #include "hud.h"
 #include "cl_util.h"
@@ -379,7 +379,8 @@ int CHudHealth::DrawDamage(float flTime)
 	ScaleColors(r, g, b, a);
 
 	// Draw all the items
-	for (int i = 0; i < NUM_DMG_TYPES; i++)
+	int i;
+	for ( i = 0; i < NUM_DMG_TYPES; i++)
 	{
 		if (m_bitsDamage & giDmgFlags[i])
 		{
@@ -391,7 +392,7 @@ int CHudHealth::DrawDamage(float flTime)
 
 
 	// check for bits that should be expired
-	for ( int i = 0; i < NUM_DMG_TYPES; i++ )
+	for ( i = 0; i < NUM_DMG_TYPES; i++ )
 	{
 		DAMAGE_IMAGE *pdmg = &m_dmg[i];
 

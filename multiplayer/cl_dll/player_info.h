@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 2003', Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -12,29 +12,9 @@
 *   without written permission from Valve LLC.
 *
 ****/
-//
-//  parsemsg.h
-//
 
-#define ASSERT( x )
-
-void BEGIN_READ( void *buf, int size );
-int READ_CHAR( void );
-int READ_BYTE( void );
-int READ_SHORT( void );
-int READ_WORD( void );
-int READ_LONG( void );
-float READ_FLOAT( void );
-char* READ_STRING( void );
-float READ_COORD( void );
-float READ_ANGLE( void );
-float READ_HIRESANGLE( void );
-
-
-
-
-
-
-
-
+extern hud_player_info_t	g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
+extern extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
+extern team_info_t			g_TeamInfo[MAX_TEAMS+1];
+extern int					g_IsSpectator[MAX_PLAYERS+1];
 

@@ -14,11 +14,7 @@
 #endif
 
 #include "hud_iface.h"
-
-extern "C"
-{
-	void _DLLEXPORT HUD_PostRunCmd( struct local_state_s *from, struct local_state_s *to, struct usercmd_s *cmd, int runfuncs, double time, unsigned int random_seed );
-}
+#include "Exports.h"
 
 void			COM_Log( char *pszFile, char *fmt, ...);
 int				CL_IsDead( void );
