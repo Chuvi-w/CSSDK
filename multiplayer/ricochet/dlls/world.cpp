@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -134,7 +134,7 @@ void CDecal :: Spawn( void )
 	else
 	{
 		// if there IS a targetname, the decal sprays itself on when it is triggered.
-		SetThink ( &CBaseEntity::SUB_DoNothing );
+		SetThink ( &CDecal::SUB_DoNothing );
 		SetUse(&CDecal::TriggerDecal);
 	}
 }
@@ -160,7 +160,7 @@ void CDecal :: TriggerDecal ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 			WRITE_SHORT( (int)VARS(trace.pHit)->modelindex );
 	MESSAGE_END();
 
-	SetThink( &CBaseEntity::SUB_Remove );
+	SetThink( &CDecal::SUB_Remove );
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
@@ -497,7 +497,8 @@ void CWorld :: Precache( void )
 	CVAR_SET_STRING("room_type", "0"); // clear DSP
 
 	// Create all the arenas
-	for (int i = 0; i < MAX_ARENAS; i++)
+	int i;
+	for ( i = 0; i < MAX_ARENAS; i++)
 	{
 		g_pArenaList[i] = GetClassPtr( ( CDiscArena *)NULL );
 		g_pArenaList[i]->Spawn();
@@ -625,7 +626,7 @@ void CWorld :: Precache( void )
 	// 63 testing
 	LIGHT_STYLE(63, "a");
 
-	for ( int i = 0; i < static_cast<int>(ARRAYSIZE(gDecals)); i++ )
+	for ( i = 0; i < ARRAYSIZE(gDecals); i++ )
 		gDecals[i].index = DECAL_INDEX( gDecals[i].name );
 
 // init the WorldGraph.
@@ -689,7 +690,7 @@ void CWorld :: Precache( void )
 
 	// Discwar
 	if ( g_iPlayersPerTeam < 1 )
-		g_iPlayersPerTeam = static_cast<int>(CVAR_GET_FLOAT("rc_playersperteam"));
+		g_iPlayersPerTeam = CVAR_GET_FLOAT("rc_playersperteam");
 }
 
 

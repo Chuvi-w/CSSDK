@@ -1,18 +1,11 @@
-/***
-*
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
-*
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
-*
-****/
-// pm_math.c -- math primitives
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
+
+// mathlib.c -- math primitives
 
 #include "mathlib.h"
 #include "const.h"
@@ -25,11 +18,11 @@
 // fall over
 #define	ROLL	2 
 
-#ifdef _MSC_VER
 #pragma warning(disable : 4244)
-#endif
 
+#ifndef DISABLE_VEC_ORIGIN
 vec3_t vec3_origin = {0,0,0};
+#endif
 int nanmask = 255<<23;
 
 float	anglemod(float a)

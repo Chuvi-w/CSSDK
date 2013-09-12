@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -461,7 +461,6 @@ int CHudMessage::MsgFunc_GameTitle( const char *pszName,  int iSize, void *pbuf 
 
 	return 1;
 }
-
 void CHudMessage::MessageAdd(client_textmessage_t * newMessage )
 {
 	m_parms.time = gHUD.m_flTime;
@@ -479,4 +478,5 @@ void CHudMessage::MessageAdd(client_textmessage_t * newMessage )
 			return;
 		}
 	}
+
 }

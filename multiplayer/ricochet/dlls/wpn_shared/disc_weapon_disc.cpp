@@ -139,9 +139,9 @@ void CDisc::Spawn( void )
 
 		WRITE_BYTE( 5 );  // width
 
-		WRITE_BYTE( static_cast<int>(g_iaDiscColors[pev->team][0]) ); // r, g, b
-		WRITE_BYTE( static_cast<int>(g_iaDiscColors[pev->team][1]) ); // r, g, b
-		WRITE_BYTE( static_cast<int>(g_iaDiscColors[pev->team][2]) ); // r, g, b
+		WRITE_BYTE( g_iaDiscColors[pev->team][0] ); // r, g, b
+		WRITE_BYTE( g_iaDiscColors[pev->team][1] ); // r, g, b
+		WRITE_BYTE( g_iaDiscColors[pev->team][2] ); // r, g, b
 
 		WRITE_BYTE( 250 );	// brightness
 	MESSAGE_END();
@@ -282,7 +282,7 @@ void CDisc::DiscTouch ( CBaseEntity *pOther )
 
 					((CBasePlayer*)pOther)->m_hLastPlayerToHitMe = m_hOwner;
 					((CBasePlayer*)pOther)->m_flLastDiscHit = gpGlobals->time;
-					((CBasePlayer*)pOther)->m_flLastDiscBounces = m_iBounces;
+					((CBasePlayer*)pOther)->m_iLastDiscBounces = m_iBounces;
 					if ( m_bTeleported )
 						((CBasePlayer*)pOther)->m_flLastDiscHitTeleport = gpGlobals->time;
 
@@ -333,7 +333,7 @@ void CDisc::DiscThink()
 	if ( (m_iPowerupFlags & POW_FREEZE) && (m_iBounces == 0) )
 	{
 		// Use an existing target if he's still in the view cone
-		if ( m_pLockTarget != 0 )
+		if ( m_pLockTarget != NULL )
 		{
 			Vector vecDir = (m_pLockTarget->pev->origin - pev->origin).Normalize();
 			UTIL_MakeVectors( pev->angles );
@@ -343,7 +343,7 @@ void CDisc::DiscThink()
 		}
 
 		// Get a new target if we don't have one
-		if ( m_pLockTarget == 0 )
+		if ( m_pLockTarget == NULL )
 		{
 			CBaseEntity *pOther = NULL;
 
@@ -370,7 +370,7 @@ void CDisc::DiscThink()
 		}
 
 		// Track towards our target
-		if ( m_pLockTarget != 0 )
+		if ( m_pLockTarget != NULL )
 		{
 			// Calculate new velocity
 			Vector vecDir = (m_pLockTarget->pev->origin - pev->origin).Normalize();
@@ -518,7 +518,7 @@ void CDiscWeapon::Holster( int skiplocal /* = 0 */ )
 	{
 		// no more grenades!
 		m_pPlayer->pev->weapons &= ~(1<<WEAPON_DISC);
-		SetThink( &CBasePlayerItem::DestroyItem );
+		SetThink( &CDiscWeapon::DestroyItem );
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 
@@ -748,3 +748,6 @@ int CDiscWeapon::AddDuplicate( CBasePlayerItem *pOriginal )
 	pev->flags |= FL_KILLME;
 	return FALSE;
 }
+
+
+

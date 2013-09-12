@@ -44,7 +44,7 @@
 #include "camera.h"
 #include "in_defs.h"
 #include "parsemsg.h"
-#include "../engine/keydefs.h"
+#include "keydefs.h"
 #include "demo.h"
 #include "demo_api.h"
 #include "ammohistory.h"
@@ -612,8 +612,10 @@ void TeamFortressViewport::CreateCommandMenu( void )
 		return;
 	}
 
+#ifdef _WIN32
 try
 {
+#endif
 	// First, read in the localisation strings
 
 	// Detpack strings
@@ -794,6 +796,7 @@ try
 
 		pfile = gEngfuncs.COM_ParseFile(pfile, token);
 	}
+#ifdef _WIN32
 }
 catch( CException *e )
 {
@@ -803,6 +806,7 @@ catch( CException *e )
 	m_iInitialized = false;
 	return;
 }
+#endif
 
 	SetCurrentMenu( NULL );
 	SetCurrentCommandMenu( NULL );
@@ -1702,6 +1706,10 @@ void TeamFortressViewport::GetAllPlayersInfo( void )
 
 void TeamFortressViewport::paintBackground()
 {
+	int wide, tall;
+	getParent()->getSize( wide, tall );
+	setSize( wide, tall );
+
 	if (m_pScoreBoard)
 	{
 		int x, y;

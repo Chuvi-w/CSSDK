@@ -23,6 +23,9 @@
 #include "player.h"
 #include "gamerules.h"
 
+#if !defined ( _WIN32 )
+#include <ctype.h>
+#endif
 
 static char *memfgets( byte *pMemFile, int fileSize, int &filePos, char *pBuffer, int bufferSize );
 
@@ -192,7 +195,7 @@ void CAmbientGeneric :: Spawn( void )
 	{
 		ALERT( at_error, "EMPTY AMBIENT AT: %f, %f, %f\n", pev->origin.x, pev->origin.y, pev->origin.z );
 		pev->nextthink = gpGlobals->time + 0.1;
-		SetThink( &CBaseEntity::SUB_Remove );
+		SetThink( &CAmbientGeneric::SUB_Remove );
 		return;
 	}
     pev->solid		= SOLID_NOT;
@@ -448,7 +451,7 @@ void CAmbientGeneric :: InitModulationParms(void)
 {
 	int pitchinc;
 
-	m_dpv.volrun = static_cast<int>(pev->health * 10);	// 0 - 100
+	m_dpv.volrun = pev->health * 10;	// 0 - 100
 	if (m_dpv.volrun > 100) m_dpv.volrun = 100;
 	if (m_dpv.volrun < 0) m_dpv.volrun = 0;
 
@@ -550,7 +553,7 @@ void CAmbientGeneric :: ToggleUse ( CBaseEntity *pActivator, CBaseEntity *pCalle
 		if (fraction < 0.0)
 			fraction = 0.01;
 
-		m_dpv.pitch = static_cast<int>(fraction * 255);
+		m_dpv.pitch = fraction * 255;
 
 		UTIL_EmitAmbientSound(ENT(pev), pev->origin, szSoundFile, 
 					0, 0, SND_CHANGE_PITCH, m_dpv.pitch);
@@ -1823,7 +1826,7 @@ void CSpeaker :: Spawn( void )
 	{
 		ALERT( at_error, "SPEAKER with no Level/Sentence! at: %f, %f, %f\n", pev->origin.x, pev->origin.y, pev->origin.z );
 		pev->nextthink = gpGlobals->time + 0.1;
-		SetThink( &CBaseEntity::SUB_Remove );
+		SetThink( &CSpeaker::SUB_Remove );
 		return;
 	}
     pev->solid		= SOLID_NOT;
@@ -1851,7 +1854,7 @@ void CSpeaker :: Precache( void )
 }
 void CSpeaker :: SpeakerThink( void )
 {
-	char *szSoundFile = NULL;
+	char* szSoundFile;
 	float flvolume = pev->health * 0.1;
 	float flattenuation = 0.3;
 	int flags = 0;

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -301,7 +301,7 @@ public:
 	float m_flFreezeTime;
 	EHANDLE m_hLastPlayerToHitMe;
 	float m_flLastDiscHit;
-	float m_flLastDiscBounces;
+	int m_iLastDiscBounces;
 	float m_flLastDiscHitTeleport;
 
 	Vector	m_vecOldVelocity;

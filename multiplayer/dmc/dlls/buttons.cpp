@@ -26,6 +26,9 @@
 #include "saverestore.h"
 #include "doors.h"
 
+#if !defined ( _WIN32 )
+#include <string.h> // memset())))
+#endif
 
 #define SF_BUTTON_DONTMOVE		1
 #define SF_ROTBUTTON_NOTSOLID	1
@@ -240,7 +243,7 @@ void CMultiSource::Register(void)
 	m_iTotal = 0;
 	memset( m_rgEntities, 0, MS_MAX_TARGETS * sizeof(EHANDLE) );
 
-	SetThink(&CBaseEntity::SUB_DoNothing);
+	SetThink(&CMultiSource::SUB_DoNothing);
 
 	// search for all entities which target this multisource (pev->targetname)
 
@@ -361,22 +364,22 @@ void CBaseButton::KeyValue( KeyValueData *pkvd )
 	}	
 	else if (FStrEq(pkvd->szKeyName, "locked_sound"))
 	{
-		m_bLockedSound = atoi(pkvd->szValue);
+		m_bLockedSound = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "locked_sentence"))
 	{
-		m_bLockedSentence = atoi(pkvd->szValue);
+		m_bLockedSentence = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "unlocked_sound"))
 	{
-		m_bUnlockedSound = atoi(pkvd->szValue);
+		m_bUnlockedSound = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "unlocked_sentence"))
 	{
-		m_bUnlockedSentence = atoi(pkvd->szValue);
+		m_bUnlockedSentence = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else if (FStrEq(pkvd->szKeyName, "sounds"))
@@ -401,7 +404,7 @@ int CBaseButton::TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, fl
 	SetTouch( NULL );
 
 	m_hActivator = CBaseEntity::Instance( pevAttacker );
-	if ( m_hActivator == 0 )
+	if ( m_hActivator == NULL )
 		return 0;
 
 	if ( code == BUTTON_RETURN )
@@ -857,10 +860,10 @@ void CRotButton::Spawn( void )
 	if ( !FBitSet ( pev->spawnflags, SF_BUTTON_TOUCH_ONLY ) )
 	{
 		SetTouch ( NULL );
-		SetUse	 ( &CBaseButton::ButtonUse );
+		SetUse	 ( &CRotButton::ButtonUse );
 	}
 	else // touchable button
-		SetTouch( &CBaseButton::ButtonTouch );
+		SetTouch( &CRotButton::ButtonTouch );
 
 	//SetTouch( ButtonTouch );
 }

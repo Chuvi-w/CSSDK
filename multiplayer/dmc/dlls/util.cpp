@@ -123,7 +123,7 @@ float UTIL_SharedRandomFloat( unsigned int seed, float low, float high )
 	U_Random();
 	U_Random();
 
-	range = static_cast<int>(high - low);
+	range = high - low;
 	if ( !range )
 	{
 		return low;
@@ -812,7 +812,7 @@ static unsigned short FixedUnsigned16( float value, float scale )
 {
 	int output;
 
-	output = static_cast<int>(value * scale);
+	output = value * scale;
 	if ( output < 0 )
 		output = 0;
 	if ( output > 0xFFFF )
@@ -825,7 +825,7 @@ static short FixedSigned16( float value, float scale )
 {
 	int output;
 
-	output = static_cast<int>(value * scale);
+	output = value * scale;
 
 	if ( output > 32767 )
 		output = 32767;
@@ -1145,10 +1145,10 @@ TraceResult UTIL_GetGlobalTrace( )
 {
 	TraceResult tr;
 
-	tr.fAllSolid		= static_cast<int>(gpGlobals->trace_allsolid);
-	tr.fStartSolid		= static_cast<int>(gpGlobals->trace_startsolid);
-	tr.fInOpen			= static_cast<int>(gpGlobals->trace_inopen);
-	tr.fInWater			= static_cast<int>(gpGlobals->trace_inwater);
+	tr.fAllSolid		= gpGlobals->trace_allsolid;
+	tr.fStartSolid		= gpGlobals->trace_startsolid;
+	tr.fInOpen			= gpGlobals->trace_inopen;
+	tr.fInWater			= gpGlobals->trace_inwater;
 	tr.flFraction		= gpGlobals->trace_fraction;
 	tr.flPlaneDist		= gpGlobals->trace_plane_dist;
 	tr.pHit			= gpGlobals->trace_ent;
@@ -2136,11 +2136,11 @@ void CSave :: WritePositionVector( const char *pname, const float *value, int co
 }
 
 
-void CSave :: WriteFunction( const char *pname, const int *data, int count )
+void CSave :: WriteFunction( const char *pname, void **data, int count )
 {
 	const char *functionName;
 
-	functionName = NAME_FOR_FUNCTION( *data );
+	functionName = NAME_FOR_FUNCTION( (uint32)*data );
 	if ( functionName )
 		BufferField( pname, strlen(functionName) + 1, functionName );
 	else
@@ -2153,7 +2153,7 @@ void EntvarsKeyvalue( entvars_t *pev, KeyValueData *pkvd )
 	int i;
 	TYPEDESCRIPTION		*pField;
 
-	for ( i = 0; i < static_cast<int>(ENTVARS_COUNT); i++ )
+	for ( i = 0; i < ENTVARS_COUNT; i++ )
 	{
 		pField = &gEntvarsDescription[i];
 
@@ -2261,21 +2261,19 @@ int CSave :: WriteFields( const char *pname, void *pBaseData, TYPEDESCRIPTION *p
 				{
 					case FIELD_EVARS:
 						entityArray[j] = EntityIndex( ((entvars_t **)pOutputData)[j] );
-						break;
+					break;
 					case FIELD_CLASSPTR:
 						entityArray[j] = EntityIndex( ((CBaseEntity **)pOutputData)[j] );
-						break;
+					break;
 					case FIELD_EDICT:
 						entityArray[j] = EntityIndex( ((edict_t **)pOutputData)[j] );
-						break;
+					break;
 					case FIELD_ENTITY:
 						entityArray[j] = EntityIndex( ((EOFFSET *)pOutputData)[j] );
-						break;
+					break;
 					case FIELD_EHANDLE:
 						entityArray[j] = EntityIndex( (CBaseEntity *)(((EHANDLE *)pOutputData)[j]) );
-						break;
-					default:
-						break;
+					break;
 				}
 			}
 			WriteInt( pTest->fieldName, entityArray, pTest->fieldSize );
@@ -2306,7 +2304,7 @@ int CSave :: WriteFields( const char *pname, void *pBaseData, TYPEDESCRIPTION *p
 		break;
 
 		case FIELD_FUNCTION:
-			WriteFunction( pTest->fieldName, (int *)(char *)pOutputData, pTest->fieldSize );
+			WriteFunction( pTest->fieldName, (void **)pOutputData, pTest->fieldSize );
 		break;
 		default:
 			ALERT( at_error, "Bad field type\n" );

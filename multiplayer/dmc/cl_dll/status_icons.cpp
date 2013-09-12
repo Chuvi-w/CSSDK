@@ -143,7 +143,7 @@ void CHudStatusIcons::DisableIcon( char *pszIconName )
 		if ( !stricmp( m_IconList[i].szSpriteName, pszIconName ) )
 		{
 			// clear the item from the list
-			memset( &m_IconList[i], 0, sizeof icon_sprite_t );
+			memset( &m_IconList[i], 0, sizeof(icon_sprite_t) );
 			return;
 		}
 	}

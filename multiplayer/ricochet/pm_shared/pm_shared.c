@@ -38,13 +38,36 @@
 
 static int pm_shared_initialized = 0;
 
-#ifdef _MSC_VER
 #pragma warning( disable : 4305 )
-#endif
 
 typedef enum {mod_brush, mod_sprite, mod_alias, mod_studio} modtype_t;
 
 playermove_t *pmove = NULL;
+
+typedef struct
+{
+	int			planenum;
+	short		children[2];	// negative numbers are contents
+} dclipnode_t;
+
+typedef struct mplane_s
+{
+	vec3_t	normal;			// surface normal
+	float	dist;			// closest appoach to origin
+	byte	type;			// for texture axis selection and fast side tests
+	byte	signbits;		// signx + signy<<1 + signz<<1
+	byte	pad[2];
+} mplane_t;
+
+typedef struct hull_s
+{
+	dclipnode_t	*clipnodes;
+	mplane_t	*planes;
+	int			firstclipnode;
+	int			lastclipnode;
+	vec3_t		clip_mins;
+	vec3_t		clip_maxs;
+} hull_t;
 
 // Ducking time
 #define TIME_TO_DUCK	0.4
@@ -93,10 +116,10 @@ playermove_t *pmove = NULL;
 
 #define PLAYER_LONGJUMP_SPEED 350 // how fast we longjump
 
+#define PLAYER_DUCKING_MULTIPLIER 0.333
+
 // double to float warning
-#ifdef _MSC_VER
 #pragma warning(disable : 4244)
-#endif
 #define max(a, b)  (((a) > (b)) ? (a) : (b))
 #define min(a, b)  (((a) < (b)) ? (a) : (b))
 // up / down
@@ -1961,6 +1984,9 @@ void PM_Duck( void )
 	int buttonsChanged	= ( pmove->oldbuttons ^ pmove->cmd.buttons );	// These buttons have changed this frame
 	int nButtonPressed	=  buttonsChanged & pmove->cmd.buttons;		// The changed ones still down are "pressed"
 
+	int duckchange		= buttonsChanged & IN_DUCK ? 1 : 0;
+	int duckpressed		= nButtonPressed & IN_DUCK ? 1 : 0;
+
 	if ( pmove->cmd.buttons & IN_DUCK )
 	{
 		pmove->oldbuttons |= IN_DUCK;
@@ -1978,9 +2004,9 @@ void PM_Duck( void )
 
 	if ( ( pmove->cmd.buttons & IN_DUCK ) || ( pmove->bInDuck ) || ( pmove->flags & FL_DUCKING ) )
 	{
-		pmove->cmd.forwardmove *= 0.333;
-		pmove->cmd.sidemove    *= 0.333;
-		pmove->cmd.upmove      *= 0.333;
+		pmove->cmd.forwardmove *= PLAYER_DUCKING_MULTIPLIER;
+		pmove->cmd.sidemove    *= PLAYER_DUCKING_MULTIPLIER;
+		pmove->cmd.upmove      *= PLAYER_DUCKING_MULTIPLIER;
 
 		if ( pmove->cmd.buttons & IN_DUCK )
 		{
@@ -2107,16 +2133,37 @@ void PM_LadderMove( physent_t *pLadder )
 	{
 		float forward = 0, right = 0;
 		vec3_t vpn, v_right;
+		float flSpeed = MAX_CLIMB_SPEED;
+
+		// they shouldn't be able to move faster than their maxspeed
+		if ( flSpeed > pmove->maxspeed )
+		{
+			flSpeed = pmove->maxspeed;
+		}
 
 		AngleVectors( pmove->angles, vpn, v_right, NULL );
+
+		if ( pmove->flags & FL_DUCKING )
+		{
+			flSpeed *= PLAYER_DUCKING_MULTIPLIER;
+		}
+
 		if ( pmove->cmd.buttons & IN_BACK )
-			forward -= MAX_CLIMB_SPEED;
+		{
+			forward -= flSpeed;
+		}
 		if ( pmove->cmd.buttons & IN_FORWARD )
-			forward += MAX_CLIMB_SPEED;
+		{
+			forward += flSpeed;
+		}
 		if ( pmove->cmd.buttons & IN_MOVELEFT )
-			right -= MAX_CLIMB_SPEED;
+		{
+			right -= flSpeed;
+		}
 		if ( pmove->cmd.buttons & IN_MOVERIGHT )
-			right += MAX_CLIMB_SPEED;
+		{
+			right += flSpeed;
+		}
 
 		if ( pmove->cmd.buttons & IN_JUMP )
 		{

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -220,7 +220,7 @@ void CFuncIllusionary :: KeyValue( KeyValueData *pkvd )
 {
 	if (FStrEq(pkvd->szKeyName, "skin"))//skin is used for content type
 	{
-		pev->skin = atoi(pkvd->szValue);
+		pev->skin = atof(pkvd->szValue);
 		pkvd->fHandled = TRUE;
 	}
 	else
@@ -431,7 +431,7 @@ void CFuncRotating :: Spawn( )
 	// instant-use brush?
 	if ( FBitSet( pev->spawnflags, SF_BRUSH_ROTATE_INSTANT) )
 	{		
-		SetThink( &CBaseEntity::SUB_CallUseToggle );
+		SetThink( &CFuncRotating::SUB_CallUseToggle );
 		pev->nextthink = pev->ltime + 1.5;	// leave a magic delay for client to start up
 	}	
 	// can this brush inflict pain?
@@ -550,13 +550,13 @@ void CFuncRotating :: RampPitchVol (int fUp)
 	
 	// get current angular velocity
 
-	vecCur = abs(vecAVel.x != 0 ? static_cast<int>(vecAVel.x) : static_cast<int>(vecAVel.y != 0 ? vecAVel.y : vecAVel.z));
+	vecCur = abs(vecAVel.x != 0 ? vecAVel.x : (vecAVel.y != 0 ? vecAVel.y : vecAVel.z));
 	
 	// get target angular velocity
 
 	vecFinal = (pev->movedir.x != 0 ? pev->movedir.x : (pev->movedir.y != 0 ? pev->movedir.y : pev->movedir.z));
 	vecFinal *= pev->speed;
-	vecFinal = abs(static_cast<int>(vecFinal));
+	vecFinal = abs(vecFinal);
 
 	// calc volume and pitch as % of final vol and pitch
 
@@ -592,9 +592,9 @@ void CFuncRotating :: SpinUp( void )
 	vecAVel = pev->avelocity;// cache entity's rotational velocity
 
 	// if we've met or exceeded target speed, set target speed and stop thinking
-	if (	abs(static_cast<int>(vecAVel.x)) >= abs(static_cast<int>(pev->movedir.x * pev->speed))	&&
-			abs(static_cast<int>(vecAVel.y)) >= abs(static_cast<int>(pev->movedir.y * pev->speed))	&&
-			abs(static_cast<int>(vecAVel.z)) >= abs(static_cast<int>(pev->movedir.z * pev->speed)) )
+	if (	abs(vecAVel.x) >= abs(pev->movedir.x * pev->speed)	&&
+			abs(vecAVel.y) >= abs(pev->movedir.y * pev->speed)	&&
+			abs(vecAVel.z) >= abs(pev->movedir.z * pev->speed) )
 	{
 		pev->avelocity = pev->movedir * pev->speed;// set speed in case we overshot
 		EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseRunning), 
@@ -639,7 +639,7 @@ void CFuncRotating :: SpinDown( void )
 		
 		// stop sound, we're done
 		EMIT_SOUND_DYN(ENT(pev), CHAN_STATIC, (char *)STRING(pev->noiseRunning /* Stop */), 
-				0, 0, SND_STOP, static_cast<int>(m_pitch));
+				0, 0, SND_STOP, m_pitch);
 
 		SetThink( &CFuncRotating::Rotate );
 		Rotate();
@@ -812,7 +812,7 @@ void CPendulum :: Spawn( void )
 
 	if ( FBitSet( pev->spawnflags, SF_BRUSH_ROTATE_INSTANT) )
 	{		
-		SetThink( &CBaseEntity::SUB_CallUseToggle );
+		SetThink( &CPendulum::SUB_CallUseToggle );
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 	pev->speed = 0;

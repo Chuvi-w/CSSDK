@@ -34,7 +34,7 @@ extern DLL_GLOBAL Vector		g_vecAttackDir;
 
 /*************************************
 			  STATUS BAR 
- *************************************/
+/*************************************/
 
 // Initialise the player's status bar
 void CBasePlayer::InitStatusBar()
@@ -114,7 +114,7 @@ int CBasePlayer::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 	CBaseEntity *pAttacker = CBaseEntity::Instance(pevAttacker);
 
 	// keep track of amount of damage last sustained
-	m_lastDamageAmount = static_cast<int>(flDamage);
+	m_lastDamageAmount = flDamage;
 
 	// check for quad damage powerup on the attacker
 	if (pAttacker->IsPlayer())
@@ -245,6 +245,6 @@ int CBasePlayer::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 	// play pain sound
 	Pain( pAttacker );
 
-	return static_cast<int>(flTake);
+	return flTake;
 }
 

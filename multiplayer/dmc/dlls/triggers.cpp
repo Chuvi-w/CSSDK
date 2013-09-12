@@ -634,7 +634,7 @@ void CTriggerMonsterJump :: Spawn ( void )
 	{// if targetted, spawn turned off
 		pev->solid = SOLID_NOT;
 		UTIL_SetOrigin( pev, pev->origin ); // Unlink from trigger list
-		SetUse( &CBaseTrigger::ToggleUse );
+		SetUse( &CTriggerMonsterJump::ToggleUse );
 	}
 }
 
@@ -728,7 +728,7 @@ void PlayCDTrack( int iTrack )
 
 	if ( iTrack == -1 )
 	{
-		CLIENT_COMMAND ( pClient, "cd pause\n");
+		CLIENT_COMMAND ( pClient, "cd stop\n");
 	}
 	else
 	{
@@ -837,7 +837,7 @@ void CTriggerEnvHurt :: Spawn( void )
 // When touched, a hurt trigger does DMG points of damage each half-second
 void CBaseTrigger :: EnvTouch ( CBaseEntity *pOther )
 {
-	float fldmg = 0.0f;
+	float fldmg;
 
 	if ( !pOther->pev->takedamage )
 		return;
@@ -959,11 +959,11 @@ void CBaseTrigger :: EnvTouch ( CBaseEntity *pOther )
 void CTriggerHurt :: Spawn( void )
 {
 	InitTrigger();
-	SetTouch ( &CBaseTrigger::HurtTouch );
+	SetTouch ( &CTriggerHurt::HurtTouch );
 
 	if ( !FStringNull ( pev->targetname ) )
 	{
-		SetUse ( &CBaseTrigger::ToggleUse );
+		SetUse ( &CTriggerHurt::ToggleUse );
 	}
 	else
 	{
@@ -1231,7 +1231,7 @@ void CTriggerMultiple :: Spawn( void )
 //		}
 //	else
 		{
-			SetTouch( &CBaseTrigger::MultiTouch );
+			SetTouch( &CTriggerMultiple::MultiTouch );
 		}
 	}
 
@@ -1337,7 +1337,7 @@ void CBaseTrigger :: ActivateMultiTrigger( CBaseEntity *pActivator )
 		// called while C code is looping through area links...
 		SetTouch( NULL );
 		pev->nextthink = gpGlobals->time + 0.1;
-		SetThink(  &CBaseEntity::SUB_Remove );
+		SetThink(  &CBaseTrigger::SUB_Remove );
 	}
 }
 
@@ -1417,7 +1417,7 @@ void CTriggerCounter :: Spawn( void )
 
 	if (m_cTriggersLeft == 0)
 		m_cTriggersLeft = 2;
-	SetUse( &CBaseTrigger::CounterUse );
+	SetUse( &CTriggerCounter::CounterUse );
 }
 
 // ====================== TRIGGER_CHANGELEVEL ================================
@@ -1436,7 +1436,7 @@ void CTriggerVolume :: Spawn( void )
 	pev->solid = SOLID_NOT;
 	pev->movetype = MOVETYPE_NONE;
 	SET_MODEL(ENT(pev), STRING(pev->model));    // set size and link into world
-	pev->model = 0;
+	pev->model = NULL;
 	pev->modelindex = 0;
 }
 
@@ -1617,6 +1617,7 @@ void CChangeLevel :: UseChangeLevel ( CBaseEntity *pActivator, CBaseEntity *pCal
 void CChangeLevel :: ChangeLevelNow( CBaseEntity *pActivator )
 {
 	edict_t	*pentLandmark;
+	LEVELLIST	levels[16];
 
 	ASSERT(!FStrEq(m_szMapName, ""));
 
@@ -1966,7 +1967,7 @@ void CTriggerPush :: Spawn( )
 	if ( FBitSet (pev->spawnflags, SF_TRIGGER_PUSH_START_OFF) )// if flagged to Start Turned Off, make trigger nonsolid.
 		pev->solid = SOLID_NOT;
 
-	SetUse( &CBaseTrigger::ToggleUse );
+	SetUse( &CTriggerPush::ToggleUse );
 
 	UTIL_SetOrigin( pev, pev->origin );		// Link into the list
 }
@@ -2045,7 +2046,7 @@ void CTeleDeath::Spawn( void )
 
 	SetTouch( &CTeleDeath::DeathTouch );
 	pev->nextthink = gpGlobals->time + 0.2;
-	SetThink( &CBaseEntity::SUB_Remove );
+	SetThink( &CTeleDeath::SUB_Remove );
 	
 	// Touch still players
 	gpGlobals->force_retouch = 2;
@@ -2169,7 +2170,7 @@ void CTriggerTeleport :: Spawn( void )
 {
 	InitTrigger();
 
-	SetTouch( &CBaseTrigger::TeleportTouch );
+	SetTouch( &CTriggerTeleport::TeleportTouch );
 
 	g_vecTeleMins[ g_iTeleNum ] = pev->absmin; 
 	g_vecTeleMaxs[ g_iTeleNum ] = pev->absmax;
@@ -2528,7 +2529,7 @@ void CTriggerCamera::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	}
 
 	// Nothing to look at!
-	if ( m_hTarget == 0 )
+	if ( m_hTarget == NULL )
 	{
 		return;
 	}
@@ -2586,10 +2587,10 @@ void CTriggerCamera::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 
 void CTriggerCamera::FollowTarget( )
 {
-	if (m_hPlayer == 0)
+	if (m_hPlayer == NULL)
 		return;
 
-	if (m_hTarget == 0 || m_flReturnTime < gpGlobals->time)
+	if (m_hTarget == NULL || m_flReturnTime < gpGlobals->time)
 	{
 		if (m_hPlayer->IsAlive( ))
 		{

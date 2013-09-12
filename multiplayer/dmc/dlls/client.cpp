@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -37,10 +37,18 @@
 #include "usercmd.h"
 #include "netadr.h"
 
+#if !defined ( _WIN32 )
+#include <ctype.h> // isspace,isprint
+#endif
+
 extern DLL_GLOBAL ULONG		g_ulModelIndexPlayer;
 extern DLL_GLOBAL BOOL		g_fGameOver;
 extern DLL_GLOBAL int		g_iSkillLevel;
 extern DLL_GLOBAL ULONG		g_ulFrameCount;
+
+#if defined( THREEWAVE )
+char* GetTeamName( int team );
+#endif
 
 extern bool g_bHaveMOTD;
 
@@ -53,6 +61,13 @@ extern unsigned short g_sTeleport;
 extern unsigned short g_sTrail;
 extern unsigned short g_sExplosion;
 extern unsigned short g_usPowerUp;
+
+#ifdef THREEWAVE
+extern unsigned short g_usHook;	
+extern unsigned short g_usCable;
+extern unsigned short g_usCarried;
+extern unsigned short g_usFlagSpawn;
+#endif
 
 void LinkUserMessages( void );
 
@@ -195,6 +210,9 @@ void ClientPutInServer( edict_t *pEntity )
 	pPlayer->pev->effects |= EF_NOINTERP;
 }
 
+
+#include "threewave_gamerules.h"
+
 //// HOST_SAY
 // String comes in as
 // say blah blah blah
@@ -250,7 +268,7 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	}
 
 // make sure the text has content
-	char *pc = NULL;
+	char *pc;
 	for ( pc = p; pc != NULL && *pc != 0; pc++ )
 	{
 		if ( isprint( *pc ) && !isspace( *pc ) )
@@ -294,7 +312,13 @@ void Host_Say( edict_t *pEntity, int teamonly )
 
 		if ( !(client->IsNetClient()) )	// Not a client ? (should never be true)
 			continue;
+
+		// can the receiver hear the sender? or has he muted him?
+#ifdef THREEWAVE 		
+		if ( ((CThreeWave *)g_pGameRules)->m_VoiceGameMgr.PlayerHasBlockedPlayer( client, player ) )
+#else
 		if ( ((CHalfLifeMultiplay *)g_pGameRules)->m_VoiceGameMgr.PlayerHasBlockedPlayer( client, player ) )
+#endif
 			continue;
 
 		if ( teamonly && g_pGameRules->PlayerRelationship(client, CBaseEntity::Instance(pEntity)) != GR_TEAMMATE )
@@ -322,6 +346,8 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	else
 		temp = "say";
 
+#if !defined( THREEWAVE )
+
 	UTIL_LogPrintf( "\"%s<%i><%s><%i>\" %s \"%s\"\n", 
 		STRING( pEntity->v.netname ), 
 		GETPLAYERUSERID( pEntity ),
@@ -329,6 +355,16 @@ void Host_Say( edict_t *pEntity, int teamonly )
 		GETPLAYERUSERID( pEntity ),
 		temp,
 		p );
+#else
+
+	UTIL_LogPrintf( "\"%s<%i><%s><%s>\" %s \"%s\"\n", 
+		STRING( pEntity->v.netname ), 
+		GETPLAYERUSERID( pEntity ),
+		GETPLAYERAUTHID( pEntity ),
+		GetTeamName( pEntity->v.team ),
+		temp,
+		p );
+#endif
 }
 
 
@@ -378,10 +414,26 @@ void ClientCommand( edict_t *pEntity )
 		if ( pPlayer->m_bHadFirstSpawn == false && g_bHaveMOTD )
 		{
 			pPlayer->m_bHadFirstSpawn = true;
+#ifndef THREEWAVE
 			pPlayer->Spawn();
+#endif
+
 		}
+
+		
+
 	}
 
+	// QUAKECLASSIC
+	// Some commands removed: Drop Use Weapon
+	// Some added: qweapon
+/*	else if ( FStrEq(pcmd, "qweapon" ) )
+	{
+		if ( CMD_ARGC() > 1 )
+		{
+			GetClassPtr((CBasePlayer *)pev)->W_ChangeWeapon( atoi( CMD_ARGV(1) ) );
+		}
+	}*/
 	else if ( FStrEq(pcmd, "spectate" ) )
 	{
 		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
@@ -445,12 +497,23 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 			WRITE_STRING( text );
 		MESSAGE_END();
 
+#if !defined( THREEWAVE )
+
 		UTIL_LogPrintf( "\"%s<%i><%s><%i>\" changed name to \"%s\"\n", 
 			STRING( pEntity->v.netname ), 
 			GETPLAYERUSERID( pEntity ), 
 			GETPLAYERAUTHID( pEntity ),
 			GETPLAYERUSERID( pEntity ), 
 			g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
+#else
+
+		UTIL_LogPrintf( "\"%s<%i><%s><%s>\" changed name to \"%s\"\n", 
+			STRING( pEntity->v.netname ), 
+			GETPLAYERUSERID( pEntity ), 
+			GETPLAYERAUTHID( pEntity ),
+			GetTeamName( pEntity->v.team ), 
+			g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
+#endif
 	}
 
 	// QUAKECLASSIC
@@ -533,6 +596,7 @@ Called every frame before physics are run
 */
 void PlayerPreThink( edict_t *pEntity )
 {
+	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
 
 	if (pPlayer)
@@ -548,6 +612,7 @@ Called every frame after physics are run
 */
 void PlayerPostThink( edict_t *pEntity )
 {
+	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
 
 	if (pPlayer)
@@ -583,7 +648,7 @@ void StartFrame( void )
 		return;
 
 	gpGlobals->teamplay = CVAR_GET_FLOAT("teamplay");
-	g_iSkillLevel = static_cast<int>(CVAR_GET_FLOAT("skill"));
+	g_iSkillLevel = CVAR_GET_FLOAT("skill");
 	g_ulFrameCount++;
 }
 
@@ -709,6 +774,36 @@ void ClientPrecache( void )
 
 	PRECACHE_SOUND("player/plyrjmp8.wav");
 
+#ifdef THREEWAVE
+
+	PRECACHE_MODEL("models/rune_resist.mdl");
+	PRECACHE_MODEL("models/rune_haste.mdl");
+	PRECACHE_MODEL("models/rune_regen.mdl");
+	PRECACHE_MODEL("models/rune_strength.mdl");
+
+	PRECACHE_SOUND("rune/rune1.wav");
+	PRECACHE_SOUND("rune/rune2.wav");
+	PRECACHE_SOUND("rune/rune22.wav"); // Quad + Strength Rune.
+	PRECACHE_SOUND("rune/rune3.wav");
+	PRECACHE_SOUND("rune/rune4.wav");
+
+	PRECACHE_MODEL("models/hook.mdl");
+
+	PRECACHE_MODEL("sprites/rope.spr");
+
+	PRECACHE_SOUND("weapons/grfire.wav");
+	PRECACHE_SOUND("weapons/grhang.wav");
+	PRECACHE_SOUND("weapons/grhit.wav");
+	PRECACHE_SOUND("weapons/grpull.wav");
+	PRECACHE_SOUND("weapons/grreset.wav");
+
+	g_usHook			= PRECACHE_EVENT( 1, "events/hook.sc" );
+	g_usCable			= PRECACHE_EVENT( 1, "events/cable.sc" );
+	g_usCarried			= PRECACHE_EVENT( 1, "events/follow.sc" );
+	g_usFlagSpawn		= PRECACHE_EVENT( 1, "events/flagspawn.sc" );
+
+#endif
+
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, Vector ( 0, 0, 0 ), Vector ( 0, 0, 0 ),"models/p_crowbar.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, Vector ( 0, 0, 0 ), Vector ( 0, 0, 0 ),"models/p_light.mdl");
 	ENGINE_FORCE_UNMODIFIED(force_exactfile, Vector ( 0, 0, 0 ), Vector ( 0, 0, 0 ),"models/p_nail.mdl");
@@ -796,6 +891,7 @@ animation right now.
 */
 void PlayerCustomization( edict_t *pEntity, customization_t *pCust )
 {
+	entvars_t *pev = &pEntity->v;
 	CBasePlayer *pPlayer = (CBasePlayer *)GET_PRIVATE(pEntity);
 
 	if (!pPlayer)
@@ -835,6 +931,7 @@ A spectator has joined the game
 */
 void SpectatorConnect( edict_t *pEntity )
 {
+	entvars_t *pev = &pEntity->v;
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
 
 	if (pPlayer)
@@ -850,6 +947,7 @@ A spectator has left the game
 */
 void SpectatorDisconnect( edict_t *pEntity )
 {
+	entvars_t *pev = &pEntity->v;
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
 
 	if (pPlayer)
@@ -865,6 +963,7 @@ A spectator has sent a usercmd
 */
 void SpectatorThink( edict_t *pEntity )
 {
+	entvars_t *pev = &pEntity->v;
 	CBaseSpectator *pPlayer = (CBaseSpectator *)GET_PRIVATE(pEntity);
 
 	if (pPlayer)
@@ -936,7 +1035,7 @@ int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *h
 	int					i;
 
 	// don't send if flagged for NODRAW and it's not the host getting the message
-	if ( ( ent->v.effects == EF_NODRAW ) &&
+	if ( ( ent->v.effects & EF_NODRAW ) &&
 		 ( ent != host ) )
 		return 0;
 
@@ -1060,11 +1159,11 @@ int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *h
 	}
 
 	state->rendermode    = ent->v.rendermode;
-	state->renderamt     = static_cast<int>(ent->v.renderamt); 
+	state->renderamt     = ent->v.renderamt; 
 	state->renderfx      = ent->v.renderfx;
-	state->rendercolor.r = static_cast<byte>(ent->v.rendercolor[0]);
-	state->rendercolor.g = static_cast<byte>(ent->v.rendercolor[1]);
-	state->rendercolor.b = static_cast<byte>(ent->v.rendercolor[2]);
+	state->rendercolor.r = ent->v.rendercolor[0];
+	state->rendercolor.g = ent->v.rendercolor[1];
+	state->rendercolor.b = ent->v.rendercolor[2];
 
 	state->aiment = 0;
 	if ( ent->v.aiment )
@@ -1097,7 +1196,7 @@ int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *h
 //		state->team			= ent->v.team;
 //		state->playerclass  = ent->v.playerclass;
 		state->usehull      = ( ent->v.flags & FL_DUCKING ) ? 1 : 0;
-		state->health		= static_cast<int>(ent->v.health);
+		state->health		= ent->v.health;
 	}
 
 	return 1;
@@ -1495,7 +1594,7 @@ void UpdateClientData ( const struct edict_s *ent, int sendweapons, struct clien
 	cd->flTimeStepSound = ent->v.flTimeStepSound;
 	cd->flDuckTime		= ent->v.flDuckTime;
 	cd->flSwimTime		= ent->v.flSwimTime;
-	cd->waterjumptime	= static_cast<const int>(ent->v.teleport_time);
+	cd->waterjumptime	= ent->v.teleport_time;
 
 	strcpy( cd->physinfo, ENGINE_GETPHYSINFO( ent ) );
 
@@ -1535,8 +1634,11 @@ void UpdateClientData ( const struct edict_s *ent, int sendweapons, struct clien
 			}
 
 			cd->fuser1 = (float)pl->m_iQuakeWeapon;
-			cd->iuser4 = static_cast<int>(gpGlobals->deathmatch);
+			cd->iuser4 = gpGlobals->deathmatch;
 			cd->fuser2 = pl->m_iNailOffset > 0 ? 1.0 : 0.0;
+#ifdef THREEWAVE
+			cd->fuser3 = (float)pl->m_iRuneStatus;
+#endif
 
 			cd->iuser3 = pl->m_iQuakeItems;
 
@@ -1609,6 +1711,9 @@ ConnectionlessPacket
 */
 int	ConnectionlessPacket( const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size )
 {
+	// Parse stuff from args
+	int max_buffer_size = *response_buffer_size;
+
 	// Zero it out since we aren't going to respond.
 	// If we wanted to response, we'd write data into response_buffer
 	*response_buffer_size = 0;
@@ -1661,6 +1766,7 @@ to be created during play ( e.g., grenades, ammo packs, projectiles, corpses, et
 */
 void CreateInstancedBaselines ( void )
 {
+	int iret = 0;
 	entity_state_t state;
 
 	memset( &state, 0, sizeof( state ) );

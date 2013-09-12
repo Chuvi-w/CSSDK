@@ -1,25 +1,14 @@
-/***
-*
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
-*
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
-*
-****/
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
+
 // pm_defs.h
 #if !defined( PM_DEFSH )
 #define PM_DEFSH
-#ifdef _WIN32
-#ifndef __MINGW32__
 #pragma once
-#endif /* not __MINGW32__ */
-#endif
 
 #define	MAX_PHYSENTS 600 		  // Must have room for all entities in the world.
 #define MAX_MOVEENTS 64
@@ -35,14 +24,7 @@
 #define PM_TRACELINE_ANYVISIBLE		0
 #define PM_TRACELINE_PHYSENTSONLY	1
 
-#if defined _MSC_VER && _MSC_VER >= 1400
-	#ifndef _CRT_SECURE_NO_DEPRECATE
-		#define _CRT_SECURE_NO_DEPRECATE
-	#endif
-
-	#pragma warning(disable: 4996) // deprecated functions
-#endif
-
+#include "archtypes.h"     // DAL
 #include "pm_info.h"
 
 // PM_PlayerTrace results.
@@ -96,43 +78,9 @@ typedef struct physent_s
 	vec3_t			vuser4;
 } physent_t;
 
-#ifndef _DCLIPNODE_DEFINED_
-#define _DCLIPNODE_DEFINED_
-typedef struct
-{
-	int			planenum;
-	short		children[2];	// negative numbers are contents
-} dclipnode_t;
-#endif
+typedef struct playermove_s playermove_t;
 
-// plane_t structure
-#ifndef _MPLANE_DEFINED_
-#define _MPLANE_DEFINED_
-typedef struct mplane_s
-{
-	vec3_t	normal;			// surface normal
-	float	dist;			// closest appoach to origin
-	byte	type;			// for texture axis selection and fast side tests
-	byte	signbits;		// signx + signy<<1 + signz<<1
-	byte	pad[2];
-} mplane_t;
-#endif
-
-#ifndef _HULL_DEFINED_
-#define _HULL_DEFINED_
-typedef struct hull_s
-{
-	dclipnode_t	*clipnodes;
-	mplane_t	*planes;
-	int			firstclipnode;
-	int			lastclipnode;
-	vec3_t		clip_mins;
-	vec3_t		clip_maxs;
-} hull_t;
-#endif
-
-
-typedef struct playermove_s
+struct playermove_s
 {
 	int				player_index;  // So we don't try to run the PM_CheckStuck nudging too quickly.
 	qboolean		server;        // For debugging, are we running physics code on server side?
@@ -243,7 +191,7 @@ typedef struct playermove_s
 	int				(*PM_HullPointContents) ( struct hull_s *hull, int num, vec3_t p);   
 	pmtrace_t		(*PM_PlayerTrace) (vec3_t start, vec3_t end, int traceFlags, int ignore_pe );
 	struct pmtrace_s *(*PM_TraceLine)( float *start, float *end, int flags, int usehulll, int ignore_pe );
-	long			(*RandomLong)( long lLow, long lHigh );
+	int32			(*RandomLong)( int32 lLow, int32 lHigh );
 	float			(*RandomFloat)( float flLow, float flHigh );
 	int				(*PM_GetModelType)( struct model_s *mod );
 	void			(*PM_GetModelBounds)( struct model_s *mod, vec3_t mins, vec3_t maxs );
@@ -260,6 +208,6 @@ typedef struct playermove_s
 	void			(*PM_PlaySound) ( int channel, const char *sample, float volume, float attenuation, int fFlags, int pitch );
 	const char		*(*PM_TraceTexture) ( int ground, vec3_t vstart, vec3_t vend );
 	void			(*PM_PlaybackEventFull) ( int flags, int clientindex, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2 );
-} playermove_t;
+};
 
 #endif

@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1996-2002, Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1999 Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -45,7 +45,7 @@
 #include "in_defs.h"
 #include "pm_shared.h"
 #include "parsemsg.h"
-#include "../engine/keydefs.h"
+#include "keydefs.h"
 #include "demo.h"
 #include "demo_api.h"
 
@@ -60,9 +60,9 @@ extern int g_iVisibleMouse;
 class CCommandMenu;
 int g_iPlayerClass;
 int g_iTeamNumber;
-int g_iUser1;
-int g_iUser2;
-int g_iUser3;
+int g_iUser1 = 0;
+int g_iUser2 = 0;
+int g_iUser3 = 0;
 
 // Scoreboard positions
 #define SBOARD_INDENT_X			XRES(104)
@@ -646,8 +646,10 @@ int TeamFortressViewport::CreateCommandMenu( char * menuFile, int direction, int
 		return newIndex;
 	}
 
+#ifdef _WIN32
 try
 {
+#endif
 	// First, read in the localisation strings
 
 	// Detpack strings
@@ -829,6 +831,7 @@ try
 
 		pfile = gEngfuncs.COM_ParseFile(pfile, token);
 	}
+#ifdef _WIN32
 }
 catch( CException *e )
 {
@@ -838,7 +841,7 @@ catch( CException *e )
 	m_iInitialized = false;
 	return newIndex;
 }
-
+#endif
 	SetCurrentMenu( NULL );
 	SetCurrentCommandMenu( NULL );
 	gEngfuncs.COM_FreeFile( pfile );
@@ -1557,6 +1560,10 @@ void TeamFortressViewport::GetAllPlayersInfo( void )
 
 void TeamFortressViewport::paintBackground()
 {
+	int wide, tall;
+	getParent()->getSize( wide, tall );
+	setSize( wide, tall );
+
 	// See if the command menu is visible and needs recalculating due to some external change
 /*	if ( g_iTeamNumber != m_iCurrentTeamNumber )
 	{

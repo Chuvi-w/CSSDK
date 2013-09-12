@@ -272,7 +272,7 @@ void CItemHealth::MegahealthRot( void )
 	// Respawn if it's not DM==2
 	if (gpGlobals->deathmatch != 2)
 	{
-		SetThink ( &CQuakeItem::Materialize );
+		SetThink ( &CItemHealth::Materialize );
 		pev->nextthink = gpGlobals->time + 20;
 	}
 	else
@@ -471,7 +471,7 @@ int WeaponCode(int iWeapon)
 
 int GetWeaponValue ( int iWeapon )
 {
-	int iWepValue = 0;
+	int iWepValue;
 
 	switch ( iWeapon )
 	{
@@ -1356,7 +1356,7 @@ void CItemBackpack::Spawn()
 	UTIL_SetOrigin( pev, pev->origin );
 	SET_MODEL(ENT(pev), "models/backpack.mdl");
 
-	SetTouch(&CQuakeItem::ItemTouch);
+	SetTouch(&CItemBackpack::ItemTouch);
 }
 
 // Drop a backpack containing this player's ammo/weapons
@@ -1406,7 +1406,7 @@ void CBasePlayer::DropBackpack()
 
 	// Remove after 2 mins
 	pPack->pev->nextthink = gpGlobals->time + 120;
-	pPack->SetThink( &CBaseEntity::SUB_Remove );
+	pPack->SetThink( &CItemBackpack::SUB_Remove );
 
 	// Remove all weapons
 	m_iQuakeItems = 0;

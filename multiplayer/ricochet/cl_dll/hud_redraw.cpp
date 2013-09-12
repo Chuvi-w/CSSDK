@@ -34,6 +34,9 @@ extern int g_iVisibleMouse;
 // Think
 void CHud::Think(void)
 {
+	m_scrinfo.iSize = sizeof(m_scrinfo);
+	GetScreenInfo(&m_scrinfo);
+
 	HUDLIST *pList = m_pHudList;
 	while (pList)
 	{
@@ -145,7 +148,7 @@ int CHud :: DrawHudNumberString( int xpos, int ypos, int iMinX, int iNumber, int
 int CHud :: DrawHudStringReverse( int xpos, int ypos, int iMinX, char *szString, int r, int g, int b )
 {
 	// find the end of the string
-	char *szIt = NULL;
+	char *szIt;
 	for ( szIt = szString; *szIt != 0; szIt++ )
 	{ // we should count the length?		
 	}

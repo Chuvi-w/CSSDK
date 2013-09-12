@@ -230,7 +230,7 @@ void CSoundEnt :: Initialize ( void )
   	int i;
 	int iSound;
 
-	m_cLastActiveSounds = 0;
+	m_cLastActiveSounds;
 	m_iFreeSound = 0;
 	m_iActiveSound = SOUNDLIST_EMPTY;
 
@@ -274,7 +274,7 @@ void CSoundEnt :: Initialize ( void )
 int CSoundEnt :: ISoundsInList ( int iListType )
 {
 	int i;
-	int iThisSound = 0;
+	int iThisSound;
 
 	if ( iListType == SOUNDLISTTYPE_FREE )
 	{

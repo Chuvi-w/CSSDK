@@ -201,7 +201,7 @@ int CHudDeathNotice :: MsgFunc_DeathMsg( const char *pszName, int iSize, void *p
 
 	//gHUD.m_Scoreboard.GetAllPlayersInfo();
 
-	if ( gViewPort )
+	if (gViewPort)
 		gViewPort->GetAllPlayersInfo();
 
 	char *killer_name = g_PlayerInfoList[ killer ].name;

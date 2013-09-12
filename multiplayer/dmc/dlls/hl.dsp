@@ -1,35 +1,35 @@
-# Microsoft Developer Studio Project File - Name="cl_dll" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="hl" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
 
-CFG=cl_dll - Win32 Release
+CFG=hl - Win32 Release
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "cl_dll.mak".
+!MESSAGE NMAKE /f "hl.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "cl_dll.mak" CFG="cl_dll - Win32 Release"
+!MESSAGE NMAKE /f "hl.mak" CFG="hl - Win32 Release"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "cl_dll - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "cl_dll - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "hl - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "hl - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE 
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""
-# PROP Scc_LocalPath ""
+# PROP Scc_ProjName ""$/GoldSrc/dmc/dlls", TTQCAAAA"
+# PROP Scc_LocalPath "."
 CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "cl_dll - Win32 Release"
+!IF  "$(CFG)" == "hl - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -38,12 +38,12 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir ".\Release"
-# PROP Intermediate_Dir ".\Release"
+# PROP Output_Dir ".\Releasehl"
+# PROP Intermediate_Dir ".\Releasehl"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\..\utils\common" /I "..\..\engine" /I "..\..\common" /I "..\..\utils\vgui\include" /I "..\..\dlls" /I "..\..\..\engine" /I "..\..\..\common" /I "..\..\pm_shared" /I "..\..\..\utils\vgui\include" /I "." /I "..\..\..\game_shared" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "CLIENT_DLL" /D "DMC_BUILD" /YX /FD /c
+# ADD CPP /nologo /G5 /MT /W3 /Zi /O2 /I "..\engine" /I "..\common" /I "..\..\public" /I "." /I "..\..\game_shared" /I "..\dlls" /I "..\..\engine" /I "..\..\common" /I "..\pm_shared" /I "..\\" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /Fr /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -53,311 +53,276 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib winmm.lib ..\..\..\utils\vgui\lib\win32_vc6\vgui.lib wsock32.lib /nologo /subsystem:windows /dll /map /machine:I386 /out:".\Release\client.dll"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /map /debug /machine:I386 /def:".\hl.def" /out:".\Releasehl/dmc.dll"
+# SUBTRACT LINK32 /profile
+# Begin Custom Build - Copying...
+InputDir=.\Releasehl
+ProjDir=.
+InputPath=.\Releasehl\dmc.dll
+InputName=dmc
+SOURCE="$(InputPath)"
 
-!ELSEIF  "$(CFG)" == "cl_dll - Win32 Debug"
+BuildCmds= \
+	call ..\..\filecopy.bat $(InputPath) $(ProjDir)\..\..\..\game\mod\dlls\$(InputName).dll \
+	call ..\..\filecopy.bat $(InputDir)\$(InputName).pdb $(ProjDir)\..\..\..\game\mod\dlls\$(InputName).pdb \
+	
+
+"$(ProjDir)\..\..\..\game\mod\dlls\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(ProjDir)\..\..\..\game\mod\dlls\$(InputName).pdb" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir ".\Debug"
-# PROP BASE Intermediate_Dir ".\Debug"
+# PROP BASE Output_Dir ".\hl___Win"
+# PROP BASE Intermediate_Dir ".\hl___Win"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir ".\Debug"
-# PROP Intermediate_Dir ".\Debug"
+# PROP Output_Dir ".\debughl"
+# PROP Intermediate_Dir ".\debughl"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /MT /W3 /GX /ZI /Od /I "..\..\engine" /I "..\..\common" /I "..\..\utils\vgui\include" /I "..\..\dlls" /I "..\..\..\engine" /I "..\..\..\common" /I "..\..\pm_shared" /I "..\..\..\utils\vgui\include" /I "." /I "..\..\..\game_shared" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "CLIENT_DLL" /D "DMC_BUILD" /FR /Fp".\Release/cl_dll.pch" /YX /Fo".\Release/" /Fd".\Release/" /FD /c
+# ADD CPP /nologo /G5 /MTd /W3 /Gm /ZI /Od /I "..\public" /I "." /I "..\..\game_shared" /I "..\dlls" /I "..\..\engine" /I "..\..\common" /I "..\pm_shared" /I "..\\" /I "..\..\public" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
-# ADD RSC /l 0x409 /d "_DEBUG"
+# ADD RSC /l 0x409 /i "..\engine" /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib winmm.lib ..\..\..\utils\vgui\lib\win32_vc6\vgui.lib wsock32.lib /nologo /subsystem:windows /dll /profile /map /debug /machine:I386 /out:".\Debug\client.dll"
+# ADD LINK32 user32.lib advapi32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /def:".\hl.def" /implib:".\Debug\hl.lib"
+# SUBTRACT LINK32 /profile
+# Begin Custom Build - Copying...
+ProjDir=.
+InputPath=.\debughl\hl.dll
+InputName=hl
+SOURCE="$(InputPath)"
+
+"$(ProjDir)\..\..\..\game\mod\dlls\$(InputName).dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	call ..\..\filecopy.bat $(InputPath) $(ProjDir)\..\..\..\game\mod\dlls\$(InputName).dll
+
+# End Custom Build
 
 !ENDIF 
 
 # Begin Target
 
-# Name "cl_dll - Win32 Release"
-# Name "cl_dll - Win32 Debug"
+# Name "hl - Win32 Release"
+# Name "hl - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat;for;f90"
-# Begin Group "quake"
+# Begin Group "Shared Weapons"
 
 # PROP Default_Filter "*.cpp"
 # Begin Source File
 
-SOURCE=..\DMC_Teleporters.cpp
+SOURCE=.\quake_gun.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\ev_hldm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\hud_spectator.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\common\interface.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\quake\quake_baseentity.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\quake\quake_events.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\dlls\quake_gun.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\quake\quake_objects.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\quake\quake_weapons.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\dlls\quake_weapons_all.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\studio_util.cpp
+SOURCE=.\quake_weapons_all.cpp
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\ammo.cpp
+SOURCE=.\animating.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\ammo_secondary.cpp
+SOURCE=.\animation.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\ammohistory.cpp
+SOURCE=.\bmodels.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\battery.cpp
+SOURCE=.\buttons.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\cdll_int.cpp
+SOURCE=.\cbase.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\com_weapons.cpp
+SOURCE=.\client.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\death.cpp
+SOURCE=.\combat.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\demo.cpp
+SOURCE=.\doors.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\entity.cpp
+SOURCE=.\effects.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\ev_common.cpp
+SOURCE=.\explode.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\events.cpp
+SOURCE=.\func_break.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\GameStudioModelRenderer.cpp
+SOURCE=.\func_tank.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\geiger.cpp
+SOURCE=.\game.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\health.cpp
+SOURCE=.\gamerules.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\hud.cpp
+SOURCE=.\globals.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\hud_msg.cpp
+SOURCE=.\h_ai.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\hud_redraw.cpp
+SOURCE=.\h_export.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\hud_servers.cpp
+SOURCE=.\lights.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\hud_update.cpp
+SOURCE=.\maprules.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\in_camera.cpp
+SOURCE=.\monsters.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\input.cpp
+SOURCE=.\monsterstate.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\inputw32.cpp
+SOURCE=.\multiplay_gamerules.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\menu.cpp
+SOURCE=.\nodes.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\message.cpp
+SOURCE=.\observer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\parsemsg.cpp
+SOURCE=.\pathcorner.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\pm_shared\pm_debug.c
+SOURCE=.\plane.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\pm_shared\pm_math.c
+SOURCE=.\plats.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\pm_shared\pm_shared.c
+SOURCE=.\player.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\saytext.cpp
+SOURCE=..\pm_shared\pm_debug.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\scoreboard.cpp
-# PROP Exclude_From_Build 1
+SOURCE=..\pm_shared\pm_math.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\status_icons.cpp
+SOURCE=..\pm_shared\pm_shared.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\statusbar.cpp
+SOURCE=.\quake_items.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\StudioModelRenderer.cpp
+SOURCE=.\quake_nail.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\text_message.cpp
+SOURCE=.\quake_player.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\train.cpp
+SOURCE=.\quake_rocket.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\tri.cpp
+SOURCE=.\schedule.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\util.cpp
+SOURCE=.\singleplay_gamerules.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_checkbutton2.cpp
+SOURCE=.\skill.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_CustomObjects.cpp
+SOURCE=.\sound.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_grid.cpp
+SOURCE=.\spectator.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_helpers.cpp
+SOURCE=.\subs.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_int.cpp
+SOURCE=.\teamplay_gamerules.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_listbox.cpp
+SOURCE=.\threewave_gamerules.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_loadtga.cpp
+SOURCE=.\triggers.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_MOTDWindow.cpp
+SOURCE=.\util.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_SchemeManager.cpp
+SOURCE=..\..\game_shared\voice_gamemgr.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_ScorePanel.cpp
+SOURCE=.\weapons.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_scrollbar2.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\vgui_ServerBrowser.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\game_shared\vgui_slider2.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\vgui_SpectatorPanel.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\vgui_viewport.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\view.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\game_shared\voice_banmgr.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\game_shared\voice_status.cpp
+SOURCE=.\world.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -365,183 +330,175 @@ SOURCE=..\..\..\game_shared\voice_status.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
 # Begin Source File
 
-SOURCE=..\ammo.h
+SOURCE=.\activity.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\ammohistory.h
+SOURCE=.\activitymap.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\camera.h
+SOURCE=.\animation.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\cl_dll.h
+SOURCE=.\basemonster.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\com_weapons.h
+SOURCE=.\cbase.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\demo.h
+SOURCE=.\cdll_dll.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\DMC_BSPFile.h
+SOURCE=.\client.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\DMC_Teleporters.h
+SOURCE=.\decals.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\ev_hldm.h
+SOURCE=.\defaultai.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\eventscripts.h
+SOURCE=.\doors.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\GameStudioModelRenderer.h
+SOURCE=.\effects.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\health.h
+SOURCE=.\enginecallback.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\hud.h
+SOURCE=.\explode.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\hud_iface.h
+SOURCE=.\extdll.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\hud_servers.h
+SOURCE=.\func_break.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\hud_servers_priv.h
+SOURCE=.\gamerules.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\hud_spectator.h
+SOURCE=.\items.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\in_defs.h
+SOURCE=.\monsterevent.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\kbutton.h
+SOURCE=.\monsters.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\parsemsg.h
+SOURCE=.\nodes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\pm_shared\pm_debug.h
+SOURCE=.\plane.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\pm_shared\pm_defs.h
+SOURCE=.\player.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\pm_shared\pm_info.h
+SOURCE=..\pm_shared\pm_debug.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\pm_shared\pm_materials.h
+SOURCE=..\pm_shared\pm_defs.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\pm_shared\pm_movevars.h
+SOURCE=..\pm_shared\pm_info.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\pm_shared\pm_shared.h
+SOURCE=..\pm_shared\pm_materials.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\dlls\quake_gun.h
+SOURCE=..\pm_shared\pm_movevars.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\StudioModelRenderer.h
+SOURCE=..\pm_shared\pm_shared.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\util.h
+SOURCE=.\quake_gun.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\util_vector.h
+SOURCE=.\saverestore.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_checkbutton2.h
+SOURCE=.\schedule.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_ControlConfigPanel.h
+SOURCE=.\scripted.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_grid.h
+SOURCE=.\scriptevent.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_helpers.h
+SOURCE=.\skill.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_int.h
+SOURCE=.\soundent.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_listbox.h
+SOURCE=.\spectator.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\game_shared\vgui_loadtga.h
+SOURCE=.\teamplay_gamerules.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_SchemeManager.h
+SOURCE=.\threewave_gamerules.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_ScorePanel.h
+SOURCE=.\trains.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_ServerBrowser.h
+SOURCE=.\util.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_SpectatorPanel.h
+SOURCE=.\vector.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\vgui_viewport.h
+SOURCE=..\..\game_shared\voice_gamemgr.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\view.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\game_shared\voice_status.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\wrect.h
+SOURCE=.\weapons.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

@@ -78,7 +78,7 @@ void CDiscArena::Spawn( void )
 	Reset();
 
 	// Initialize
-	m_iMaxRounds = static_cast<int>(CVAR_GET_FLOAT("rc_rounds"));
+	m_iMaxRounds = CVAR_GET_FLOAT("rc_rounds");
 	m_iPlayersPerTeam = g_iPlayersPerTeam;
 	SetThink( NULL );
 }
@@ -119,7 +119,8 @@ void CDiscArena::StartBattle( void )
 	m_iTeamOneScore = m_iTeamTwoScore = 0;
 
 	// First, set all players in this arena to "didn't play"
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	int i;
+	for ( i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex( i );
 
@@ -128,7 +129,7 @@ void CDiscArena::StartBattle( void )
 	}
 
 	// Get the players in the battle
-	for ( int i = 0; i < (m_iPlayersPerTeam * 2); i++ )
+	for ( i = 0; i < (m_iPlayersPerTeam * 2); i++ )
 	{
 		CBasePlayer *pCurr;
 
@@ -477,9 +478,10 @@ bool CDiscArena::CheckBattleOver( void )
 	bool bTeamTwoAlive = false;
 
 	// See if the battle is finished
-	for ( int i = 0; i < (m_iPlayersPerTeam * 2); i++ )
+	int i;
+	for ( i = 0; i < (m_iPlayersPerTeam * 2); i++ )
 	{
-		if ( m_hCombatants[i] != 0 && ((CBasePlayer*)(CBaseEntity*)m_hCombatants[i])->IsAlive() )
+		if ( m_hCombatants[i] != NULL && ((CBasePlayer*)(CBaseEntity*)m_hCombatants[i])->IsAlive() )
 		{
 			if ( ((CBaseEntity*)m_hCombatants[i])->pev->team == 1 )
 				bTeamOneAlive = true;
@@ -521,7 +523,7 @@ bool CDiscArena::CheckBattleOver( void )
 					WRITE_BYTE( m_iPlayersPerTeam );
 
 					// Send down the winners of this round
-					for (int i = 0; i < (m_iPlayersPerTeam * 2); i++)
+					for (i = 0; i < (m_iPlayersPerTeam * 2); i++)
 					{
 						CBasePlayer *pPlayer = (CBasePlayer*)(CBaseEntity*)m_hCombatants[i];
 						if ( !pPlayer || pPlayer->pev->team != m_iWinningTeam )
@@ -541,7 +543,7 @@ bool CDiscArena::CheckBattleOver( void )
 					{
 						WRITE_BYTE( m_iPlayersPerTeam );
 						// Send down the winners of this round
-						for (int i = 0; i < (m_iPlayersPerTeam * 2); i++)
+						for (i = 0; i < (m_iPlayersPerTeam * 2); i++)
 						{
 							CBasePlayer *pPlayer = (CBasePlayer*)(CBaseEntity*)m_hCombatants[i];
 							if ( !pPlayer || pPlayer->pev->team != iTeamInTheLead )
@@ -843,7 +845,7 @@ void CDiscArena::RemovePlayerFromQueue( CBasePlayer *pPlayer )
 //-----------------------------------------------------------------------------
 CBasePlayer *CDiscArena::GetNextPlayer( void )
 {
-	if ( m_pPlayerQueue == 0 )
+	if ( m_pPlayerQueue == NULL )
 		return NULL;
 
 	CBasePlayer *pCurr = (CBasePlayer*)(CBaseEntity*)m_pPlayerQueue;
@@ -866,7 +868,7 @@ int CDiscArena::IsFull( void )
 // Returns the first player in the Arena's queue, if any
 CBasePlayer *CDiscArena::GetFirstSparePlayer( void )
 {
-	if ( m_pPlayerQueue == 0 )
+	if ( m_pPlayerQueue == NULL )
 		return NULL;
 
 	return (CBasePlayer*)(CBaseEntity*)m_pPlayerQueue;
@@ -961,7 +963,8 @@ void ShufflePlayers( void )
 	int iArenaNum = 0;
 
 	// Reset all Arenas
-	for ( int i = 0; i < MAX_ARENAS; i++)
+	int i;
+	for ( i = 0; i < MAX_ARENAS; i++)
 	{
 		g_pArenaList[i]->Reset();
 	}
@@ -974,7 +977,7 @@ void ShufflePlayers( void )
 	iArenaNum = AddPlayers( GAME_LOST, iArenaNum );
 
 	// Then tell all full arenas to start 
-	for (int i = 0; i < MAX_ARENAS; i++)
+	for (i = 0; i < MAX_ARENAS; i++)
 	{
 		if ( g_pArenaList[i]->IsFull() )
 		{
@@ -1013,7 +1016,8 @@ void CDiscArena::PostBattle( void )
 {
 	int iOtherGame = -1;
 	// First, see if there are any other games going on in other arenas
-	for (int i = 0; i < MAX_ARENAS; i++)
+	int i;
+	for ( i = 0; i < MAX_ARENAS; i++)
 	{
 		if ( g_pArenaList[i]->m_iArenaState != ARENA_WAITING_FOR_PLAYERS && g_pArenaList[i] != this )
 		{
@@ -1030,7 +1034,7 @@ void CDiscArena::PostBattle( void )
 	}
 
 	// There's another game going on. Move all the players from this arena to it to spectate.
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex( i );
 

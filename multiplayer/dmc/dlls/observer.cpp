@@ -113,12 +113,12 @@ void CBasePlayer::Observer_SetMode( int iMode )
 		iMode = OBS_IN_EYE; // now it is
 
 	// if we are not roaming, we need a valid target to track
-	if ( (iMode != OBS_ROAMING) && (m_hObserverTarget == 0) )
+	if ( (iMode != OBS_ROAMING) && (m_hObserverTarget == NULL) )
 	{
 		Observer_FindNextPlayer();
 
 		// if we didn't find a valid target switch to roaming
-		if (m_hObserverTarget == 0)
+		if (m_hObserverTarget == NULL)
 		{
 			ClientPrint( pev, HUD_PRINTCENTER, "#Spec_NoTarget"  );
 			iMode = OBS_ROAMING;

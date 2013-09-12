@@ -16,9 +16,6 @@
 // nodes.cpp - AI node tree stuff.
 //=========================================================
 
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #include	"extdll.h"
 #include	"util.h"
 #include	"cbase.h"
@@ -29,6 +26,8 @@
 
 #ifndef _WIN32
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #define CreateDirectory(p, n) mkdir(p, 0777)
 #endif // _WIN32
 
@@ -583,7 +582,7 @@ int CGraph :: FindShortestPath ( int *piPath, int iStart, int iDest, int iHull, 
 	int		iVisitNode;
 	int		iCurrentNode;
 	int		iNumPathNodes;
-	int		iHullMask = 0;
+	int		iHullMask;
 
 	if ( !m_fGraphPresent || !m_fGraphPointersSet )
 	{// protect us in the case that the node graph isn't available or built
@@ -660,7 +659,7 @@ int CGraph :: FindShortestPath ( int *piPath, int iStart, int iDest, int iHull, 
 
 		// Mark all the nodes as unvisited.
 		//
-		int i = 0;
+		int i;
 		for ( i = 0; i < m_cNodes; i++)
 		{
 			m_pNodes[ i ].m_flClosestSoFar = -1.0;
@@ -837,19 +836,19 @@ void CGraph :: CheckNode(Vector vecOrigin, int iNode)
 			m_iNearest = iNode;
 			m_flShortest = flDist;
 
-			UpdateRange(m_minX, m_maxX, CALC_RANGE(static_cast<int>(vecOrigin.x), static_cast<int>(m_RegionMin[0]), static_cast<int>(m_RegionMax[0])), m_pNodes[iNode].m_Region[0]);
-			UpdateRange(m_minY, m_maxY, CALC_RANGE(static_cast<int>(vecOrigin.y), static_cast<int>(m_RegionMin[1]), static_cast<int>(m_RegionMax[1])), m_pNodes[iNode].m_Region[1]);
-			UpdateRange(m_minZ, m_maxZ, CALC_RANGE(static_cast<int>(vecOrigin.z), static_cast<int>(m_RegionMin[2]), static_cast<int>(m_RegionMax[2])), m_pNodes[iNode].m_Region[2]);
+			UpdateRange(m_minX, m_maxX, CALC_RANGE(vecOrigin.x, m_RegionMin[0], m_RegionMax[0]), m_pNodes[iNode].m_Region[0]);
+			UpdateRange(m_minY, m_maxY, CALC_RANGE(vecOrigin.y, m_RegionMin[1], m_RegionMax[1]), m_pNodes[iNode].m_Region[1]);
+			UpdateRange(m_minZ, m_maxZ, CALC_RANGE(vecOrigin.z, m_RegionMin[2], m_RegionMax[2]), m_pNodes[iNode].m_Region[2]);
 
 			// From maxCircle, calculate maximum bounds box. All points must be
 			// simultaneously inside all bounds of the box.
 			//
-			m_minBoxX = CALC_RANGE(static_cast<int>(vecOrigin.x - flDist), static_cast<int>(m_RegionMin[0]), static_cast<int>(m_RegionMax[0]));
-			m_maxBoxX = CALC_RANGE(static_cast<int>(vecOrigin.x + flDist), static_cast<int>(m_RegionMin[0]), static_cast<int>(m_RegionMax[0]));
-			m_minBoxY = CALC_RANGE(static_cast<int>(vecOrigin.y - flDist), static_cast<int>(m_RegionMin[1]), static_cast<int>(m_RegionMax[1]));
-			m_maxBoxY = CALC_RANGE(static_cast<int>(vecOrigin.y + flDist), static_cast<int>(m_RegionMin[1]), static_cast<int>(m_RegionMax[1]));
-			m_minBoxZ = CALC_RANGE(static_cast<int>(vecOrigin.z - flDist), static_cast<int>(m_RegionMin[2]), static_cast<int>(m_RegionMax[2]));
-			m_maxBoxZ = CALC_RANGE(static_cast<int>(vecOrigin.z + flDist), static_cast<int>(m_RegionMin[2]), static_cast<int>(m_RegionMax[2]));
+			m_minBoxX = CALC_RANGE(vecOrigin.x - flDist, m_RegionMin[0], m_RegionMax[0]);
+			m_maxBoxX = CALC_RANGE(vecOrigin.x + flDist, m_RegionMin[0], m_RegionMax[0]);
+			m_minBoxY = CALC_RANGE(vecOrigin.y - flDist, m_RegionMin[1], m_RegionMax[1]);
+			m_maxBoxY = CALC_RANGE(vecOrigin.y + flDist, m_RegionMin[1], m_RegionMax[1]);
+			m_minBoxZ = CALC_RANGE(vecOrigin.z - flDist, m_RegionMin[2], m_RegionMax[2]);
+			m_maxBoxZ = CALC_RANGE(vecOrigin.z + flDist, m_RegionMin[2], m_RegionMax[2]);
 		}
 	}
 }
@@ -1279,7 +1278,7 @@ int CGraph :: LinkVisibleNodes ( CLink *pLinkPool, FILE *file, int *piBadNode )
 					fprintf ( file, "  Entity on connection: %s, name: %s  Model: %s", STRING( VARS( pTraceEnt )->classname ), STRING ( VARS( pTraceEnt )->targetname ), STRING ( VARS(tr.pHit)->model ) );
 				}
 				
-				fprintf ( file, "\n");
+				fprintf ( file, "\n", j );
 			}
 
 			pLinkPool [ cTotalLinks ].m_iDestNode = j;
@@ -1464,7 +1463,7 @@ void CTestHull :: Spawn( entvars_t *pevMasterNode )
 
 	if ( WorldGraph.m_fGraphPresent )
 	{// graph loaded from disk, so we don't need the test hull
-		SetThink ( &CBaseEntity::SUB_Remove );
+		SetThink ( &CTestHull::SUB_Remove );
 		pev->nextthink = gpGlobals->time;
 	}
 	else
@@ -1485,7 +1484,7 @@ void CTestHull :: Spawn( entvars_t *pevMasterNode )
 //=========================================================
 void CTestHull::DropDelay ( void )
 {
-	UTIL_CenterPrintAll( "Node Graph out of Date. Rebuilding..." );
+//	UTIL_CenterPrintAll( "Node Graph out of Date. Rebuilding..." );
 
 	UTIL_SetOrigin ( VARS(pev), WorldGraph.m_pNodes[ 0 ].m_vecOrigin );
 
@@ -1615,6 +1614,10 @@ void CTestHull :: BuildNodeGraph( void )
 
 	int		iBadNode;// this is the node that caused graph generation to fail
 
+	int		cMaxInitialLinks = 0;
+	int		cMaxValidLinks	= 0;
+
+	int		iPoolIndex = 0;
 	int		cPoolLinks;// number of links in the pool.
 
 	Vector	vecDirToCheckNode;
@@ -1633,7 +1636,7 @@ void CTestHull :: BuildNodeGraph( void )
 	float	flDist;
 	int		step;
 
-	SetThink ( &CBaseEntity::SUB_Remove );// no matter what happens, the hull gets rid of itself.
+	SetThink ( &CTestHull::SUB_Remove );// no matter what happens, the hull gets rid of itself.
 	pev->nextthink = gpGlobals->time;
 
 // 	malloc a swollen temporary connection pool that we trim down after we know exactly how many connections there are.
@@ -1884,17 +1887,17 @@ void CTestHull :: BuildNodeGraph( void )
 						switch ( hull )
 						{
 						case NODE_SMALL_HULL:	// if this hull can't fit, nothing can, so drop the connection
-							fprintf ( file, "NODE_SMALL_HULL step %f\n", static_cast<double>(step) );
+							fprintf ( file, "NODE_SMALL_HULL step %f\n", step );
 							pTempPool[ pSrcNode->m_iFirstLink + j ].m_afLinkInfo &= ~(bits_LINK_SMALL_HULL | bits_LINK_HUMAN_HULL | bits_LINK_LARGE_HULL);
 							fSkipRemainingHulls = TRUE;// don't bother checking larger hulls
 							break;
 						case NODE_HUMAN_HULL:
-							fprintf ( file, "NODE_HUMAN_HULL step %f\n", static_cast<double>(step) );
+							fprintf ( file, "NODE_HUMAN_HULL step %f\n", step );
 							pTempPool[ pSrcNode->m_iFirstLink + j ].m_afLinkInfo &= ~(bits_LINK_HUMAN_HULL | bits_LINK_LARGE_HULL);
 							fSkipRemainingHulls = TRUE;// don't bother checking larger hulls
 							break;
 						case NODE_LARGE_HULL:
-							fprintf ( file, "NODE_LARGE_HULL step %f\n", static_cast<double>(step) );
+							fprintf ( file, "NODE_LARGE_HULL step %f\n", step );
 							pTempPool[ pSrcNode->m_iFirstLink + j ].m_afLinkInfo &= ~bits_LINK_LARGE_HULL;
 							break;
 						}
@@ -2734,7 +2737,8 @@ void CGraph::HashChoosePrimes(int TableSize)
     // We divide this interval into 16 equal sized zones. We want to find
     // one prime number that best represents that zone.
     //
-    for (int iZone = 1, iPrime = 0; iPrime < 16; iZone += Spacing)
+    int iPrime,iZone;
+    for (iZone = 1, iPrime = 0; iPrime < 16; iZone += Spacing)
     {
         // Search for a prime number that is less than the target zone
         // number given by iZone.
@@ -2764,7 +2768,7 @@ void CGraph::HashChoosePrimes(int TableSize)
 
     // Alternate negative and positive numbers
     //
-    for (int iPrime = 0; iPrime < 16; iPrime += 2)
+    for (iPrime = 0; iPrime < 16; iPrime += 2)
     {
         m_HashPrimes[iPrime] = TableSize-m_HashPrimes[iPrime];
     }
@@ -2772,7 +2776,7 @@ void CGraph::HashChoosePrimes(int TableSize)
     // Shuffle the set of primes to reduce correlation with bits in
     // hash key.
     //
-    for (int iPrime = 0; iPrime < 16-1; iPrime++)
+    for (iPrime = 0; iPrime < 16-1; iPrime++)
     {
         int Pick = RANDOM_LONG(0, 15-iPrime);
         int Temp = m_HashPrimes[Pick];
@@ -2790,8 +2794,10 @@ void CGraph::SortNodes(void)
 	// After assigning new node numbers to everything, we move
 	// things and patchup the links.
 	//
-	int iNodeCnt = 0, i = 0;
+	int iNodeCnt = 0;
+	int i;
 	m_pNodes[0].m_iPreviousNode = iNodeCnt++;
+
 	for (i = 1; i < m_cNodes; i++)
 	{
 		m_pNodes[i].m_iPreviousNode = UNNUMBERED_NODE;
@@ -2848,7 +2854,6 @@ void CGraph::SortNodes(void)
 
 void CGraph::BuildLinkLookups(void)
 {
-	int i = 0;
 	m_nHashLinks = 3*m_cLinks/2 + 3;
 
 	HashChoosePrimes(m_nHashLinks);
@@ -2858,6 +2863,7 @@ void CGraph::BuildLinkLookups(void)
 		ALERT(at_aiconsole, "Couldn't allocated Link Lookup Table.\n");
 		return;
 	}
+	int i;
 	for (i = 0; i < m_nHashLinks; i++)
 	{
 		m_pHashLinks[i] = ENTRY_STATE_EMPTY;
@@ -2898,7 +2904,7 @@ void CGraph::BuildRegionTables(void)
 	// Calculate regions for all the nodes.
 	//
 	//
-	int i = 0;
+	int i;
 	for (i = 0; i < 3; i++)
 	{
 		m_RegionMin[i] =  999999999.0; // just a big number out there;
@@ -2922,14 +2928,14 @@ void CGraph::BuildRegionTables(void)
 	}
 	for (i = 0; i < m_cNodes; i++)
 	{
-		m_pNodes[i].m_Region[0] = CALC_RANGE(static_cast<int>(m_pNodes[i].m_vecOrigin.x), static_cast<int>(m_RegionMin[0]), static_cast<int>(m_RegionMax[0]));
-		m_pNodes[i].m_Region[1] = CALC_RANGE(static_cast<int>(m_pNodes[i].m_vecOrigin.y), static_cast<int>(m_RegionMin[1]), static_cast<int>(m_RegionMax[1]));
-		m_pNodes[i].m_Region[2] = CALC_RANGE(static_cast<int>(m_pNodes[i].m_vecOrigin.z), static_cast<int>(m_RegionMin[2]), static_cast<int>(m_RegionMax[2]));
+		m_pNodes[i].m_Region[0] = CALC_RANGE(m_pNodes[i].m_vecOrigin.x, m_RegionMin[0], m_RegionMax[0]);
+		m_pNodes[i].m_Region[1] = CALC_RANGE(m_pNodes[i].m_vecOrigin.y, m_RegionMin[1], m_RegionMax[1]);
+		m_pNodes[i].m_Region[2] = CALC_RANGE(m_pNodes[i].m_vecOrigin.z, m_RegionMin[2], m_RegionMax[2]);
 	}
 
 	for (i = 0; i < 3; i++)
 	{
-		int j = 0;
+		int j;
 		for (j = 0; j < NUM_RANGES; j++)
 		{
 			m_RangeStart[i][j] = 255;
@@ -2946,7 +2952,7 @@ void CGraph::BuildRegionTables(void)
 			int jCodeX = m_pNodes[jNode].m_Region[0];
 			int jCodeY = m_pNodes[jNode].m_Region[1];
 			int jCodeZ = m_pNodes[jNode].m_Region[2];
-			int jCode = 0;
+			int jCode;
 			switch (i)
 			{
 			case 0:
@@ -2966,7 +2972,7 @@ void CGraph::BuildRegionTables(void)
 				int kCodeX = m_pNodes[kNode].m_Region[0];
 				int kCodeY = m_pNodes[kNode].m_Region[1];
 				int kCodeZ = m_pNodes[kNode].m_Region[2];
-				int kCode = 0;
+				int kCode;
 				switch (i)
 				{
 				case 0:
@@ -3049,7 +3055,7 @@ void CGraph :: ComputeStaticRoutingTables( void )
 		{
 			for (int iCap = 0; iCap < 2; iCap++)
 			{
-				int iCapMask = 0;
+				int iCapMask;
 				switch (iCap)
 				{
 				case 0:
@@ -3064,7 +3070,7 @@ void CGraph :: ComputeStaticRoutingTables( void )
 
 				// Initialize Routing table to uncalculated.
 				//
-				int iFrom = 0;
+				int iFrom;
 				for (iFrom = 0; iFrom < m_cNodes; iFrom++)
 				{
 					for (int iTo = 0; iTo < m_cNodes; iTo++)
@@ -3281,7 +3287,7 @@ void CGraph :: ComputeStaticRoutingTables( void )
 					int nRoute = p - pRoute;
 					if (m_pRouteInfo)
 					{
-						int i = 0;
+						int i;
 						for (i = 0; i < m_nRouteInfo - nRoute; i++)
 						{
 							if (memcmp(m_pRouteInfo + i, pRoute, nRoute) == 0)
@@ -3345,7 +3351,7 @@ void CGraph :: TestRoutingTables( void )
 		{
 			for (int iCap = 0; iCap < 2; iCap++)
 			{
-				int iCapMask = 0;
+				int iCapMask;
 				switch (iCap)
 				{
 				case 0:
@@ -3374,7 +3380,7 @@ void CGraph :: TestRoutingTables( void )
 						//
 #if 1
 						float flDistance1 = 0.0;
-						int i = 0;
+						int i;
 						for (i = 0; i < cPathSize1-1; i++)
 						{
 							// Find the link from pMyPath[i] to pMyPath[i+1]
@@ -3434,7 +3440,7 @@ void CGraph :: TestRoutingTables( void )
 								ALERT(at_aiconsole, "%d ", pMyPath[i]);
 							}
 							ALERT(at_aiconsole, "\n(%d to %d |%d/%d)2:", iFrom, iTo, iHull, iCap);
-							for (int i = 0; i < cPathSize2; i++)
+							for (i = 0; i < cPathSize2; i++)
 							{
 								ALERT(at_aiconsole, "%d ", pMyPath2[i]);
 							}
@@ -3634,9 +3640,9 @@ void CNodeViewer :: DrawThink( void )
 			WRITE_BYTE( 250 ); // life
 			WRITE_BYTE( 40 );  // width
 			WRITE_BYTE( 0 );   // noise
-			WRITE_BYTE( static_cast<int>(m_vecColor.x) );   // r, g, b
-			WRITE_BYTE( static_cast<int>(m_vecColor.y) );   // r, g, b
-			WRITE_BYTE( static_cast<int>(m_vecColor.z) );   // r, g, b
+			WRITE_BYTE( m_vecColor.x );   // r, g, b
+			WRITE_BYTE( m_vecColor.y );   // r, g, b
+			WRITE_BYTE( m_vecColor.z );   // r, g, b
 			WRITE_BYTE( 128 );	// brightness
 			WRITE_BYTE( 0 );		// speed
 		MESSAGE_END();
