@@ -15,12 +15,9 @@
 // pm_defs.h
 #if !defined( PM_DEFSH )
 #define PM_DEFSH
-#ifdef _WIN32
-#ifndef __MINGW32__
 #pragma once
-#endif /* not __MINGW32__ */
-#endif
 
+#include "archtypes.h"     // DAL
 #define	MAX_PHYSENTS 600 		  // Must have room for all entities in the world.
 #define MAX_MOVEENTS 64
 #define	MAX_CLIP_PLANES	5
@@ -35,13 +32,6 @@
 #define PM_TRACELINE_PHYSENTSONLY	0
 #define PM_TRACELINE_ANYVISIBLE		1
 
-#if defined _MSC_VER && _MSC_VER >= 1400
-	#ifndef _CRT_SECURE_NO_DEPRECATE
-		#define _CRT_SECURE_NO_DEPRECATE
-	#endif
-
-	#pragma warning(disable: 4996) // deprecated functions
-#endif
 
 #include "pm_info.h"
 
@@ -95,39 +85,6 @@ typedef struct physent_s
 	vec3_t			vuser4;
 } physent_t;
 
-#ifndef _DCLIPNODE_DEFINED_
-#define _DCLIPNODE_DEFINED_
-typedef struct
-{
-	int			planenum;
-	short		children[2];	// negative numbers are contents
-} dclipnode_t;
-#endif
-
-#ifndef _MPLANE_DEFINED_
-#define _MPLANE_DEFINED_
-typedef struct mplane_s
-{
-	vec3_t	normal;			// surface normal
-	float	dist;			// closest appoach to origin
-	byte	type;			// for texture axis selection and fast side tests
-	byte	signbits;		// signx + signy<<1 + signz<<1
-	byte	pad[2];
-} mplane_t;
-#endif
-
-#ifndef _HULL_DEFINED_
-#define _HULL_DEFINED_
-typedef struct hull_s
-{
-	dclipnode_t	*clipnodes;
-	mplane_t	*planes;
-	int			firstclipnode;
-	int			lastclipnode;
-	vec3_t		clip_mins;
-	vec3_t		clip_maxs;
-} hull_t;
-#endif
 
 typedef struct playermove_s
 {
@@ -240,7 +197,7 @@ typedef struct playermove_s
 	int				(*PM_HullPointContents) ( struct hull_s *hull, int num, float *p);   
 	pmtrace_t		(*PM_PlayerTrace) (float *start, float *end, int traceFlags, int ignore_pe );
 	struct pmtrace_s *(*PM_TraceLine)( float *start, float *end, int flags, int usehulll, int ignore_pe );
-	long			(*RandomLong)( long lLow, long lHigh );
+	int32			(*RandomLong)( int32 lLow, int32 lHigh );
 	float			(*RandomFloat)( float flLow, float flHigh );
 	int				(*PM_GetModelType)( struct model_s *mod );
 	void			(*PM_GetModelBounds)( struct model_s *mod, float *mins, float *maxs );

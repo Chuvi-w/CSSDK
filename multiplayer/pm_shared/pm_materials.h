@@ -14,13 +14,9 @@
 ****/
 #if !defined( PM_MATERIALSH )
 #define PM_MATERIALSH
-#ifdef _WIN32
-#ifndef __MINGW32__
 #pragma once
-#endif /* not __MINGW32__ */
-#endif
 
-#define CBTEXTURENAMEMAX	17			// only load first n chars of name
+#define CBTEXTURENAMEMAX	13			// only load first n chars of name
 
 #define CHAR_TEX_CONCRETE	'C'			// texture types
 #define CHAR_TEX_METAL		'M'

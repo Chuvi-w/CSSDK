@@ -15,9 +15,7 @@
 #if !defined( ENTITY_STATEH )
 #define ENTITY_STATEH
 #ifdef _WIN32
-#ifndef __MINGW32__
 #pragma once
-#endif /* not __MINGW32__ */
 #endif
 
 // For entityType below
@@ -189,7 +187,7 @@ typedef struct local_state_s
 {
 	entity_state_t playerstate;
 	clientdata_t   client;
-	weapon_data_t  weapondata[ 32 ];
+	weapon_data_t  weapondata[ 64 ];
 } local_state_t;
 
 #endif // !ENTITY_STATEH

@@ -15,14 +15,13 @@
 #if !defined( QFONTH )
 #define QFONTH
 #ifdef _WIN32
-#ifndef __MINGW32__
 #pragma once
-#endif /* not __MINGW32__ */
 #endif
 
 // Font stuff
 
 #define NUM_GLYPHS 256
+#include "basetypes.h"
 
 typedef struct
 {
