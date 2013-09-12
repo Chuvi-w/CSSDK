@@ -110,6 +110,7 @@ class CBaseMonster;
 class CBasePlayerItem;
 class CSquadMonster;
 
+
 #define	SF_NORESPAWN	( 1 << 30 )// !!!set this bit on guns and stuff that should never respawn.
 
 //
@@ -131,6 +132,7 @@ public:
 	CBaseEntity * operator = (CBaseEntity *pEntity);
 	CBaseEntity * operator ->();
 };
+
 
 //
 // Base Entity.  All entity types derive from this
@@ -163,6 +165,7 @@ public:
 	// still realize that they are teammates. (overridden for monsters that form groups)
 	virtual int Classify ( void ) { return CLASS_NONE; };
 	virtual void DeathNotice ( entvars_t *pevChild ) {}// monster maker children use this to tell the monster maker that they have died.
+
 
 	static	TYPEDESCRIPTION m_SaveData[];
 
@@ -199,6 +202,7 @@ public:
 	virtual	BOOL	IsPlayer( void ) { return FALSE; }
 	virtual BOOL	IsNetClient( void ) { return FALSE; }
 	virtual const char *TeamID( void ) { return ""; }
+
 
 	//	virtual void	SetActivator( CBaseEntity *pActivator ) {}
 	virtual CBaseEntity *GetNextTarget( void );
@@ -279,6 +283,7 @@ public:
 		return NULL;
 	}
 
+
 	// Ugly code to lookup all functions to make sure they are exported when set.
 #ifdef _DEBUG
 	void FunctionCheck( void *pFunction, char *name )
@@ -314,10 +319,12 @@ public:
 
 #endif
 
+
 	// virtual functions used by a few classes
 
 	// used by monsters that are created by the MonsterMaker
 	virtual	void UpdateOwner( void ) { return; };
+
 
 	//
 	static CBaseEntity *Create( char *szName, const Vector &vecOrigin, const Vector &vecAngles, edict_t *pentOwner = NULL );
@@ -430,6 +437,8 @@ public:
 	/* last cacheline: 24 bytes */
 };
 
+
+
 // Ugly technique to override base member functions
 // Normally it's illegal to cast a pointer to a member function of a derived class to a pointer to a
 // member function of a base class.  static_cast is a sleezy way around that problem.
@@ -450,6 +459,7 @@ public:
 
 #endif
 
+
 class CPointEntity : public CBaseEntity
 {
 public:
@@ -457,6 +467,7 @@ public:
 	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 private:
 };
+
 
 typedef struct locksounds			// sounds that doors and buttons make when locked/unlocked
 {
@@ -504,6 +515,7 @@ public:
 	string_t	m_globalstate;
 };
 
+
 //
 // generic Delay entity.
 //
@@ -522,6 +534,7 @@ public:
 	void SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, float value );
 	void EXPORT DelayThink( void );
 };
+
 
 class CBaseAnimating : public CBaseDelay
 {
@@ -559,6 +572,7 @@ public:
 	BOOL				m_fSequenceFinished;// flag set when StudioAdvanceFrame moves across a frame boundry
 	BOOL				m_fSequenceLoops;	// true if the sequence loops
 };
+
 
 //
 // generic Toggle entity.
@@ -618,6 +632,7 @@ public:
 	// deactivated.
 };
 #define SetMoveDone( a ) m_pfnCallWhenMoveDone = static_cast <void (CBaseToggle::*)(void)> (a)
+
 
 // people gib if their health is <= this at the time of death
 #define	GIB_HEALTH_VALUE	-30
@@ -707,6 +722,7 @@ public:
 #define SLOWFREEZE_DURATION	2
 #define SLOWFREEZE_DAMAGE	1.0
 
+
 #define	itbd_Paralyze		0
 #define	itbd_NerveGas		1
 #define	itbd_Poison			2
@@ -729,7 +745,9 @@ class CSound;
 
 #include "basemonster.h"
 
+
 char *ButtonSound( int sound );				// get string of button sound number
+
 
 //
 // Generic Button
@@ -809,6 +827,7 @@ template <class T> T * GetClassPtr( T *a )
 	return a;
 }
 
+
 /*
 bit_PUSHBRUSH_DATA | bit_TOGGLE_DATA
 bit_MONSTER_DATA
@@ -841,6 +860,7 @@ typedef struct _SelAmmo
 	BYTE	Ammo2Type;
 	BYTE	Ammo2;
 } SelAmmo;
+
 
 // this moved here from world.cpp, to allow classes to be derived from it
 //=======================

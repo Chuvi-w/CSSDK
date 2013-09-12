@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -119,7 +119,7 @@ float UTIL_SharedRandomFloat( unsigned int seed, float low, float high )
 	U_Random();
 	U_Random();
 
-	range = static_cast<int>(high - low);
+	range = high - low;
 	if ( !range )
 	{
 		return low;
@@ -642,7 +642,7 @@ static unsigned short FixedUnsigned16( float value, float scale )
 {
 	int output;
 
-	output = static_cast<int>(value * scale);
+	output = value * scale;
 	if ( output < 0 )
 		output = 0;
 	if ( output > 0xFFFF )
@@ -655,7 +655,7 @@ static short FixedSigned16( float value, float scale )
 {
 	int output;
 
-	output = static_cast<int>(value * scale);
+	output = value * scale;
 
 	if ( output > 32767 )
 		output = 32767;
@@ -975,10 +975,10 @@ TraceResult UTIL_GetGlobalTrace( )
 {
 	TraceResult tr;
 
-	tr.fAllSolid		= static_cast<int>(gpGlobals->trace_allsolid);
-	tr.fStartSolid		= static_cast<int>(gpGlobals->trace_startsolid);
-	tr.fInOpen			= static_cast<int>(gpGlobals->trace_inopen);
-	tr.fInWater			= static_cast<int>(gpGlobals->trace_inwater);
+	tr.fAllSolid		= gpGlobals->trace_allsolid;
+	tr.fStartSolid		= gpGlobals->trace_startsolid;
+	tr.fInOpen			= gpGlobals->trace_inopen;
+	tr.fInWater			= gpGlobals->trace_inwater;
 	tr.flFraction		= gpGlobals->trace_fraction;
 	tr.flPlaneDist		= gpGlobals->trace_plane_dist;
 	tr.pHit			= gpGlobals->trace_ent;
@@ -1003,7 +1003,9 @@ float UTIL_VecToYaw( const Vector &vec )
 
 void UTIL_SetOrigin( entvars_t *pev, const Vector &vecOrigin )
 {
-	SET_ORIGIN(ENT(pev), vecOrigin );
+	edict_t *ent = ENT(pev);
+	if ( ent )
+		SET_ORIGIN( ent, vecOrigin );
 }
 
 void UTIL_ParticleEffect( const Vector &vecOrigin, const Vector &vecDirection, ULONG ulColor, ULONG ulCount )
@@ -1736,7 +1738,11 @@ static int gSizes[FIELD_TYPECOUNT] =
 	sizeof(float)*3,	// FIELD_POSITION_VECTOR
 	sizeof(int *),		// FIELD_POINTER
 	sizeof(int),		// FIELD_INTEGER
+#ifdef GNUC
+	sizeof(int *)*2,		// FIELD_FUNCTION
+#else
 	sizeof(int *),		// FIELD_FUNCTION
+#endif
 	sizeof(int),		// FIELD_BOOLEAN
 	sizeof(short),		// FIELD_SHORT
 	sizeof(char),		// FIELD_CHARACTER
@@ -2046,11 +2052,11 @@ void CSave :: WritePositionVector( const char *pname, const float *value, int co
 }
 
 
-void CSave :: WriteFunction( const char *pname, const int *data, int count )
+void CSave :: WriteFunction( const char *pname, void **data, int count )
 {
 	const char *functionName;
 
-	functionName = NAME_FOR_FUNCTION( *data );
+	functionName = NAME_FOR_FUNCTION( (uint32)*data );
 	if ( functionName )
 		BufferField( pname, strlen(functionName) + 1, functionName );
 	else
@@ -2063,7 +2069,7 @@ void EntvarsKeyvalue( entvars_t *pev, KeyValueData *pkvd )
 	int i;
 	TYPEDESCRIPTION		*pField;
 
-	for ( i = 0; i < static_cast<int>(ENTVARS_COUNT); i++ )
+	for ( i = 0; i < ENTVARS_COUNT; i++ )
 	{
 		pField = &gEntvarsDescription[i];
 
@@ -2184,8 +2190,6 @@ int CSave :: WriteFields( const char *pname, void *pBaseData, TYPEDESCRIPTION *p
 					case FIELD_EHANDLE:
 						entityArray[j] = EntityIndex( (CBaseEntity *)(((EHANDLE *)pOutputData)[j]) );
 						break;
-					default:
-						break;
 				}
 			}
 			WriteInt( pTest->fieldName, entityArray, pTest->fieldSize );
@@ -2216,7 +2220,7 @@ int CSave :: WriteFields( const char *pname, void *pBaseData, TYPEDESCRIPTION *p
 		break;
 
 		case FIELD_FUNCTION:
-			WriteFunction( pTest->fieldName, (int *)(char *)pOutputData, pTest->fieldSize );
+			WriteFunction( pTest->fieldName, (void **)pOutputData, pTest->fieldSize );
 		break;
 		default:
 			ALERT( at_error, "Bad field type\n" );

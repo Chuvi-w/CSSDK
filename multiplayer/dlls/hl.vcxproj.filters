@@ -398,5 +398,8 @@
     <ClInclude Include="..\game_shared\GameEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="unisignals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

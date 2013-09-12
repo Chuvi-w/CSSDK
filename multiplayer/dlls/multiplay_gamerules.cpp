@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -15,7 +15,6 @@
 //
 // teamplay_gamerules.cpp
 //
-
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -30,6 +29,10 @@
 #include "hltv.h"
 #include "GameEvent.h"
 #include "client.h"
+
+#if !defined ( _WIN32 )
+#include <ctype.h>
+#endif
 
 extern DLL_GLOBAL CHalfLifeMultiplay *g_pGameRules;
 extern DLL_GLOBAL BOOL	g_fGameOver;
@@ -177,17 +180,7 @@ CHalfLifeMultiplay :: CHalfLifeMultiplay()
 	// share a single config file. (sjb)
 	if ( IS_DEDICATED_SERVER() )
 	{
-		// dedicated server
-		char *servercfgfile = (char *)CVAR_GET_STRING( "servercfgfile" );
-
-		if ( servercfgfile && servercfgfile[0] )
-		{
-			char szCommand[256];
-			
-			ALERT( at_console, "Executing dedicated server config file\n" );
-			sprintf( szCommand, "exec %s\n", servercfgfile );
-			SERVER_COMMAND( szCommand );
-		}
+		// this code has been moved into engine, to only run server.cfg once
 	}
 	else
 	{
@@ -338,7 +331,7 @@ void CHalfLifeMultiplay :: Think ( void )
 
 			if ( pPlayer )
 			{
-				remain = static_cast<int>(flFragLimit - pPlayer->pev->frags);
+				remain = flFragLimit - pPlayer->pev->frags;
 				if ( remain < bestfrags )
 				{
 					bestfrags = remain;
@@ -384,7 +377,7 @@ BOOL CHalfLifeMultiplay::IsDeathmatch( void )
 //=========================================================
 BOOL CHalfLifeMultiplay::IsCoOp( void )
 {
-	return static_cast<BOOL>(gpGlobals->coop);
+	return gpGlobals->coop;
 }
 
 //=========================================================
@@ -550,7 +543,7 @@ void CHalfLifeMultiplay :: InitHUD( CBasePlayer *pl )
 		{
 			MESSAGE_BEGIN( MSG_ONE, gmsgScoreInfo, NULL, pl->edict() );
 				WRITE_BYTE( i );	// client number
-				WRITE_SHORT( static_cast<int>(plr->pev->frags) );
+				WRITE_SHORT( plr->pev->frags );
 				WRITE_SHORT( plr->m_iDeaths );
 				WRITE_SHORT( 0 );
 				WRITE_SHORT( GetTeamIndex( plr->m_szTeamName ) + 1 );
@@ -726,7 +719,7 @@ void CHalfLifeMultiplay :: PlayerKilled( CBasePlayer *pVictim, entvars_t *pKille
 	// killed scores
 	MESSAGE_BEGIN( MSG_ALL, gmsgScoreInfo );
 		WRITE_BYTE( ENTINDEX(pVictim->edict()) );
-		WRITE_SHORT( static_cast<int>(pVictim->pev->frags) );
+		WRITE_SHORT( pVictim->pev->frags );
 		WRITE_SHORT( pVictim->m_iDeaths );
 		WRITE_SHORT( 0 );
 		WRITE_SHORT( GetTeamIndex( pVictim->m_szTeamName ) + 1 );
@@ -740,7 +733,7 @@ void CHalfLifeMultiplay :: PlayerKilled( CBasePlayer *pVictim, entvars_t *pKille
 
 		MESSAGE_BEGIN( MSG_ALL, gmsgScoreInfo );
 			WRITE_BYTE( ENTINDEX(PK->edict()) );
-			WRITE_SHORT( static_cast<int>(PK->pev->frags) );
+			WRITE_SHORT( PK->pev->frags );
 			WRITE_SHORT( PK->m_iDeaths );
 			WRITE_SHORT( 0 );
 			WRITE_SHORT( GetTeamIndex( PK->m_szTeamName) + 1 );
@@ -757,7 +750,7 @@ void CHalfLifeMultiplay :: PlayerKilled( CBasePlayer *pVictim, entvars_t *pKille
 void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, entvars_t *pevInflictor )
 {
 	// Work out what killed the player, and send a message to all clients about it
-	CBaseEntity::Instance( pKiller );
+	CBaseEntity *Killer = CBaseEntity::Instance( pKiller );
 
 	const char *killer_weapon_name = "world";		// by default, the player is killed by the world
 	int killer_index = 0;

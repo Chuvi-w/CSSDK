@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -113,7 +113,7 @@ void CHalfLifeTeamplay :: Think ( void )
 				return;
 			}
 
-			remain = static_cast<int>(flFragLimit - team_scores[i]);
+			remain = flFragLimit - team_scores[i];
 			if ( remain < bestfrags )
 			{
 				bestfrags = remain;
@@ -152,6 +152,8 @@ BOOL CHalfLifeTeamplay :: ClientCommand( CBasePlayer *pPlayer, const char *pcmd 
 	{
 		if ( CMD_ARGC() < 2 )
 			return TRUE;
+
+		int slot = atoi( CMD_ARGV(1) );
 
 		// select the item from the current menu
 
@@ -296,7 +298,7 @@ void CHalfLifeTeamplay::ChangePlayerTeam( CBasePlayer *pPlayer, const char *pTea
 
 	MESSAGE_BEGIN( MSG_ALL, gmsgScoreInfo );
 		WRITE_BYTE( clientIndex );
-		WRITE_SHORT( static_cast<int>(pPlayer->pev->frags) );
+		WRITE_SHORT( pPlayer->pev->frags );
 		WRITE_SHORT( pPlayer->m_iDeaths );
 		WRITE_SHORT( 0 );
 		WRITE_SHORT( g_pGameRules->GetTeamIndex( pPlayer->m_szTeamName ) + 1 );
@@ -609,7 +611,7 @@ void CHalfLifeTeamplay::RecountTeams( bool bResendInfo )
 
 			if ( tm >= 0 )
 			{
-				team_scores[tm] += static_cast<int>(plr->pev->frags);
+				team_scores[tm] += plr->pev->frags;
 			}
 
 			if ( bResendInfo ) //Someone's info changed, let's send the team info again.

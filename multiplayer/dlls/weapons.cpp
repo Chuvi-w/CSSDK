@@ -70,7 +70,6 @@ MULTIDAMAGE gMultiDamage;
 #define TRACER_FREQ		4			// Tracers fire every fourth bullet
 
 
-
 //=========================================================
 // MaxAmmoCarry - pass in a name and this function will tell
 // you the maximum amount of that type of ammunition that a 

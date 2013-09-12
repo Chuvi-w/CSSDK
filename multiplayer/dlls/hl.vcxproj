@@ -369,6 +369,7 @@
     <ClInclude Include="talkmonster.h" />
     <ClInclude Include="teamplay_gamerules.h" />
     <ClInclude Include="trains.h" />
+    <ClInclude Include="unisignals.h" />
     <ClInclude Include="util.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="weapons.h" />

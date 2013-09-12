@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -131,7 +131,7 @@ void CDecal :: Spawn( void )
 	else
 	{
 		// if there IS a targetname, the decal sprays itself on when it is triggered.
-		SetThink ( &CBaseEntity::SUB_DoNothing );
+		SetThink ( &CDecal::SUB_DoNothing );
 		SetUse(&CDecal::TriggerDecal);
 	}
 }
@@ -157,7 +157,7 @@ void CDecal :: TriggerDecal ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE
 			WRITE_SHORT( (int)VARS(trace.pHit)->modelindex );
 	MESSAGE_END();
 
-	SetThink( &CBaseEntity::SUB_Remove );
+	SetThink( &CDecal::SUB_Remove );
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
@@ -604,7 +604,7 @@ void CWorld :: Precache( void )
 	// 63 testing
 	LIGHT_STYLE(63, "a");
 
-	for ( int i = 0; i < static_cast<int>(ARRAYSIZE(gDecals)); i++ )
+	for ( int i = 0; i < ARRAYSIZE(gDecals); i++ )
 		gDecals[i].index = DECAL_INDEX( gDecals[i].name );
 
 // init the WorldGraph.

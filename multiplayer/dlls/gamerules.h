@@ -1,7 +1,7 @@
-#include "voice_gamemgr.h"
+
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -19,6 +19,8 @@
 
 //#include "weapons.h"
 //#include "items.h"
+#include "voice_gamemgr.h"
+
 class CBasePlayerItem;
 class CBasePlayer;
 class CItem;
@@ -351,7 +353,7 @@ class CHalfLifeMultiplay : public CGameRules
         virtual int WeaponShouldRespawn( CBasePlayerItem *pWeapon );
         virtual float FlWeaponRespawnTime( CBasePlayerItem *pWeapon );
         virtual float FlWeaponTryRespawn( CBasePlayerItem *pWeapon );
-        virtual class Vector VecWeaponRespawnSpot( CBasePlayerItem *pWeapon );
+        virtual Vector VecWeaponRespawnSpot( CBasePlayerItem *pWeapon );
 
         // Item retrieval
         virtual BOOL CanHaveItem( CBasePlayer *pPlayer, CItem *pItem );
@@ -360,7 +362,7 @@ class CHalfLifeMultiplay : public CGameRules
         // Item spawn/respawn control
         virtual int ItemShouldRespawn( CItem *pItem );
         virtual float FlItemRespawnTime( CItem *pItem );
-        virtual class Vector VecItemRespawnSpot( CItem *pItem );
+        virtual Vector VecItemRespawnSpot( CItem *pItem );
 
         // Ammo retrieval
         virtual void PlayerGotAmmo( CBasePlayer *pPlayer, char *szName, int iCount );
@@ -368,7 +370,7 @@ class CHalfLifeMultiplay : public CGameRules
         // Ammo spawn/respawn control
         virtual int AmmoShouldRespawn( CBasePlayerAmmo *pAmmo );
         virtual float FlAmmoRespawnTime( CBasePlayerAmmo *pAmmo );
-        virtual class Vector VecAmmoRespawnSpot( CBasePlayerAmmo *pAmmo );
+        virtual Vector VecAmmoRespawnSpot( CBasePlayerAmmo *pAmmo );
 
         // Healthcharger respawn control
         virtual float FlHealthChargerRechargeTime( void );

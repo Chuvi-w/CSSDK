@@ -3915,10 +3915,6 @@ pt_end:
         if ( m_flAmmoStartCharge < -0.001 )
             m_flAmmoStartCharge = -0.001;
     }*/
-    
-
-#else
-    return;
 #endif
 
 	// Track button info so we can detect 'pressed' and 'released' buttons next frame
