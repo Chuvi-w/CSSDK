@@ -93,9 +93,10 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>call ..\filecopy.bat %(FullPath) $(ProjectDir)..\..\game\mod\dlls\%(Filename).dll  
-call ..\filecopy.bat %(RootDir)%(Directory)\%(Filename).pdb $(ProjectDir)..\..\game\moddlls\%(Filename).pdb</Command>
-      <Outputs>$(ProjectDir)..\..\game\mod\dlls\$(InputName).dll;$(ProjectDir)..\..\game\mod\dlls\$(InputName).pdb;%(Outputs)</Outputs>
+      <Command>
+      </Command>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -144,8 +145,10 @@ call ..\filecopy.bat %(RootDir)%(Directory)\%(Filename).pdb $(ProjectDir)..\..\g
       <AdditionalDependencies>user32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>call ..\filecopy.bat %(FullPath) $(ProjectDir)..\..\game\mod\dlls\%(Filename).dll</Command>
-      <Outputs>$(ProjectDir)..\..\game\mod\dlls\$(InputName).dll;%(Outputs)</Outputs>
+      <Command>
+      </Command>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -321,18 +324,15 @@ call ..\filecopy.bat %(RootDir)%(Directory)\%(Filename).pdb $(ProjectDir)..\..\g
     <ClCompile Include="wpn_shared\wpn_tmp.cpp" />
     <ClCompile Include="wpn_shared\wpn_ump45.cpp" />
     <ClCompile Include="wpn_shared\wpn_usp.cpp" />
-    <ClCompile Include="xen.cpp">
-      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\game_shared\GameEvent.h" />
     <ClInclude Include="..\game_shared\shared_util.h" />
     <ClInclude Include="..\public\MemPool.h" />
     <ClInclude Include="activity.h" />
     <ClInclude Include="activitymap.h" />
     <ClInclude Include="animation.h" />
     <ClInclude Include="basemonster.h" />
-    <ClInclude Include="bot.h" />
     <ClInclude Include="career_tasks.h" />
     <ClInclude Include="cbase.h" />
     <ClInclude Include="cdll_dll.h" />

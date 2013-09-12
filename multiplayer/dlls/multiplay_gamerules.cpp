@@ -28,7 +28,7 @@
 #include "items.h"
 #include "voice_gamemgr.h"
 #include "hltv.h"
-#include "bot.h"
+#include "GameEvent.h"
 #include "client.h"
 
 extern DLL_GLOBAL CHalfLifeMultiplay *g_pGameRules;

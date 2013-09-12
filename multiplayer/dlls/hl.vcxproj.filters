@@ -156,9 +156,6 @@
     <ClCompile Include="world.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="xen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mpstubb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -386,9 +383,6 @@
     <ClInclude Include="basemonster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="career_tasks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -399,6 +393,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\game_shared\shared_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\game_shared\GameEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

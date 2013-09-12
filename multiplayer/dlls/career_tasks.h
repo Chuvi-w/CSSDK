@@ -16,7 +16,7 @@
 #ifndef CAREER_TASKS_H
 #define CAREER_TASKS_H
 
-#include "bot.h"
+#include "GameEvent.h"
 #include <list>
 
 class CCareerTask 
