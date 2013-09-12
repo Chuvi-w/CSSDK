@@ -149,6 +149,8 @@ call ..\filecopy.bat %(RootDir)%(Directory)\%(Filename).pdb $(ProjectDir)..\..\g
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\game_shared\shared_util.cpp" />
+    <ClCompile Include="..\public\MemPool.cpp" />
     <ClCompile Include="airtank.cpp">
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
     </ClCompile>
@@ -233,6 +235,7 @@ call ..\filecopy.bat %(RootDir)%(Directory)\%(Filename).pdb $(ProjectDir)..\..\g
     <ClCompile Include="multiplay_gamerules.cpp">
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
     </ClCompile>
+    <ClCompile Include="observer.cpp" />
     <ClCompile Include="pathcorner.cpp">
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
     </ClCompile>
@@ -323,6 +326,8 @@ call ..\filecopy.bat %(RootDir)%(Directory)\%(Filename).pdb $(ProjectDir)..\..\g
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\game_shared\shared_util.h" />
+    <ClInclude Include="..\public\MemPool.h" />
     <ClInclude Include="activity.h" />
     <ClInclude Include="activitymap.h" />
     <ClInclude Include="animation.h" />

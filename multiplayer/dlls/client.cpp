@@ -397,12 +397,12 @@ void Host_Say( edict_t *pEntity, int teamonly )
 
 // turn on color set 2  (color on,  no sound)
 	// turn on color set 2  (color on,  no sound)
-	if ( player->IsObserver() && ( teamonly ) )
+	/*if ( player->IsObserver() && ( teamonly ) )
 		sprintf( text, "%c(SPEC) %s: ", 2, STRING( pEntity->v.netname ) );
 	else if ( teamonly )
 		sprintf( text, "%c(TEAM) %s: ", 2, STRING( pEntity->v.netname ) );
 	else
-		sprintf( text, "%c%s: ", 2, STRING( pEntity->v.netname ) );
+		sprintf( text, "%c%s: ", 2, STRING( pEntity->v.netname ) );*/
 
 	j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
 	if ( (int)strlen(p) > j )
@@ -435,13 +435,13 @@ void Host_Say( edict_t *pEntity, int teamonly )
 		if ( g_VoiceGameMgr.PlayerHasBlockedPlayer( client, player ) )
 			continue;
 
-		if ( !player->IsObserver() && teamonly && g_pGameRules->PlayerRelationship(client, CBaseEntity::Instance(pEntity)) != GR_TEAMMATE )
+		if ( /*!player->IsObserver() &&*/ teamonly && g_pGameRules->PlayerRelationship(client, CBaseEntity::Instance(pEntity)) != GR_TEAMMATE )
 			continue;
 
 		// Spectators can only talk to other specs
-		if ( player->IsObserver() && teamonly )
-			if ( !client->IsObserver() )
-			continue;
+		//if ( player->IsObserver() && teamonly )
+		//	if ( !client->IsObserver() )
+		//	continue;
 
 		MESSAGE_BEGIN( MSG_ONE, gmsgSayText, NULL, client->pev );
 			WRITE_BYTE( ENTINDEX(pEntity) );
@@ -580,8 +580,8 @@ void ClientCommand( edict_t *pEntity )
 	{
 		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
 
-		if ( pPlayer->IsObserver() )
-			pPlayer->Observer_SetMode( atoi( CMD_ARGV(1) ) );
+		//if ( pPlayer->IsObserver() )
+		//	pPlayer->Observer_SetMode( atoi( CMD_ARGV(1) ) );
 	}
 	else if ( FStrEq(pcmd, "closemenus" ) )
 	{

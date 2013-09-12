@@ -485,7 +485,7 @@ int CBasePlayer::AmmoInventory( int iAmmoIndex ) // Last check : 2013, June 6.
 
 void CBasePlayer::AutoBuy( void ) // Last check : 2013, June 6.
 {
-    bool boughtPrimary   = false;
+    /*bool boughtPrimary   = false;
     bool boughtSecondary = false;
 
     const char *weapon = NULL;
@@ -528,7 +528,7 @@ void CBasePlayer::AutoBuy( void ) // Last check : 2013, June 6.
     {
         ParseAutoBuyString( weapon, boughtPrimary, boughtSecondary );
     }
-
+	*/
     // TODO: Implement me.
     // if( TheTutor )
     // {
@@ -2734,8 +2734,8 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 
 void CBasePlayer::PlayerUse ( void )
 {
-	if ( IsObserver() )
-		return;
+	//if ( IsObserver() )
+	//	return;
 
     // Was use pressed or released?
     if ( ! ((pev->button | m_afButtonPressed | m_afButtonReleased) & IN_USE) )
@@ -3075,14 +3075,14 @@ void CBasePlayer::PreThink(void)
     CheckSuitUpdate();
 
 	// Observer Button Handling
-	if ( IsObserver() )
-	{
+	//if ( IsObserver() )
+	//{
 		Observer_HandleButtons();
 		Observer_CheckTarget();
 		Observer_CheckProperties();
 		pev->impulse = 0;
 		return;
-	}
+	//}
 
     if (pev->deadflag >= DEAD_DYING)
     {
