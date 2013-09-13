@@ -439,7 +439,7 @@ void CBasePlayer::AddPoints( int score, BOOL bAllowNegativeScore ) // Last check
 
             if( -score > pev->frags )
             {
-                score = static_cast< int >( -pev->frags );
+                score = -pev->frags;
             }
         }
     }
@@ -448,7 +448,7 @@ void CBasePlayer::AddPoints( int score, BOOL bAllowNegativeScore ) // Last check
 
     MESSAGE_BEGIN( MSG_ALL, gmsgScoreInfo );
         WRITE_BYTE( entindex() );
-        WRITE_SHORT( static_cast< int >( pev->frags ) );
+        WRITE_SHORT( pev->frags );
         WRITE_SHORT( m_iDeaths );
         WRITE_SHORT( 0 );
         WRITE_SHORT( m_iTeam );
@@ -689,11 +689,10 @@ void CBasePlayer::JoiningThink( void )
             {
                 pev->deadflag = DEAD_RESPAWNABLE;
 
-                // TODO: Implement me
-                // if( pev->classname )
-                //     RemoveEntityHashValue( STRING( pev->classname ) );
-                // 
-                // AddEntityHashValue( STRING( pev->classname ) );
+                if( pev->classname )
+                    RemoveEntityHashValue( pev, STRING( pev->classname ), CLASSNAME );
+                
+                AddEntityHashValue( pev, STRING( pev->classname ), CLASSNAME );
 
                 pev->deadflag   = DEAD_RESPAWNABLE;
                 pev->classname  = MAKE_STRING( "player" );

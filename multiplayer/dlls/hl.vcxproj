@@ -329,6 +329,8 @@
     <ClInclude Include="..\game_shared\GameEvent.h" />
     <ClInclude Include="..\game_shared\shared_util.h" />
     <ClInclude Include="..\public\MemPool.h" />
+    <ClInclude Include="..\public\UtlMemory.h" />
+    <ClInclude Include="..\public\UtlVector.h" />
     <ClInclude Include="activity.h" />
     <ClInclude Include="activitymap.h" />
     <ClInclude Include="animation.h" />

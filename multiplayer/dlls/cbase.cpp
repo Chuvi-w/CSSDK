@@ -20,6 +20,7 @@
 #include	"decals.h"
 #include	"gamerules.h"
 #include	"game.h"
+#include	"MemPool.h"
 
 void EntvarsKeyvalue( entvars_t *pev, KeyValueData *pkvd );
 
@@ -30,6 +31,213 @@ extern "C" char PM_FindTextureType( const char *name );
 extern Vector VecBModelOrigin( entvars_t* pevBModel );
 extern DLL_GLOBAL Vector		g_vecAttackDir;
 extern DLL_GLOBAL int			g_iSkillLevel;
+
+CUtlVector<hash_item_t> stringsHashTable;
+CMemoryPool hashItemMemPool(sizeof(hash_item_t), 64);
+
+
+int CaseInsensitiveHash( const char *string, int iBounds ) // Last check : 2013, August 13.
+{
+	int hash = 0;
+
+	if( !*string )
+		return 0;
+
+	while( *string )
+	{
+		if( *string < 'A' || *string > 'Z' )
+			hash = *string + 2 * hash;
+		else
+			hash = *string + 2 * hash + ' ';
+
+		string++;
+	}
+
+	return hash % iBounds;
+}
+
+void EmptyEntityHashTable( void ) // Last check : 2013, August 13.
+{
+	if( !stringsHashTable.Count() )
+		return;
+
+	int i;
+	hash_item_t *item;
+	hash_item_t *temp;
+	hash_item_t *free;
+
+	for( i = 0; i < stringsHashTable.Count(); ++i )
+	{
+		item = &stringsHashTable[i];
+		temp = item->next;
+
+		item->pev		= NULL;
+		item->pevIndex	= 0;
+		item->lastHash	= NULL;
+		item->next		= NULL;
+
+		while( temp )
+		{
+			free = temp;
+			temp = temp->next;
+
+			hashItemMemPool.Free( free );
+		}
+	}
+}
+
+void AddEntityHashValue( struct entvars_s *pev, const char *value, hash_types_e fieldType ) // Last check : 2013, August 13.
+{
+	int count;
+	hash_item_t *item;
+	hash_item_t *next;
+	hash_item_t *temp;
+	hash_item_t *newp;
+	int hash = 0;
+	int pevIndex;
+	entvars_t *pevtemp;
+
+	if( fieldType == CLASSNAME )
+	{
+		if( !FStringNull( pev->classname ) )
+		{
+			count	 = stringsHashTable.Count();
+			hash	 = CaseInsensitiveHash( value, count );
+			pevIndex = ENTINDEX( ENT( pev ) );
+			item	 = &stringsHashTable[ hash ];
+
+			while( item->pev )
+			{
+				if( !strcmp( STRING( item->pev->classname ), STRING( pev->classname ) ) )
+					break;
+
+				hash = ( hash + 1 ) % count;
+				item = &stringsHashTable[ hash ];
+			}
+
+			if( item->pev )
+			{
+				next = item->next;
+
+				while( next )
+				{
+					if( item->pev == pev )
+						break;
+
+					if( item->pevIndex >= pevIndex )
+						break;
+
+					item = next;
+					next = next->next;
+				}
+
+				if( pevIndex < item->pevIndex )
+				{
+					pevtemp			= item->pev;
+					item->pev		= pev;
+					item->lastHash	= NULL;
+					item->pevIndex	= pevIndex;
+
+					pevIndex = ENTINDEX( ENT( pevtemp ) );
+				}
+				else
+					pevtemp = pev;
+
+				if( item->pev != pevtemp )
+				{
+					temp = item->next;
+					newp = ( hash_item_t* )hashItemMemPool.Alloc( sizeof( hash_item_t ) );
+
+					item->next		= newp;
+					newp->pev		= pevtemp;
+					newp->lastHash	= NULL;
+					newp->pevIndex	= pevIndex;
+
+					if( temp )
+						newp->next = temp;
+					else
+						newp->next = NULL;
+				}
+			}
+			else
+			{
+				item->pev		= pev;
+				item->lastHash	= NULL;
+				item->pevIndex	= ENTINDEX( ENT( pev ) );
+			}
+		}
+	}
+}
+
+void RemoveEntityHashValue( struct entvars_s *pev, const char *value, hash_types_e fieldType ) // Last check : 2013, August 13.
+{
+	int hash = 0;
+	hash_item_t *item;
+	hash_item_t *last;
+	int pevIndex;
+	int count;
+
+	count    = stringsHashTable.Count();
+	hash	 = CaseInsensitiveHash( value, count );
+	pevIndex = ENTINDEX( ENT( pev ) );
+
+	if( fieldType == CLASSNAME )
+	{
+		hash = hash % count;
+		item = &stringsHashTable[ hash ];
+
+		while( item->pev )
+		{
+			if( !strcmp( STRING( item->pev->classname ), STRING( pev->classname ) ) )
+				break;
+
+			hash = ( hash + 1 ) % count;
+			item = &stringsHashTable[hash];
+		}
+
+		if( item->pev )
+		{
+			last = item;
+
+			while( item->next )
+			{
+				if( item->pev == pev )
+					break;
+
+				last = item;
+				item = item->next;
+			}
+
+			if( item->pev == pev )
+			{
+				if( last == item )
+				{
+					if( item->next )
+					{
+						item->pev		= item->next->pev;
+						item->pevIndex	= item->next->pevIndex;
+						item->lastHash	= NULL;
+						item->next		= item->next->next;
+					}
+					else
+					{
+						item->pev		= NULL;
+						item->lastHash	= NULL;
+						item->pevIndex	= 0;
+					}
+				}
+				else
+				{
+					if( stringsHashTable[ hash ].lastHash == item )
+						stringsHashTable[ hash ].lastHash = NULL;
+
+					last->next = item->next;
+					hashItemMemPool.Free( item );
+				}
+			}
+		}
+	}
+}
 
 static DLL_FUNCTIONS gFunctionTable = 
 {

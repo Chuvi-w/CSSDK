@@ -401,5 +401,11 @@
     <ClInclude Include="unisignals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\UtlMemory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UtlVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -695,14 +695,12 @@ CGrenade *CGrenade::ShootSatchelCharge( entvars_t *pevOwner, Vector vecStart, Ve
 	pGrenade->pev->movetype	= MOVETYPE_TOSS;
 	pGrenade->pev->solid	= SOLID_BBOX;
 
-	// TODO: Implements me.
-	// if( pev->classname )
-	//		RemoveEntityHashValue( STRING( pev->classname ) );
+	if( pGrenade->pev->classname )
+		RemoveEntityHashValue( pGrenade->pev, STRING( pGrenade->pev->classname ), CLASSNAME );
 
 	pGrenade->pev->classname = MAKE_STRING( "grenade" );
 
-	// TODO: Implements me.
-	// AddEntityHashValue( STRING( pev->classname ) );
+	AddEntityHashValue( pGrenade->pev, STRING( pGrenade->pev->classname ), CLASSNAME );
 
 	SET_MODEL( ENT( pGrenade->pev ), "models/w_c4.mdl" );
 

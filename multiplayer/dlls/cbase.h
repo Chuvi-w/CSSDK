@@ -65,6 +65,30 @@ CBaseGroup
 extern "C" CBASE_DLLEXPORT int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion );
 extern "C" CBASE_DLLEXPORT int GetEntityAPI2( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion );
 
+typedef enum
+{
+	CLASSNAME,
+
+} hash_types_e;
+
+typedef struct hash_item_s
+{
+	entvars_t			*pev;
+	struct hash_item_s	*next;
+	struct hash_item_s	*lastHash;
+	int					pevIndex;
+
+} hash_item_t;
+
+extern CUtlVector<hash_item_t> stringsHashTable;
+
+int CaseInsensitiveHash( const char *string, int iBounds );
+void EmptyEntityHashTable( void );
+void AddEntityHashValue( struct entvars_s *pev, const char *value, hash_types_e fieldType );
+void RemoveEntityHashValue( struct entvars_s *pev, const char *value, hash_types_e fieldType );
+//void printEntities( void );
+//void loopPerformance( void );
+
 extern int DispatchSpawn( edict_t *pent );
 extern void DispatchKeyValue( edict_t *pentKeyvalue, KeyValueData *pkvd );
 extern void DispatchTouch( edict_t *pentTouched, edict_t *pentOther );
