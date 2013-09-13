@@ -57,6 +57,8 @@ extern cvar_t allow_spectators;
 
 extern int g_teamplay;
 
+BOOL g_bClientPrintEnable = TRUE;
+
 void LinkUserMessages( void );
 
 /*
@@ -214,6 +216,14 @@ void ClientPutInServer( edict_t *pEntity )
 #include "voice_gamemgr.h"
 extern CVoiceGameMgr g_VoiceGameMgr;
 
+extern int gmsgBlinkAcct;
+
+void BlinkAccount( CBasePlayer *pPlayer, int numBlinks ) // Last check: 2013, August 13.
+{
+	MESSAGE_BEGIN( MSG_ONE, gmsgBlinkAcct, NULL, pPlayer->pev );
+		WRITE_BYTE( numBlinks );
+	MESSAGE_END();
+}
 
 
 #if defined( _MSC_VER ) || defined( WIN32 )
@@ -1925,6 +1935,125 @@ int AllowLagCompensation( void )
 }
 
 
+bool BuyGunAmmo( CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney ) // Last check: 2013, August 13.
+{
+	int cost;
+	char *classname;
+
+	if( !player->CanPlayerBuy( true ) )
+	{
+		return false;
+	}
+
+	int nAmmo = weapon->PrimaryAmmoIndex();
+
+	if( nAmmo == -1 || player->m_rgAmmo[ nAmmo ] >= weapon->iMaxAmmo1() )
+	{
+		return false;
+	}
+
+	switch( weapon->m_iId )
+	{
+		case WEAPON_AWP:
+		{
+			cost = AMMO_338MAG_PRICE;
+			classname = "ammo_338mag";
+			break;
+		}
+		case WEAPON_M249:
+		{
+			cost = AMMO_556NATO_PRICE;
+			classname = "ammo_556natobox";
+			break;
+		}
+		case WEAPON_AUG:
+		case WEAPON_SG550:
+		case WEAPON_GALIL:
+		case WEAPON_FAMAS:
+		case WEAPON_M4A1:
+		case WEAPON_SG552:
+		{
+			cost = AMMO_556NATO_PRICE;
+			classname = "ammo_556nato";
+			break;
+		}
+		case WEAPON_SCOUT:
+		case WEAPON_G3SG1:
+		case WEAPON_AK47:
+		{
+			cost = AMMO_762NATO_PRICE;
+			classname = "ammo_762nato";
+			break;
+		}
+		case WEAPON_XM1014:
+		case WEAPON_M3:
+		{
+			cost = AMMO_BUCKSHOT_PRICE;
+			classname = "ammo_buckshot";
+			break;
+		}
+		case WEAPON_MAC10:
+		case WEAPON_UMP45:
+		case WEAPON_USP:
+		{
+			cost = AMMO_45ACP_PRICE;
+			classname = "ammo_45acp";
+			break;
+		}
+		case WEAPON_FIVESEVEN:
+		case WEAPON_P90:
+		{
+			classname = "ammo_57mm";
+			cost = AMMO_57MM_PRICE;
+			break;
+		}
+		case WEAPON_ELITE:
+		case WEAPON_GLOCK18:
+		case WEAPON_MP5N:
+		case WEAPON_TMP:
+		{
+			cost = AMMO_9MM_PRICE;
+			classname = "ammo_9mm";
+			break;
+		}
+		case WEAPON_DEAGLE:
+		{
+			cost = AMMO_50AE_PRICE;
+			classname = "ammo_50ae";
+			break;
+		}
+		case WEAPON_P228:
+		{
+			classname = "ammo_357sig";
+			cost = AMMO_357SIG_PRICE;
+			break;
+		}
+		default: 
+		{
+			ALERT( at_console, "Tried to buy ammo for an unrecognized gun\n" ); 
+			return false;
+		}
+	}
+
+	if( player->m_iAccount >= cost )
+	{
+		player->GiveNamedItem( classname );
+		player->AddAccount( -cost, true );
+
+		return true;
+	}
+
+	if( bBlinkMoney )
+	{
+		if( g_bClientPrintEnable )
+		{
+			ClientPrint( player->pev, HUD_PRINTCENTER, "#Not_Enough_Money" );
+			BlinkAccount( player, 2 );
+		}
+	}
+
+	return false;
+}
 bool BuyAmmo( CBasePlayer *player, int nSlot, bool bBlinkMoney ) // Last check: 2013, August 13.
 {
 	if( !player->CanPlayerBuy( true ) || nSlot > PISTOL_SLOT )
