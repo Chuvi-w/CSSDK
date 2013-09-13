@@ -546,6 +546,59 @@ void CBasePlayer::Blind( float duration, float holdTime, float fadeTime, int alp
     m_blindAlpha = alpha;
 };
 
+bool CBasePlayer::CanPlayerBuy( bool display ) // Last check: 2013, August 13.
+{
+	//if( !g_pGameRules->IsMultiplayer() )
+	//	return CHalfLifeTraining::PlayerCanBuy(this);
+
+	if( pev->deadflag != DEAD_NO || ~m_signals.GetState() & SIGNAL_BUY )
+	{
+		return false;
+	}
+
+	int buyTime = ( int )CVAR_GET_FLOAT( "mp_buytime" ) * 60;
+
+	if( buyTime < 15 )
+	{
+		buyTime = 15;
+		CVAR_SET_FLOAT( "mp_buytime", 1 / ( 60 / 15 ) );
+	}
+
+	if( gpGlobals->time - g_pGameRules->m_fRoundCount > buyTime )
+	{
+		if( display )
+			ClientPrint( pev, HUD_PRINTCENTER, "#Cant_buy", UTIL_dtos1( buyTime ) );
+
+		return false;
+	}
+
+	if( m_bIsVIP )
+	{
+		if( display )
+			ClientPrint( pev, HUD_PRINTCENTER, "#VIP_cant_buy" );
+
+		return false;
+	}
+
+	if( g_pGameRules->m_bCTCantBuy && m_iTeam == CT )
+	{
+		if (display == true)
+			ClientPrint(pev, HUD_PRINTCENTER, "#CT_cant_buy" );
+
+		return false;
+	}
+
+	if( g_pGameRules->m_bTCantBuy && m_iTeam == TERRORIST )
+	{
+		if( display )
+			ClientPrint( pev, HUD_PRINTCENTER, "#Terrorist_cant_buy" );
+
+		return false;
+	}
+
+	return true;
+}
+
 // CS
 void CBasePlayer::CheckPowerups( entvars_s *pev )
 {
