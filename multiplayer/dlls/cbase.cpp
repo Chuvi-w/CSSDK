@@ -36,7 +36,7 @@ CUtlVector<hash_item_t> stringsHashTable;
 CMemoryPool hashItemMemPool(sizeof(hash_item_t), 64);
 
 
-int CaseInsensitiveHash( const char *string, int iBounds ) // Last check : 2013, August 13.
+int CaseInsensitiveHash( const char *string, int iBounds ) // Last check : 2013, September 13.
 {
 	int hash = 0;
 
@@ -56,7 +56,7 @@ int CaseInsensitiveHash( const char *string, int iBounds ) // Last check : 2013,
 	return hash % iBounds;
 }
 
-void EmptyEntityHashTable( void ) // Last check : 2013, August 13.
+void EmptyEntityHashTable( void ) // Last check : 2013, September 13.
 {
 	if( !stringsHashTable.Count() )
 		return;
@@ -86,7 +86,7 @@ void EmptyEntityHashTable( void ) // Last check : 2013, August 13.
 	}
 }
 
-void AddEntityHashValue( struct entvars_s *pev, const char *value, hash_types_e fieldType ) // Last check : 2013, August 13.
+void AddEntityHashValue( struct entvars_s *pev, const char *value, hash_types_e fieldType ) // Last check : 2013, September 13.
 {
 	int count;
 	hash_item_t *item;
@@ -169,7 +169,7 @@ void AddEntityHashValue( struct entvars_s *pev, const char *value, hash_types_e 
 	}
 }
 
-void RemoveEntityHashValue( struct entvars_s *pev, const char *value, hash_types_e fieldType ) // Last check : 2013, August 13.
+void RemoveEntityHashValue( struct entvars_s *pev, const char *value, hash_types_e fieldType ) // Last check : 2013, September 13.
 {
 	int hash = 0;
 	hash_item_t *item;
@@ -307,7 +307,7 @@ static void SetObjectCollisionBox( entvars_t *pev );
 
 extern "C" 
 {
-	int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion ) // Last check : 2013, August 13.
+	int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion ) // Last check : 2013, September 13.
 	{
 		if( !pFunctionTable || interfaceVersion != INTERFACE_VERSION )
 		{

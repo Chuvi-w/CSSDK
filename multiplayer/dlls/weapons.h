@@ -282,7 +282,7 @@ enum ClipSizeType
     P90_MAX_CLIP        = 50,
 };
 
-enum AmmoCostType	// Last check: 2013, August 13.
+enum AmmoCostType	// Last check: 2013, September 13.
 {
 	AMMO_338MAG_PRICE	= 125,
 	AMMO_357SIG_PRICE	= 50,
@@ -295,7 +295,7 @@ enum AmmoCostType	// Last check: 2013, August 13.
 	AMMO_BUCKSHOT_PRICE = 65,
 };
 
-enum WeaponCostType	// Last check: 2013, August 13.
+enum WeaponCostType	// Last check: 2013, September 13.
 {
 	AK47_PRICE		= 2500,
 	AWP_PRICE		= 4750,
@@ -324,7 +324,7 @@ enum WeaponCostType	// Last check: 2013, August 13.
 	SHIELDGUN_PRICE = 2200
 };
 
-enum ItemCostType	// Last check: 2013, August 13.
+enum ItemCostType	// Last check: 2013, September 13.
 {
 	ASSAULTSUIT_PRICE	= 1000,
 	FLASHBANG_PRICE		= 200,

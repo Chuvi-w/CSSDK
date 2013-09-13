@@ -546,7 +546,7 @@ void CBasePlayer::Blind( float duration, float holdTime, float fadeTime, int alp
     m_blindAlpha = alpha;
 };
 
-bool CBasePlayer::CanPlayerBuy( bool display ) // Last check: 2013, August 13.
+bool CBasePlayer::CanPlayerBuy( bool display ) // Last check: 2013, September 13.
 {
 	//if( !g_pGameRules->IsMultiplayer() )
 	//	return CHalfLifeTraining::PlayerCanBuy(this);

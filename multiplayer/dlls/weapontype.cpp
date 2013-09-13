@@ -20,7 +20,7 @@
 #include "monsters.h"
 #include "weapons.h"
 
-struct WeaponAliasInfo // Last check: 2013, August 13
+struct WeaponAliasInfo // Last check: 2013, September 13
 {
 	const char			*alias;		/*     0     4 */
 	WeaponIdType		id;			/*     4     4 */
@@ -29,7 +29,7 @@ struct WeaponAliasInfo // Last check: 2013, August 13
 	/* last cacheline: 8 bytes */
 };
 
-struct WeaponBuyAliasInfo // Last check: 2013, August 13
+struct WeaponBuyAliasInfo // Last check: 2013, September 13
 {
 	const char			*alias;		/*     0     4 */
 	WeaponIdType		id;			/*     4     4 */
@@ -39,7 +39,7 @@ struct WeaponBuyAliasInfo // Last check: 2013, August 13
 	/* last cacheline: 12 bytes */
 };
 
-struct WeaponClassAliasInfo // Last check: 2013, August 13
+struct WeaponClassAliasInfo // Last check: 2013, September 13
 {
 	const char			*alias;		/*     0     4 */
 	WeaponClassType		id;			/*     4     4 */
@@ -189,7 +189,7 @@ WeaponClassAliasInfo weaponClassAliasInfo[] =
 	{ NULL			, WEAPONCLASS_NONE			}
 };
 
-WeaponIdType AliasToWeaponID( const char *alias ) // Last check: 2013, August 13.
+WeaponIdType AliasToWeaponID( const char *alias ) // Last check: 2013, September 13.
 {
 	if( alias )
 	{
@@ -205,7 +205,7 @@ WeaponIdType AliasToWeaponID( const char *alias ) // Last check: 2013, August 13
 	return WEAPON_NONE;
 }
 
-const char *BuyAliasToWeaponID( const char *alias, WeaponIdType &id ) // Last check: 2013, August 13.
+const char *BuyAliasToWeaponID( const char *alias, WeaponIdType &id ) // Last check: 2013, September 13.
 {
 	if( alias )
 	{
@@ -225,7 +225,7 @@ const char *BuyAliasToWeaponID( const char *alias, WeaponIdType &id ) // Last ch
 	return NULL;
 }
 
-const char *WeaponIDToAlias( int id ) // Last check: 2013, August 13.
+const char *WeaponIDToAlias( int id ) // Last check: 2013, September 13.
 {
 	for( int i = WEAPON_NONE; weaponBuyAliasInfo[i].alias != NULL; ++i )
 	{
@@ -238,7 +238,7 @@ const char *WeaponIDToAlias( int id ) // Last check: 2013, August 13.
 	return NULL;
 }
 
-WeaponClassType AliasToWeaponClass( const char *alias ) // Last check: 2013, August 13.
+WeaponClassType AliasToWeaponClass( const char *alias ) // Last check: 2013, September 13.
 {
 	if( alias )
 	{
@@ -254,7 +254,7 @@ WeaponClassType AliasToWeaponClass( const char *alias ) // Last check: 2013, Aug
 	return WEAPONCLASS_NONE;
 }
 
-WeaponClassType WeaponIDToWeaponClass( int id ) // Last check: 2013, August 13.
+WeaponClassType WeaponIDToWeaponClass( int id ) // Last check: 2013, September 13.
 {
 	for( int i = WEAPON_NONE; weaponClassAliasInfo[i].alias != NULL; ++i )
 	{
@@ -267,7 +267,7 @@ WeaponClassType WeaponIDToWeaponClass( int id ) // Last check: 2013, August 13.
 	return WEAPONCLASS_NONE;
 }
 
-bool IsPrimaryWeapon( int id ) // Last check: 2013, August 13.
+bool IsPrimaryWeapon( int id ) // Last check: 2013, September 13.
 {
 	switch( id )
 	{
@@ -299,7 +299,7 @@ bool IsPrimaryWeapon( int id ) // Last check: 2013, August 13.
 	return false;
 }
 
-bool IsSecondaryWeapon( int id ) // Last check: 2013, August 13.
+bool IsSecondaryWeapon( int id ) // Last check: 2013, September 13.
 {
 	switch( id )
 	{
@@ -317,7 +317,7 @@ bool IsSecondaryWeapon( int id ) // Last check: 2013, August 13.
 	return false;
 }
 
-bool CanBuyWeaponByMaptype( int playerTeam, WeaponIdType weaponID, bool useAssasinationRestrictions ) // Last check: 2013, August 13.
+bool CanBuyWeaponByMaptype( int playerTeam, WeaponIdType weaponID, bool useAssasinationRestrictions ) // Last check: 2013, September 13.
 {
 	if( useAssasinationRestrictions)
 	{

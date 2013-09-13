@@ -15,7 +15,7 @@
 #ifndef WEAPONTYPE_H
 #define WEAPONTYPE_H
 
-typedef enum // Last check: 2013, August 13
+typedef enum // Last check: 2013, September 13
 {
 	WEAPON_NONE = 0,
 	WEAPON_P228,
@@ -52,7 +52,7 @@ typedef enum // Last check: 2013, August 13
 
 } WeaponIdType;
 
-typedef enum  // Last check: 2013, August 13
+typedef enum  // Last check: 2013, September 13
 {
 	WEAPONCLASS_NONE,
 	WEAPONCLASS_KNIFE,

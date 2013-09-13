@@ -218,7 +218,7 @@ extern CVoiceGameMgr g_VoiceGameMgr;
 
 extern int gmsgBlinkAcct;
 
-void BlinkAccount( CBasePlayer *pPlayer, int numBlinks ) // Last check: 2013, August 13.
+void BlinkAccount( CBasePlayer *pPlayer, int numBlinks ) // Last check: 2013, September 13.
 {
 	MESSAGE_BEGIN( MSG_ONE, gmsgBlinkAcct, NULL, pPlayer->pev );
 		WRITE_BYTE( numBlinks );
@@ -633,7 +633,7 @@ userinfo - gives dll a chance to modify it before
 it gets sent into the rest of the engine.
 ========================
 */
-void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer ) // Last check: 2013, August 13
+void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer ) // Last check: 2013, September 13
 {
 	if( !pEntity->pvPrivateData )
 	{
@@ -1934,7 +1934,7 @@ int AllowLagCompensation( void )
 }
 
 
-bool BuyGunAmmo( CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney ) // Last check: 2013, August 13.
+bool BuyGunAmmo( CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney ) // Last check: 2013, September 13.
 {
 	int cost;
 	char *classname;
@@ -2053,7 +2053,7 @@ bool BuyGunAmmo( CBasePlayer *player, CBasePlayerItem *weapon, bool bBlinkMoney 
 
 	return false;
 }
-bool BuyAmmo( CBasePlayer *player, int nSlot, bool bBlinkMoney ) // Last check: 2013, August 13.
+bool BuyAmmo( CBasePlayer *player, int nSlot, bool bBlinkMoney ) // Last check: 2013, September 13.
 {
 	if( !player->CanPlayerBuy( true ) || nSlot > PISTOL_SLOT )
 	{
