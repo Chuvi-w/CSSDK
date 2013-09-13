@@ -1925,6 +1925,39 @@ int AllowLagCompensation( void )
 }
 
 
+bool BuyAmmo( CBasePlayer *player, int nSlot, bool bBlinkMoney ) // Last check: 2013, August 13.
+{
+	if( !player->CanPlayerBuy( true ) || nSlot > PISTOL_SLOT )
+	{
+		return false;
+	}
+
+	CBasePlayerItem *pItem = player->m_rgpPlayerItems[ nSlot ];
+
+	if( player->HasShield() && player->m_rgpPlayerItems[ PISTOL_SLOT ] )
+	{
+		pItem = player->m_rgpPlayerItems[ PISTOL_SLOT ];
+	}
+
+	if( !pItem )
+	{
+		return false;
+	}
+
+	while( BuyGunAmmo( player, pItem, bBlinkMoney ) )
+	{
+		pItem = pItem->m_pNext;
+
+		if( !pItem )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
 // CS
 int CountTeamPlayers( int iTeam )
 {
