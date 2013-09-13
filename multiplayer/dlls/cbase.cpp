@@ -305,42 +305,41 @@ static DLL_FUNCTIONS gFunctionTable =
 
 static void SetObjectCollisionBox( entvars_t *pev );
 
-extern "C" {
-
-int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion ) // Last check : 2013, August 13.
+extern "C" 
 {
-	if( !pFunctionTable || interfaceVersion != INTERFACE_VERSION )
+	int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion ) // Last check : 2013, August 13.
 	{
-		return FALSE;
-	}
+		if( !pFunctionTable || interfaceVersion != INTERFACE_VERSION )
+		{
+			return FALSE;
+		}
 	
-	memcpy( pFunctionTable, &gFunctionTable, sizeof( DLL_FUNCTIONS ) );
+		memcpy( pFunctionTable, &gFunctionTable, sizeof( DLL_FUNCTIONS ) );
 
-	stringsHashTable.SetSize( 2048 );
+		stringsHashTable.SetSize( 2048 );
 
-	for (int i = 0; i < stringsHashTable.Count(); i++)
-	{
-		stringsHashTable[i].next = NULL;
+		for (int i = 0; i < stringsHashTable.Count(); i++)
+		{
+			stringsHashTable[i].next = NULL;
+		}
+
+		EmptyEntityHashTable();
+
+		return TRUE;
 	}
 
-	EmptyEntityHashTable();
-
-	return TRUE;
-}
-
-int GetEntityAPI2( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion )
-{
-	if ( !pFunctionTable || *interfaceVersion != INTERFACE_VERSION )
+	int GetEntityAPI2( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion )
 	{
-		// Tell engine what version we had, so it can figure out who is out of date.
-		*interfaceVersion = INTERFACE_VERSION;
-		return FALSE;
-	}
+		if( !pFunctionTable || *interfaceVersion != INTERFACE_VERSION )
+		{
+			// Tell engine what version we had, so it can figure out who is out of date.
+			*interfaceVersion = INTERFACE_VERSION;
+			return FALSE;
+		}
 	
-	memcpy( pFunctionTable, &gFunctionTable, sizeof( DLL_FUNCTIONS ) );
-	return TRUE;
-}
-
+		memcpy( pFunctionTable, &gFunctionTable, sizeof( DLL_FUNCTIONS ) );
+		return TRUE;
+	}
 }
 
 
