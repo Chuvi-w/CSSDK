@@ -633,63 +633,62 @@ userinfo - gives dll a chance to modify it before
 it gets sent into the rest of the engine.
 ========================
 */
-void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
+void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer ) // Last check: 2013, August 13
 {
-	// Is the client spawned yet?
-	if ( !pEntity->pvPrivateData )
-		return;
-
-	// msg everyone if someone changes their name,  and it isn't the first time (changing no name to current name)
-	if ( pEntity->v.netname && STRING(pEntity->v.netname)[0] != 0 && !FStrEq( STRING(pEntity->v.netname), g_engfuncs.pfnInfoKeyValue( infobuffer, "name" )) )
+	if( !pEntity->pvPrivateData )
 	{
-		char sName[256];
-		char *pName = g_engfuncs.pfnInfoKeyValue( infobuffer, "name" );
-		strncpy( sName, pName, sizeof(sName) - 1 );
-		sName[ sizeof(sName) - 1 ] = '\0';
+		return;
+	}
 
-		// First parse the name and remove any %'s
-		for ( char *pApersand = sName; pApersand != NULL && *pApersand != 0; pApersand++ )
+	char *szBufferName = g_engfuncs.pfnInfoKeyValue( infobuffer, "name" );
+	int iClientIndex = ENTINDEX( pEntity );
+
+	if( pEntity->v.netname && STRING( pEntity->v.netname )[0] != '\0' && !FStrEq( STRING( pEntity->v.netname ), szBufferName ) )
+	{
+		char sName[32];
+		_snprintf( sName, sizeof( sName ), "%s", szBufferName );
+
+		for( char *pApersand = sName; pApersand != NULL && *pApersand != '\0'; ++pApersand )
 		{
-			// Replace it with a space
-			if ( *pApersand == '%' )
+			if( *pApersand == '%' || *pApersand == '&' )
 				*pApersand = ' ';
 		}
 
-		// Set the name
-		g_engfuncs.pfnSetClientKeyValue( ENTINDEX(pEntity), infobuffer, "name", sName );
+		if( sName[0] == '#' )
+			sName[0] = '*';
 
-		if (gpGlobals->maxClients > 1)
-		{
-		char text[256];
-		sprintf( text, "* %s changed name to %s\n", STRING(pEntity->v.netname), g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
-		MESSAGE_BEGIN( MSG_ALL, gmsgSayText, NULL );
-			WRITE_BYTE( ENTINDEX(pEntity) );
-			WRITE_STRING( text );
-		MESSAGE_END();
-		}
+		CBasePlayer *pPlayer = ( CBasePlayer* )CBaseEntity::Instance( pEntity );
 
-		// team match?
-		if ( g_teamplay )
+		if( pPlayer->pev->deadflag != DEAD_NO )
 		{
-			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" changed name to \"%s\"\n", 
-				STRING( pEntity->v.netname ), 
-				GETPLAYERUSERID( pEntity ), 
-				GETPLAYERAUTHID( pEntity ),
-				g_engfuncs.pfnInfoKeyValue( infobuffer, "model" ), 
-				g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
+			pPlayer->m_bHasChangedName = true;
+			_snprintf( pPlayer->m_szNewName, sizeof( pPlayer->m_szNewName ), "%s", sName );
+
+			ClientPrint( pPlayer->pev, HUD_PRINTTALK, "#Name_change_at_respawn" );
+
+			g_engfuncs.pfnSetClientKeyValue( iClientIndex, infobuffer, "name", ( char* )STRING( pEntity->v.netname ) );
 		}
 		else
 		{
-			UTIL_LogPrintf( "\"%s<%i><%s><%i>\" changed name to \"%s\"\n", 
+			g_engfuncs.pfnSetClientKeyValue( iClientIndex, infobuffer, "name", sName );
+
+			MESSAGE_BEGIN( MSG_BROADCAST, gmsgSayText );
+				WRITE_BYTE( iClientIndex );
+				WRITE_STRING( "#Cstrike_Name_Change" );
+				WRITE_STRING( STRING( pEntity->v.netname ) );
+				WRITE_STRING( sName );
+			MESSAGE_END();
+
+			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" changed name to \"%s\"\n",	
 				STRING( pEntity->v.netname ), 
 				GETPLAYERUSERID( pEntity ), 
-				GETPLAYERAUTHID( pEntity ),
-				GETPLAYERUSERID( pEntity ), 
-				g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
+				GETPLAYERAUTHID( pEntity ), 
+				GetTeam( pPlayer->m_iTeam ), 
+				sName );
 		}
 	}
 
-	g_pGameRules->ClientUserInfoChanged( GetClassPtr((CBasePlayer *)&pEntity->v), infobuffer );
+	g_pGameRules->ClientUserInfoChanged( GetClassPtr( ( CBasePlayer* )&pEntity->v ), infobuffer );
 }
 
 static int g_serveractive = 0;
