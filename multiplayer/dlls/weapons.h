@@ -16,6 +16,7 @@
 #define WEAPONS_H
 
 #include "effects.h"
+#include "weapontype.h"
 
 class CBasePlayer;
 extern int gmsgWeapPickup;
@@ -133,43 +134,6 @@ public:
 #define ITEM_ANTIDOTE		2
 #define ITEM_SECURITY		3
 #define ITEM_BATTERY		4
-
-typedef enum 
-{
-    WEAPON_NONE = 0,
-    WEAPON_P228,
-    WEAPON_GLOCK,
-    WEAPON_SCOUT,
-    WEAPON_HEGRENADE,
-    WEAPON_XM1014,
-    WEAPON_C4,
-    WEAPON_MAC10,
-    WEAPON_AUG,
-    WEAPON_SMOKEGRENADE,
-    WEAPON_ELITE,
-    WEAPON_FIVESEVEN,
-    WEAPON_UMP45,
-    WEAPON_SG550,
-    WEAPON_GALIL,
-    WEAPON_FAMAS,
-    WEAPON_USP,
-    WEAPON_GLOCK18,
-    WEAPON_AWP,
-    WEAPON_MP5N,
-    WEAPON_M249,
-    WEAPON_M3,
-    WEAPON_M4A1,
-    WEAPON_TMP,
-    WEAPON_G3SG1,
-    WEAPON_FLASHBANG,
-    WEAPON_DEAGLE,
-    WEAPON_SG552,
-    WEAPON_AK47,
-    WEAPON_KNIFE,
-    WEAPON_P90,
-    WEAPON_SHIELDGUN = 99,
-
-} WeaponIdType;
 
 #define WEAPON_ALLWEAPONS   ( ~( 1 << WEAPON_SUIT ) )
 #define WEAPON_SUIT         31

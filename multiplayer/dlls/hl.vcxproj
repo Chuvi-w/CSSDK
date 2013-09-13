@@ -293,6 +293,7 @@
     <ClCompile Include="weapons.cpp">
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
     </ClCompile>
+    <ClCompile Include="weapontype.cpp" />
     <ClCompile Include="world.cpp">
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
     </ClCompile>
@@ -375,6 +376,7 @@
     <ClInclude Include="util.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="weapons.h" />
+    <ClInclude Include="weapontype.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

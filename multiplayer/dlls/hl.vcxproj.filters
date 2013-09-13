@@ -258,6 +258,9 @@
     <ClCompile Include="..\game_shared\shared_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="weapontype.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="activity.h">
@@ -405,6 +408,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UtlVector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="weapontype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
