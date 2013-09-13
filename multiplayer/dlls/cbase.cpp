@@ -307,14 +307,24 @@ static void SetObjectCollisionBox( entvars_t *pev );
 
 extern "C" {
 
-int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion )
+int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion ) // Last check : 2013, August 13.
 {
-	if ( !pFunctionTable || interfaceVersion != INTERFACE_VERSION )
+	if( !pFunctionTable || interfaceVersion != INTERFACE_VERSION )
 	{
 		return FALSE;
 	}
 	
 	memcpy( pFunctionTable, &gFunctionTable, sizeof( DLL_FUNCTIONS ) );
+
+	stringsHashTable.SetSize( 2048 );
+
+	for (int i = 0; i < stringsHashTable.Count(); i++)
+	{
+		stringsHashTable[i].next = NULL;
+	}
+
+	EmptyEntityHashTable();
+
 	return TRUE;
 }
 
