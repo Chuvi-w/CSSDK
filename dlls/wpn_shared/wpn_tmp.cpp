@@ -21,209 +21,209 @@
 
 enum tmp_e
 {
-    TMP_IDLE1,
-    TMP_RELOAD,
-    TMP_DRAW,
-    TMP_SHOOT1,
-    TMP_SHOOT2,
-    TMP_SHOOT3
+	TMP_IDLE1,
+	TMP_RELOAD,
+	TMP_DRAW,
+	TMP_SHOOT1,
+	TMP_SHOOT2,
+	TMP_SHOOT3
 };
 
 #define TMP_MAX_SPEED      250
 #define TMP_RELOAD_TIME    2.12
 
-LINK_ENTITY_TO_CLASS(weapon_tmp, CTMP );
+LINK_ENTITY_TO_CLASS(weapon_tmp, CTMP);
 
-void CTMP::Spawn( void )
+void CTMP::Spawn(void)
 {
-    pev->classname = MAKE_STRING( "weapon_tmp" );
+	pev->classname = MAKE_STRING("weapon_tmp");
 
-    Precache();
-    m_iId = WEAPON_TMP;
-    SET_MODEL( edict(), "models/w_tmp.mdl" );
+	Precache();
+	m_iId = WEAPON_TMP;
+	SET_MODEL(edict(), "models/w_tmp.mdl");
 
-    m_iDefaultAmmo = TMP_DEFAULT_GIVE;
-    m_flAccuracy   = 0.2;
-    m_iShotsFired  = 0;
-    m_bDelayFire   = false;
+	m_iDefaultAmmo = TMP_DEFAULT_GIVE;
+	m_flAccuracy   = 0.2;
+	m_iShotsFired  = 0;
+	m_bDelayFire   = false;
 
-    FallInit();
+	FallInit();
 }
 
-void CTMP::Precache( void )
+void CTMP::Precache(void)
 {
-    PRECACHE_MODEL( "models/v_tmp.mdl" );
-    PRECACHE_MODEL( "models/w_tmp.mdl" );
+	PRECACHE_MODEL("models/v_tmp.mdl");
+	PRECACHE_MODEL("models/w_tmp.mdl");
 
-    PRECACHE_SOUND( "weapons/tmp-1.wav" );
-    PRECACHE_SOUND( "weapons/tmp-2.wav" );
+	PRECACHE_SOUND("weapons/tmp-1.wav");
+	PRECACHE_SOUND("weapons/tmp-2.wav");
 
-    m_iShell = PRECACHE_MODEL( "models/pshell.mdl" );
-    m_usFireTMP = PRECACHE_EVENT( 1, "events/tmp.sc" );
+	m_iShell = PRECACHE_MODEL("models/pshell.mdl");
+	m_usFireTMP = PRECACHE_EVENT(1, "events/tmp.sc");
 }
 
-int CTMP::GetItemInfo( ItemInfo *p )
+int CTMP::GetItemInfo(ItemInfo *p)
 {
-    p->pszName  = STRING( pev->classname );
-    p->pszAmmo1  = "9mm";
-    p->iMaxAmmo1 = _9MM_MAX_CARRY;
-    p->pszAmmo2  = NULL;
-    p->iMaxAmmo2 = -1;
-    p->iMaxClip  = TMP_MAX_CLIP;
-    p->iSlot     = 0;
-    p->iPosition = 11;
-    p->iId       = m_iId = WEAPON_TMP;
-    p->iFlags    = 0;
-    p->iWeight   = TMP_WEIGHT;
+	p->pszName  = STRING(pev->classname);
+	p->pszAmmo1  = "9mm";
+	p->iMaxAmmo1 = _9MM_MAX_CARRY;
+	p->pszAmmo2  = NULL;
+	p->iMaxAmmo2 = -1;
+	p->iMaxClip  = TMP_MAX_CLIP;
+	p->iSlot     = 0;
+	p->iPosition = 11;
+	p->iId       = m_iId = WEAPON_TMP;
+	p->iFlags    = 0;
+	p->iWeight   = TMP_WEIGHT;
 
-    return 1;
+	return 1;
 }
 
-int CTMP::iItemSlot( void )
+int CTMP::iItemSlot(void)
 {
-    return PRIMARY_WEAPON_SLOT;
+	return PRIMARY_WEAPON_SLOT;
 }
 
-BOOL CTMP::Deploy( void )
+BOOL CTMP::Deploy(void)
 {
-    iShellOn = 1;
+	iShellOn = 1;
 
-    m_flAccuracy  = 0.2;
-    m_iShotsFired = 0;
-    m_bDelayFire  = false;
+	m_flAccuracy  = 0.2;
+	m_iShotsFired = 0;
+	m_bDelayFire  = false;
 
-    return DefaultDeploy( "models/v_tmp.mdl", "models/p_tmp.mdl", TMP_DRAW, "onehanded", UseDecrement() != FALSE );
+	return DefaultDeploy("models/v_tmp.mdl", "models/p_tmp.mdl", TMP_DRAW, "onehanded", UseDecrement() != FALSE);
 }
 
-void CTMP::PrimaryAttack( void )
+void CTMP::PrimaryAttack(void)
 {
-    if( !FBitSet( m_pPlayer->pev->flags, FL_ONGROUND ) )
-    {
-        TMPFire( 0.25 * m_flAccuracy, 0.07, FALSE );
-    }
-    else
-    {
-        TMPFire( 0.03 * m_flAccuracy, 0.07, FALSE );
-    }
+	if (!FBitSet(m_pPlayer->pev->flags, FL_ONGROUND))
+	{
+		TMPFire(0.25 * m_flAccuracy, 0.07, FALSE);
+	}
+	else
+	{
+		TMPFire(0.03 * m_flAccuracy, 0.07, FALSE);
+	}
 }
 
-void CTMP::TMPFire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
+void CTMP::TMPFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
-    m_bDelayFire = true;
-    m_iShotsFired++;
+	m_bDelayFire = true;
+	m_iShotsFired++;
 
-    m_flAccuracy = ( ( m_iShotsFired * m_iShotsFired * m_iShotsFired ) / 200 ) + 0.55;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 200) + 0.55;
 
-    if( m_flAccuracy > 1.4 )
-        m_flAccuracy = 1.4;
+	if (m_flAccuracy > 1.4)
+		m_flAccuracy = 1.4;
 
-    if( m_iClip <= 0 )
-    {
-        if( m_fFireOnEmpty )
-        {
-            PlayEmptySound();
-            m_flNextPrimaryAttack = GetNextAttackDelay( 0.2 );
-        }
+	if (m_iClip <= 0)
+	{
+		if (m_fFireOnEmpty)
+		{
+			PlayEmptySound();
+			m_flNextPrimaryAttack = GetNextAttackDelay(0.2);
+		}
 
-        // TODO: Implement me.
-        // if( TheBots )
-        // {
-        //     TheBots->OnEvent( EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer, NULL );
-        // }
+		// TODO: Implement me.
+		// if( TheBots )
+		// {
+		//     TheBots->OnEvent( EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer, NULL );
+		// }
 
-        return;
-    }
+		return;
+	}
 
-    m_iClip--;
+	m_iClip--;
 
-    m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
-    m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
+	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
+	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
-    UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
+	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
 
-    m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
+	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 
-    Vector vecDir = m_pPlayer->FireBullets3( m_pPlayer->GetGunPosition(), gpGlobals->v_forward, flSpread, 
-        TMP_DISTANCE, TMP_PENETRATION, BULLET_PLAYER_9MM, TMP_DAMAGE, TMP_RANGE_MODIFER, m_pPlayer->pev, FALSE, m_pPlayer->random_seed );
+	Vector vecDir = m_pPlayer->FireBullets3(m_pPlayer->GetGunPosition(), gpGlobals->v_forward, flSpread,
+		TMP_DISTANCE, TMP_PENETRATION, BULLET_PLAYER_9MM, TMP_DAMAGE, TMP_RANGE_MODIFER, m_pPlayer->pev, FALSE, m_pPlayer->random_seed);
 
-    int flags;
+	int flags;
 
-    #if defined( CLIENT_WEAPONS )
-        flags = FEV_NOTHOST;
-    #else
-        flags = 0;
-    #endif
+#if defined( CLIENT_WEAPONS )
+	flags = FEV_NOTHOST;
+#else
+	flags = 0;
+#endif
 
-    PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireTMP, 0, ( float* )&g_vecZero, ( float* )&g_vecZero, vecDir.x, vecDir.y, 
-        ( int )(m_pPlayer->pev->punchangle.x * 100 ), ( int )( m_pPlayer->pev->punchangle.y * 100 ), 5, FALSE );
+	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usFireTMP, 0, (float*)&g_vecZero, (float*)&g_vecZero, vecDir.x, vecDir.y,
+		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), 5, FALSE);
 
-    m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay( flCycleTime );
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
-    if( !m_iClip && m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] <= 0 )
-    {
-        m_pPlayer->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 );
-    }
+	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	{
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+	}
 
-    m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.0;
 
-    if( !FBitSet( m_pPlayer->pev->flags, FL_ONGROUND ) )
-    {
-        KickBack( 1.1, 0.5, 0.35, 0.045, 4.5, 3.5, 6 );
-    }
-    else if( m_pPlayer->pev->velocity.Length2D() > 0 )
-    {
-        KickBack( 0.8, 0.4, 0.2, 0.03, 3.0, 2.5, 7 );
-    }
-    else if( FBitSet( m_pPlayer->pev->flags, FL_DUCKING ) )
-    {
-        KickBack( 0.7, 0.35, 0.125, 0.025, 2.5, 2.0, 10 );
-    }
-    else
-    {
-        KickBack( 0.725, 0.375, 0.15, 0.025, 2.75, 2.25, 9 );
-    }
+	if (!FBitSet(m_pPlayer->pev->flags, FL_ONGROUND))
+	{
+		KickBack(1.1, 0.5, 0.35, 0.045, 4.5, 3.5, 6);
+	}
+	else if (m_pPlayer->pev->velocity.Length2D() > 0)
+	{
+		KickBack(0.8, 0.4, 0.2, 0.03, 3.0, 2.5, 7);
+	}
+	else if (FBitSet(m_pPlayer->pev->flags, FL_DUCKING))
+	{
+		KickBack(0.7, 0.35, 0.125, 0.025, 2.5, 2.0, 10);
+	}
+	else
+	{
+		KickBack(0.725, 0.375, 0.15, 0.025, 2.75, 2.25, 9);
+	}
 }
 
-void CTMP::Reload( void )
+void CTMP::Reload(void)
 {
-    if( m_pPlayer->ammo_9mm <= 0 )
-    {
-        return;
-    }
+	if (m_pPlayer->ammo_9mm <= 0)
+	{
+		return;
+	}
 
-    if( DefaultReload( TMP_MAX_CLIP, TMP_RELOAD, TMP_RELOAD_TIME ) )
-    {
-        m_pPlayer->SetAnimation( PLAYER_RELOAD );
+	if (DefaultReload(TMP_MAX_CLIP, TMP_RELOAD, TMP_RELOAD_TIME))
+	{
+		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-        m_flAccuracy  = 0.2;
-        m_iShotsFired = 0;
-    }
+		m_flAccuracy  = 0.2;
+		m_iShotsFired = 0;
+	}
 }
 
-void CTMP::WeaponIdle( void )
+void CTMP::WeaponIdle(void)
 {
-    ResetEmptySound();
-    m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
+	ResetEmptySound();
+	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
-    if( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
-    {
-        return;
-    }
+	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
+	{
+		return;
+	}
 
-    m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
-    SendWeaponAnim( TMP_IDLE1, UseDecrement() != FALSE );
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20.0;
+	SendWeaponAnim(TMP_IDLE1, UseDecrement() != FALSE);
 }
 
-BOOL CTMP::UseDecrement( void )
+BOOL CTMP::UseDecrement(void)
 {
 #if defined( CLIENT_WEAPONS )
-    return TRUE;
+	return TRUE;
 #else
-    return FALSE;
+	return FALSE;
 #endif
 }
 
-float CTMP::GetMaxSpeed( void )
+float CTMP::GetMaxSpeed(void)
 {
-    return TMP_MAX_SPEED;
+	return TMP_MAX_SPEED;
 }

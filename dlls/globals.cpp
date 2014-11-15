@@ -1,9 +1,9 @@
 /***
 *
 *	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
+*
+*	This product contains software technology licensed from Id
+*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
 *	All Rights Reserved.
 *
 *   Use, distribution, and modification of this source code and/or resulting
@@ -16,10 +16,10 @@
 
 ===== globals.cpp ========================================================
 
-  DLL-wide global variable definitions.
-  They're all defined here, for convenient centralization.
-  Source files that need them should "extern ..." declare each
-  variable, to better document what globals they care about.
+DLL-wide global variable definitions.
+They're all defined here, for convenient centralization.
+Source files that need them should "extern ..." declare each
+variable, to better document what globals they care about.
 
 */
 
@@ -35,5 +35,5 @@ DLL_GLOBAL Vector		g_vecAttackDir;
 DLL_GLOBAL int			g_iSkillLevel;
 DLL_GLOBAL int			gDisplayTitle;
 DLL_GLOBAL BOOL			g_fGameOver;
-DLL_GLOBAL const Vector	g_vecZero = Vector(0,0,0);
+DLL_GLOBAL const Vector	g_vecZero = Vector(0, 0, 0);
 DLL_GLOBAL int			g_Language;

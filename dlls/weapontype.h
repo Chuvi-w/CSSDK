@@ -1,9 +1,9 @@
 /***
 *
 *	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
+*
+*	This product contains software technology licensed from Id
+*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
 *	All Rights Reserved.
 *
 *   Use, distribution, and modification of this source code and/or resulting
@@ -49,7 +49,6 @@ typedef enum // Last check: 2013, September 13
 	WEAPON_KNIFE,
 	WEAPON_P90,
 	WEAPON_SHIELDGUN = 99,
-
 } WeaponIdType;
 
 typedef enum  // Last check: 2013, September 13
@@ -64,7 +63,6 @@ typedef enum  // Last check: 2013, September 13
 	WEAPONCLASS_RIFLE,
 	WEAPONCLASS_SNIPERRIFLE,
 	WEAPONCLASS_MAX
-
 } WeaponClassType;
 
 #endif // WEAPONTYPE_H

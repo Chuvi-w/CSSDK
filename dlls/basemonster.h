@@ -1,9 +1,9 @@
 /***
 *
 *	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
+*
+*	This product contains software technology licensed from Id
+*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
 *	All Rights Reserved.
 *
 *   This source code contains proprietary and confidential information of
@@ -36,60 +36,57 @@ public:
 	Vector				m_HackedGunPos;	// HACK until we can query end of gun
 	Vector				m_vecEnemyLKP;// last known position of enemy. (enemy's origin)
 
+	void KeyValue(KeyValueData *pkvd);
 
-	void KeyValue( KeyValueData *pkvd );
+	void MakeIdealYaw(Vector vecTarget);
+	virtual float ChangeYaw(int speed);
+	virtual BOOL HasHumanGibs(void);
+	virtual BOOL HasAlienGibs(void);
+	virtual void FadeMonster(void);	// Called instead of GibMonster() when gibs are disabled
+	virtual void GibMonster(void);
+	virtual Activity GetDeathActivity(void);
+	Activity GetSmallFlinchActivity(void);
+	virtual void BecomeDead(void);
+	BOOL		 ShouldGibMonster(int iGib);
+	void		 CallGibMonster(void);
+	virtual BOOL	ShouldFadeOnDeath(void);
+	BOOL FCheckAITrigger(void);// checks and, if necessary, fires the monster's trigger target.
+	virtual int IRelationship(CBaseEntity *pTarget);
+	virtual int TakeHealth(float flHealth, int bitsDamageType);
+	virtual int TakeDamage(entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
+	int			DeadTakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
+	float DamageForce(float damage);
+	virtual void Killed(entvars_t *pevAttacker, int iGib);
+	virtual void PainSound(void) { return; };
 
-	void MakeIdealYaw( Vector vecTarget );
-	virtual float ChangeYaw ( int speed );
-	virtual BOOL HasHumanGibs( void );
-	virtual BOOL HasAlienGibs( void );
-	virtual void FadeMonster( void );	// Called instead of GibMonster() when gibs are disabled
-	virtual void GibMonster( void );
-	virtual Activity GetDeathActivity ( void );
-	Activity GetSmallFlinchActivity( void );
-	virtual void BecomeDead( void );
-	BOOL		 ShouldGibMonster( int iGib );
-	void		 CallGibMonster( void );
-	virtual BOOL	ShouldFadeOnDeath( void );
-	BOOL FCheckAITrigger( void );// checks and, if necessary, fires the monster's trigger target. 
-	virtual int IRelationship ( CBaseEntity *pTarget );
-	virtual int TakeHealth( float flHealth, int bitsDamageType );
-	virtual int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType);
-	int			DeadTakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );
-	float DamageForce( float damage );
-	virtual void Killed( entvars_t *pevAttacker, int iGib );
-	virtual void PainSound ( void ) { return; };
+	void RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
+	void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType);
 
-	void RadiusDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType );
-	void RadiusDamage(Vector vecSrc, entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType );
+	inline void	SetConditions(int iConditions) { m_afConditions |= iConditions; }
+	inline void	ClearConditions(int iConditions) { m_afConditions &= ~iConditions; }
+	inline BOOL HasConditions(int iConditions) { if (m_afConditions & iConditions) return TRUE; return FALSE; }
+	inline BOOL HasAllConditions(int iConditions) { if ((m_afConditions & iConditions) == iConditions) return TRUE; return FALSE; }
 
-	inline void	SetConditions( int iConditions ) { m_afConditions |= iConditions; }
-	inline void	ClearConditions( int iConditions ) { m_afConditions &= ~iConditions; }
-	inline BOOL HasConditions( int iConditions ) { if ( m_afConditions & iConditions ) return TRUE; return FALSE; }
-	inline BOOL HasAllConditions( int iConditions ) { if ( (m_afConditions & iConditions) == iConditions ) return TRUE; return FALSE; }
-
-	inline void	Remember( int iMemory ) { m_afMemory |= iMemory; }
-	inline void	Forget( int iMemory ) { m_afMemory &= ~iMemory; }
-	inline BOOL HasMemory( int iMemory ) { if ( m_afMemory & iMemory ) return TRUE; return FALSE; }
-	inline BOOL HasAllMemories( int iMemory ) { if ( (m_afMemory & iMemory) == iMemory ) return TRUE; return FALSE; }
+	inline void	Remember(int iMemory) { m_afMemory |= iMemory; }
+	inline void	Forget(int iMemory) { m_afMemory &= ~iMemory; }
+	inline BOOL HasMemory(int iMemory) { if (m_afMemory & iMemory) return TRUE; return FALSE; }
+	inline BOOL HasAllMemories(int iMemory) { if ((m_afMemory & iMemory) == iMemory) return TRUE; return FALSE; }
 
 	// This will stop animation until you call ResetSequenceInfo() at some point in the future
-	inline void StopAnimation( void ) { pev->framerate = 0; }
+	inline void StopAnimation(void) { pev->framerate = 0; }
 
-	virtual void ReportAIState( void );
-	virtual void MonsterInitDead( void );	// Call after animation/pose is set up
-	void EXPORT CorpseFallThink( void );
+	virtual void ReportAIState(void);
+	virtual void MonsterInitDead(void);	// Call after animation/pose is set up
+	void EXPORT CorpseFallThink(void);
 
-	virtual void Look ( int iDistance );// basic sight function for monsters
-	virtual CBaseEntity* BestVisibleEnemy ( void );// finds best visible enemy for attack
-	CBaseEntity *CheckTraceHullAttack( float flDist, int iDamage, int iDmgType );
-	virtual BOOL FInViewCone ( CBaseEntity *pEntity );// see if pEntity is in monster's view cone
-	virtual BOOL FInViewCone ( Vector *pOrigin );// see if given location is in monster's view cone
-	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
-	void MakeDamageBloodDecal ( int cCount, float flNoise, TraceResult *ptr, const Vector &vecDir );
-	virtual BOOL	IsAlive( void ) { return (pev->deadflag != DEAD_DEAD); }
-
+	virtual void Look(int iDistance);// basic sight function for monsters
+	virtual CBaseEntity* BestVisibleEnemy(void);// finds best visible enemy for attack
+	CBaseEntity *CheckTraceHullAttack(float flDist, int iDamage, int iDmgType);
+	virtual BOOL FInViewCone(CBaseEntity *pEntity);// see if pEntity is in monster's view cone
+	virtual BOOL FInViewCone(Vector *pOrigin);// see if given location is in monster's view cone
+	void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
+	void MakeDamageBloodDecal(int cCount, float flNoise, TraceResult *ptr, const Vector &vecDir);
+	virtual BOOL	IsAlive(void) { return (pev->deadflag != DEAD_DEAD); }
 };
-
 
 #endif

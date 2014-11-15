@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -145,7 +145,7 @@ enum GameEventType
 
 #ifdef DEFINE_EVENT_NAMES
 // NOTE: These must be kept in sync with the GameEventType enum
-const char *GameEventName[ NUM_GAME_EVENTS+1 ] =
+const char *GameEventName[NUM_GAME_EVENTS + 1] =
 {
 	"EVENT_INVALID",
 
@@ -273,10 +273,10 @@ const char *GameEventName[ NUM_GAME_EVENTS+1 ] =
 	NULL		// must be NULL-terminated
 };
 #else
-extern const char *GameEventName[ NUM_GAME_EVENTS ];
+extern const char *GameEventName[NUM_GAME_EVENTS];
 #endif
 
 /// convert name to GameEventType
-extern GameEventType NameToGameEvent( const char *name );
+extern GameEventType NameToGameEvent(const char *name);
 
 #endif // GAME_EVENT_H

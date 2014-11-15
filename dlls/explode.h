@@ -1,9 +1,9 @@
 /***
 *
 *	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
+*
+*	This product contains software technology licensed from Id
+*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
 *	All Rights Reserved.
 *
 *   Use, distribution, and modification of this source code and/or resulting
@@ -15,7 +15,6 @@
 #ifndef EXPLODE_H
 #define EXPLODE_H
 
-
 #define	SF_ENVEXPLOSION_NODAMAGE	( 1 << 0 ) // when set, ENV_EXPLOSION will not actually inflict damage
 #define	SF_ENVEXPLOSION_REPEATABLE	( 1 << 1 ) // can this entity be refired?
 #define SF_ENVEXPLOSION_NOFIREBALL	( 1 << 2 ) // don't draw the fireball
@@ -26,7 +25,6 @@
 extern DLL_GLOBAL	short	g_sModelIndexFireball;
 extern DLL_GLOBAL	short	g_sModelIndexSmoke;
 
-
-extern void ExplosionCreate( const Vector &center, const Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage );
+extern void ExplosionCreate(const Vector &center, const Vector &angles, edict_t *pOwner, int magnitude, BOOL doDamage);
 
 #endif			//EXPLODE_H

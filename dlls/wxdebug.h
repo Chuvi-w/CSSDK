@@ -34,14 +34,13 @@
 
 #ifdef _DEBUG
 
-
 enum
 {
 	LOG_TRACE		= 0x00000001,	// General tracing
-    LOG_ENTRY		= 0x00000002,	// Function entry logging
-    LOG_EXIT		= 0x00000004,	// Function exit logging
-    LOG_MEMORY		= 0x00000008,	// Memory alloc/free debugging
-    LOG_ERROR		= 0x00000010,	// Error notification
+	LOG_ENTRY		= 0x00000002,	// Function entry logging
+	LOG_EXIT		= 0x00000004,	// Function exit logging
+	LOG_MEMORY		= 0x00000008,	// Memory alloc/free debugging
+	LOG_ERROR		= 0x00000010,	// Error notification
 	LOG_UNUSED0		= 0x00000020,	// reserved
 	LOG_UNUSED1		= 0x00000040,	// reserved
 	LOG_UNUSED2		= 0x00000080,	// reserved
@@ -50,15 +49,13 @@ enum
 	LOG_ICHTHYOSAUR = 0x00000400,   // Ichthyosaur debugging
 };
 
-
 // These are public but should be called only by the DLLMain function
 void WINAPI DbgInitialise(HINSTANCE hInst);
 void WINAPI DbgTerminate();
 // These are public but should be called by macro only
-void WINAPI DbgKernelAssert(const TCHAR *pCondition,const TCHAR *pFileName,INT iLine);
-void WINAPI DbgLogInfo(DWORD Type,DWORD Level,const TCHAR *pFormat,...);
+void WINAPI DbgKernelAssert(const TCHAR *pCondition, const TCHAR *pFileName, INT iLine);
+void WINAPI DbgLogInfo(DWORD Type, DWORD Level, const TCHAR *pFormat, ...);
 void WINAPI DbgOutString(LPCTSTR psz);
-
 
 // These are the macros that should be used in code.
 
@@ -119,19 +116,15 @@ void WINAPI DbgOutString(LPCTSTR psz);
 
 #endif  // !_DEBUG
 
-
 #ifndef REMIND
-    //  REMIND macro - generates warning as reminder to complete coding
-    //  (eg) usage:
-    //
-    //  #pragma message (REMIND("Add automation support"))
+//  REMIND macro - generates warning as reminder to complete coding
+//  (eg) usage:
+//
+//  #pragma message (REMIND("Add automation support"))
 
-
-    #define REMINDQUOTE(x) #x
-    #define REMINDQQUOTE(y) REMINDQUOTE(y)
-    #define REMIND(str) __FILE__ "(" REMINDQQUOTE(__LINE__) ") :  " str
+#define REMINDQUOTE(x) #x
+#define REMINDQQUOTE(y) REMINDQUOTE(y)
+#define REMIND(str) __FILE__ "(" REMINDQQUOTE(__LINE__) ") :  " str
 #endif
 
 #endif // __WXDEBUG__
-
-

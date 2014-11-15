@@ -32,15 +32,15 @@ enum aug_e
 #define AUG_MAX_SPEED      240
 #define AUG_RELOAD_TIME    3.3
 
-LINK_ENTITY_TO_CLASS( weapon_aug, CAUG );
+LINK_ENTITY_TO_CLASS(weapon_aug, CAUG);
 
-void CAUG::Spawn( void )
+void CAUG::Spawn(void)
 {
-	pev->classname = MAKE_STRING( "weapon_aug" );
+	pev->classname = MAKE_STRING("weapon_aug");
 
 	Precache();
 	m_iId = WEAPON_AUG;
-	SET_MODEL( edict(), "models/w_aug.mdl" );
+	SET_MODEL(edict(), "models/w_aug.mdl");
 
 	m_iDefaultAmmo = AUG_DEFAULT_GIVE;
 	m_flAccuracy   = 0.2;
@@ -49,25 +49,25 @@ void CAUG::Spawn( void )
 	FallInit();
 }
 
-void CAUG::Precache( void )
+void CAUG::Precache(void)
 {
-	PRECACHE_MODEL( "models/v_aug.mdl");
-	PRECACHE_MODEL( "models/w_aug.mdl");
+	PRECACHE_MODEL("models/v_aug.mdl");
+	PRECACHE_MODEL("models/w_aug.mdl");
 
-	PRECACHE_SOUND( "weapons/aug-1.wav" );
-	PRECACHE_SOUND( "weapons/aug_clipout.wav" );
-	PRECACHE_SOUND( "weapons/aug_clipin.wav"   );
-	PRECACHE_SOUND( "weapons/aug_boltpull.wav" );
-	PRECACHE_SOUND( "weapons/aug_boltslap.wav" );
-	PRECACHE_SOUND( "weapons/aug_forearm.wav"  );
+	PRECACHE_SOUND("weapons/aug-1.wav");
+	PRECACHE_SOUND("weapons/aug_clipout.wav");
+	PRECACHE_SOUND("weapons/aug_clipin.wav");
+	PRECACHE_SOUND("weapons/aug_boltpull.wav");
+	PRECACHE_SOUND("weapons/aug_boltslap.wav");
+	PRECACHE_SOUND("weapons/aug_forearm.wav");
 
-	m_iShell    = PRECACHE_MODEL( "models/rshell.mdl" );
-	m_usFireAug = PRECACHE_EVENT( 1, "events/aug.sc"  );
+	m_iShell    = PRECACHE_MODEL("models/rshell.mdl");
+	m_usFireAug = PRECACHE_EVENT(1, "events/aug.sc");
 }
 
-int CAUG::GetItemInfo( ItemInfo *p )
+int CAUG::GetItemInfo(ItemInfo *p)
 {
-	p->pszName   = STRING( pev->classname );
+	p->pszName   = STRING(pev->classname);
 	p->pszAmmo1  = "556Nato";
 	p->iMaxAmmo1 = _556NATO_MAX_CARRY;
 	p->pszAmmo2  = NULL;
@@ -82,76 +82,76 @@ int CAUG::GetItemInfo( ItemInfo *p )
 	return 1;
 }
 
-int CAUG::iItemSlot( void )
+int CAUG::iItemSlot(void)
 {
-    return PRIMARY_WEAPON_SLOT;
+	return PRIMARY_WEAPON_SLOT;
 }
 
-BOOL CAUG::Deploy( void )
+BOOL CAUG::Deploy(void)
 {
 	m_flAccuracy  = 0.2;
 	m_iShotsFired = 0;
 
 	iShellOn = 1;
 
-	return DefaultDeploy( "models/v_aug.mdl", "models/p_aug.mdl", AUG_DRAW, "carbine", UseDecrement() != FALSE );
+	return DefaultDeploy("models/v_aug.mdl", "models/p_aug.mdl", AUG_DRAW, "carbine", UseDecrement() != FALSE);
 }
 
-void CAUG::PrimaryAttack( void )
+void CAUG::PrimaryAttack(void)
 {
-	if( !FBitSet( m_pPlayer->pev->flags, FL_ONGROUND ) )
+	if (!FBitSet(m_pPlayer->pev->flags, FL_ONGROUND))
 	{
-        AUGFire( 0.035 + 0.4 * m_flAccuracy, 0.0825, FALSE );
-    }
-	else if( m_pPlayer->pev->velocity.Length2D() > 140 )
-    {
-		AUGFire( 0.035 + 0.07 * m_flAccuracy, 0.0825, FALSE );
-    }
-	else if( m_pPlayer->pev->fov == 90 )
-    {
-		AUGFire( 0.02 * m_flAccuracy, 0.0825, FALSE );
-    }
+		AUGFire(0.035 + 0.4 * m_flAccuracy, 0.0825, FALSE);
+	}
+	else if (m_pPlayer->pev->velocity.Length2D() > 140)
+	{
+		AUGFire(0.035 + 0.07 * m_flAccuracy, 0.0825, FALSE);
+	}
+	else if (m_pPlayer->pev->fov == 90)
+	{
+		AUGFire(0.02 * m_flAccuracy, 0.0825, FALSE);
+	}
 	else
-    {
-		AUGFire( 0.02 * m_flAccuracy, 0.135, FALSE );
-    }
+	{
+		AUGFire(0.02 * m_flAccuracy, 0.135, FALSE);
+	}
 }
 
-void CAUG::SecondaryAttack( void )
+void CAUG::SecondaryAttack(void)
 {
-    if( m_pPlayer->m_iFOV != 90 )
-        m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 90;
-    else
-        m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 55;
+	if (m_pPlayer->m_iFOV != 90)
+		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 90;
+	else
+		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 55;
 
-    m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 }
 
-void CAUG::AUGFire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
+void CAUG::AUGFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
 	m_bDelayFire = true;
 	m_iShotsFired++;
 
-	m_flAccuracy = ( ( m_iShotsFired * m_iShotsFired * m_iShotsFired ) / 215 ) + 0.3;
+	m_flAccuracy = ((m_iShotsFired * m_iShotsFired * m_iShotsFired) / 215) + 0.3;
 
-	if( m_flAccuracy > 1 )
+	if (m_flAccuracy > 1)
 	{
-        m_flAccuracy = 1;
-    }
+		m_flAccuracy = 1;
+	}
 
-	if( m_iClip <= 0 )
+	if (m_iClip <= 0)
 	{
-		if( m_fFireOnEmpty )
+		if (m_fFireOnEmpty)
 		{
 			PlayEmptySound();
-			m_flNextPrimaryAttack = GetNextAttackDelay( 0.2 );
+			m_flNextPrimaryAttack = GetNextAttackDelay(0.2);
 		}
 
-        // TODO: Implement me.
-        // if( TheBots )
-        // {
-        //     TheBots->OnEvent( EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer, NULL );
-        // }
+		// TODO: Implement me.
+		// if( TheBots )
+		// {
+		//     TheBots->OnEvent( EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer, NULL );
+		// }
 
 		return;
 	}
@@ -159,69 +159,69 @@ void CAUG::AUGFire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
 	m_iClip--;
 
 	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
-	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
+	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash  = BRIGHT_GUN_FLASH;
 
-	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
+	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
 
-	Vector vecDir = m_pPlayer->FireBullets3( m_pPlayer->GetGunPosition(), gpGlobals->v_forward, flSpread, 
-        AUG_DISTANCE, AUG_PENETRATION, BULLET_PLAYER_556MM, AUG_DAMAGE, AUG_RANGE_MODIFER, m_pPlayer->pev, FALSE, m_pPlayer->random_seed );
+	Vector vecDir = m_pPlayer->FireBullets3(m_pPlayer->GetGunPosition(), gpGlobals->v_forward, flSpread,
+		AUG_DISTANCE, AUG_PENETRATION, BULLET_PLAYER_556MM, AUG_DAMAGE, AUG_RANGE_MODIFER, m_pPlayer->pev, FALSE, m_pPlayer->random_seed);
 
 	int flags;
 
-    #if defined( CLIENT_WEAPONS )
-	    flags = FEV_NOTHOST;
-    #else
-	    flags = 0;
-    #endif
+#if defined( CLIENT_WEAPONS )
+	flags = FEV_NOTHOST;
+#else
+	flags = 0;
+#endif
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireAug, 0, ( float* )&g_vecZero, ( float* )&g_vecZero, 
-        vecDir.x, vecDir.y, ( int )( m_pPlayer->pev->punchangle.x * 100 ), ( int )( m_pPlayer->pev->punchangle.y * 100 ), FALSE, FALSE );
+	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usFireAug, 0, (float*)&g_vecZero, (float*)&g_vecZero,
+		vecDir.x, vecDir.y, (int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.y * 100), FALSE, FALSE);
 
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay( flCycleTime );
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
-	if( !m_iClip && m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] <= 0 )
+	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 	{
-        m_pPlayer->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 );
-    }
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.9;
 
-	if( m_pPlayer->pev->velocity.Length2D() > 0 )
+	if (m_pPlayer->pev->velocity.Length2D() > 0)
 	{
-        KickBack( 1.0, 0.45, 0.275, 0.05, 4.0, 2.5, 7 );
-    }
-	else if( !FBitSet(m_pPlayer->pev->flags, FL_ONGROUND ) )
-    {
-		KickBack( 1.25, 0.45, 0.22, 0.18, 5.5, 4.0, 5 );
-    }
-	else if( FBitSet(m_pPlayer->pev->flags, FL_DUCKING ) )
-    {
-		KickBack( 0.575, 0.325, 0.2, 0.011, 3.25, 2.0, 8 );
-    }
+		KickBack(1.0, 0.45, 0.275, 0.05, 4.0, 2.5, 7);
+	}
+	else if (!FBitSet(m_pPlayer->pev->flags, FL_ONGROUND))
+	{
+		KickBack(1.25, 0.45, 0.22, 0.18, 5.5, 4.0, 5);
+	}
+	else if (FBitSet(m_pPlayer->pev->flags, FL_DUCKING))
+	{
+		KickBack(0.575, 0.325, 0.2, 0.011, 3.25, 2.0, 8);
+	}
 	else
-    {
-		KickBack( 0.625, 0.375, 0.25, 0.0125, 3.5, 2.25, 8 );
-    }
+	{
+		KickBack(0.625, 0.375, 0.25, 0.0125, 3.5, 2.25, 8);
+	}
 }
 
-void CAUG::Reload( void )
+void CAUG::Reload(void)
 {
-	if( m_pPlayer->ammo_556nato <= 0 )
+	if (m_pPlayer->ammo_556nato <= 0)
 	{
-        return;
-    }
+		return;
+	}
 
-	if( DefaultReload( AUG_MAX_CLIP, AUG_RELOAD, AUG_RELOAD_TIME ) )
+	if (DefaultReload(AUG_MAX_CLIP, AUG_RELOAD, AUG_RELOAD_TIME))
 	{
-		m_pPlayer->SetAnimation( PLAYER_RELOAD );
+		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-		if( m_pPlayer->m_iFOV != 90 )
+		if (m_pPlayer->m_iFOV != 90)
 		{
-            SecondaryAttack();
-        }
+			SecondaryAttack();
+		}
 
 		m_flAccuracy  = 0;
 		m_iShotsFired = 0;
@@ -229,30 +229,30 @@ void CAUG::Reload( void )
 	}
 }
 
-void CAUG::WeaponIdle( void )
+void CAUG::WeaponIdle(void)
 {
 	ResetEmptySound();
-	m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
+	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
-	if( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
+	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
 	{
-        return;
-    }
+		return;
+	}
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 20;
-	SendWeaponAnim( AUG_IDLE1, UseDecrement() != FALSE );
+	SendWeaponAnim(AUG_IDLE1, UseDecrement() != FALSE);
 }
 
-BOOL CAUG::UseDecrement( void )
+BOOL CAUG::UseDecrement(void)
 {
-    #if defined( CLIENT_WEAPONS )
-        return TRUE;
-    #else
-        return FALSE;
-    #endif
+#if defined( CLIENT_WEAPONS )
+	return TRUE;
+#else
+	return FALSE;
+#endif
 }
 
-float CAUG::GetMaxSpeed( void )
+float CAUG::GetMaxSpeed(void)
 {
-    return AUG_MAX_SPEED;
+	return AUG_MAX_SPEED;
 }

@@ -21,236 +21,236 @@
 
 enum scout_e
 {
-    SCOUT_IDLE,
-    SCOUT_SHOOT,
-    SCOUT_SHOOT2,
-    SCOUT_RELOAD,
-    SCOUT_DRAW
+	SCOUT_IDLE,
+	SCOUT_SHOOT,
+	SCOUT_SHOOT2,
+	SCOUT_RELOAD,
+	SCOUT_DRAW
 };
 
 #define SCOUT_MAX_SPEED         260
 #define SCOUT_MAX_SPEED_ZOOM    220
 #define SCOUT_RELOAD_TIME       2.0
 
-LINK_ENTITY_TO_CLASS(weapon_scout, CSCOUT );
+LINK_ENTITY_TO_CLASS(weapon_scout, CSCOUT);
 
-void CSCOUT::Spawn( void )
+void CSCOUT::Spawn(void)
 {
-    pev->classname = MAKE_STRING( "weapon_scout" );
+	pev->classname = MAKE_STRING("weapon_scout");
 
-    Precache();
-    m_iId = WEAPON_SCOUT;
-    SET_MODEL( edict(), "models/w_scout.mdl" );
+	Precache();
+	m_iId = WEAPON_SCOUT;
+	SET_MODEL(edict(), "models/w_scout.mdl");
 
-    m_iDefaultAmmo = SCOUT_DEFAULT_GIVE;
+	m_iDefaultAmmo = SCOUT_DEFAULT_GIVE;
 
-    FallInit();
+	FallInit();
 }
 
-void CSCOUT::Precache( void )
+void CSCOUT::Precache(void)
 {
-    PRECACHE_MODEL( "models/v_scout.mdl" );
-    PRECACHE_MODEL( "models/w_scout.mdl" );
+	PRECACHE_MODEL("models/v_scout.mdl");
+	PRECACHE_MODEL("models/w_scout.mdl");
 
-    PRECACHE_SOUND( "weapons/scout_fire-1.wav" );
-    PRECACHE_SOUND( "weapons/scout_bolt.wav" );
-    PRECACHE_SOUND( "weapons/scout_clipin.wav" );
-    PRECACHE_SOUND( "weapons/scout_clipout.wav" );
-    PRECACHE_SOUND( "weapons/zoom.wav" );
+	PRECACHE_SOUND("weapons/scout_fire-1.wav");
+	PRECACHE_SOUND("weapons/scout_bolt.wav");
+	PRECACHE_SOUND("weapons/scout_clipin.wav");
+	PRECACHE_SOUND("weapons/scout_clipout.wav");
+	PRECACHE_SOUND("weapons/zoom.wav");
 
-    m_iShellId = m_iShell = PRECACHE_MODEL( "models/rshell_big.mdl" );
-    m_usFireScout = PRECACHE_EVENT(1, "events/scout.sc" );
+	m_iShellId = m_iShell = PRECACHE_MODEL("models/rshell_big.mdl");
+	m_usFireScout = PRECACHE_EVENT(1, "events/scout.sc");
 }
 
-int CSCOUT::GetItemInfo( ItemInfo *p )
+int CSCOUT::GetItemInfo(ItemInfo *p)
 {
-    p->pszName   = STRING(pev->classname );
-    p->pszAmmo1  = "762Nato";
-    p->iMaxAmmo1 = _762NATO_MAX_CARRY;
-    p->pszAmmo2  = NULL;
-    p->iMaxAmmo2 = -1;
-    p->iMaxClip  = SCOUT_MAX_CLIP;
-    p->iSlot     = 0;
-    p->iPosition = 9;
-    p->iId       = m_iId = WEAPON_SCOUT;
-    p->iFlags    = 0;
-    p->iWeight   = SCOUT_WEIGHT;
+	p->pszName   = STRING(pev->classname);
+	p->pszAmmo1  = "762Nato";
+	p->iMaxAmmo1 = _762NATO_MAX_CARRY;
+	p->pszAmmo2  = NULL;
+	p->iMaxAmmo2 = -1;
+	p->iMaxClip  = SCOUT_MAX_CLIP;
+	p->iSlot     = 0;
+	p->iPosition = 9;
+	p->iId       = m_iId = WEAPON_SCOUT;
+	p->iFlags    = 0;
+	p->iWeight   = SCOUT_WEIGHT;
 
-    return 1;
+	return 1;
 }
 
-int CSCOUT::iItemSlot( void )
+int CSCOUT::iItemSlot(void)
 {
-    return PRIMARY_WEAPON_SLOT;
+	return PRIMARY_WEAPON_SLOT;
 }
 
-BOOL CSCOUT::Deploy( void )
+BOOL CSCOUT::Deploy(void)
 {
-    if( DefaultDeploy( "models/v_scout.mdl", "models/p_scout.mdl", SCOUT_DRAW, "rifle", UseDecrement() != FALSE ) )
-    {
-        m_flNextPrimaryAttack   = m_pPlayer->m_flNextAttack = GetNextAttackDelay( 1.25 );
-        m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
+	if (DefaultDeploy("models/v_scout.mdl", "models/p_scout.mdl", SCOUT_DRAW, "rifle", UseDecrement() != FALSE))
+	{
+		m_flNextPrimaryAttack   = m_pPlayer->m_flNextAttack = GetNextAttackDelay(1.25);
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
 
-        return TRUE;
-    }
+		return TRUE;
+	}
 
-    return FALSE;
+	return FALSE;
 }
 
-void CSCOUT::PrimaryAttack( void )
+void CSCOUT::PrimaryAttack(void)
 {
-    if( !FBitSet( m_pPlayer->pev->flags, FL_ONGROUND ) )
-    {
-        SCOUTFire( 0.2, 1.25, FALSE );
-    }
-    else if( m_pPlayer->pev->velocity.Length2D() > 170 )
-    {
-        SCOUTFire( 0.075, 1.25, FALSE );
-    }
-    else if( FBitSet( m_pPlayer->pev->flags, FL_DUCKING ) )
-    {
-        SCOUTFire( 0.0, 1.25, FALSE );
-    }
-    else
-    {
-        SCOUTFire( 0.007, 1.25, FALSE );
-    }
+	if (!FBitSet(m_pPlayer->pev->flags, FL_ONGROUND))
+	{
+		SCOUTFire(0.2, 1.25, FALSE);
+	}
+	else if (m_pPlayer->pev->velocity.Length2D() > 170)
+	{
+		SCOUTFire(0.075, 1.25, FALSE);
+	}
+	else if (FBitSet(m_pPlayer->pev->flags, FL_DUCKING))
+	{
+		SCOUTFire(0.0, 1.25, FALSE);
+	}
+	else
+	{
+		SCOUTFire(0.007, 1.25, FALSE);
+	}
 }
 
-void CSCOUT::SecondaryAttack( void )
+void CSCOUT::SecondaryAttack(void)
 {
-    switch( m_pPlayer->m_iFOV )
-    {
-        case 90: m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 40; break;
-        case 40: m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 15; break;
-        default: m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 90; break;
-    }
+	switch (m_pPlayer->m_iFOV)
+	{
+	case 90: m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 40; break;
+	case 40: m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 15; break;
+	default: m_pPlayer->m_iFOV = m_pPlayer->pev->fov = 90; break;
+	}
 
-    m_pPlayer->ResetMaxSpeed();
+	m_pPlayer->ResetMaxSpeed();
 
-    // TODO: Implement me.
-    // if( TheBots )
-    // {
-    //     TheBots->OnEvent( EVENT_WEAPON_ZOOMED, m_pPlayer, NULL );
-    // }
+	// TODO: Implement me.
+	// if( TheBots )
+	// {
+	//     TheBots->OnEvent( EVENT_WEAPON_ZOOMED, m_pPlayer, NULL );
+	// }
 
-    EMIT_SOUND( m_pPlayer->edict(), CHAN_ITEM, "weapons/zoom.wav", 0.2, 2.4 );
+	EMIT_SOUND(m_pPlayer->edict(), CHAN_ITEM, "weapons/zoom.wav", 0.2, 2.4);
 
-    m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.3;
 }
 
-void CSCOUT::SCOUTFire( float flSpread, float flCycleTime, BOOL fUseAutoAim )
+void CSCOUT::SCOUTFire(float flSpread, float flCycleTime, BOOL fUseAutoAim)
 {
-    if( m_pPlayer->pev->fov != 90 )
-    {
-        m_pPlayer->m_bResumeZoom = true;
-        m_pPlayer->m_iLastZoom   = m_pPlayer->m_iFOV;
-        m_pPlayer->m_iFOV        = m_pPlayer->pev->fov = 90;
-    }
-    else
-    {
-        flSpread += 0.025;
-    }
+	if (m_pPlayer->pev->fov != 90)
+	{
+		m_pPlayer->m_bResumeZoom = true;
+		m_pPlayer->m_iLastZoom   = m_pPlayer->m_iFOV;
+		m_pPlayer->m_iFOV        = m_pPlayer->pev->fov = 90;
+	}
+	else
+	{
+		flSpread += 0.025;
+	}
 
-    if( m_iClip <= 0 )
-    {
-        if( m_fFireOnEmpty )
-        {
-            PlayEmptySound();
-            m_flNextPrimaryAttack = GetNextAttackDelay( 0.2 );
-        }
+	if (m_iClip <= 0)
+	{
+		if (m_fFireOnEmpty)
+		{
+			PlayEmptySound();
+			m_flNextPrimaryAttack = GetNextAttackDelay(0.2);
+		}
 
-        // TODO: Implement me.
-        // if( TheBots )
-        // {
-        //     TheBots->OnEvent( EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer, NULL );
-        // }
+		// TODO: Implement me.
+		// if( TheBots )
+		// {
+		//     TheBots->OnEvent( EVENT_WEAPON_FIRED_ON_EMPTY, m_pPlayer, NULL );
+		// }
 
-        return;
-    }
+		return;
+	}
 
-    m_iClip--;
+	m_iClip--;
 
-    m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
-    m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
+	m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
+	m_pPlayer->SetAnimation(PLAYER_ATTACK1);
 
-    UTIL_MakeVectors (m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
+	UTIL_MakeVectors(m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle);
 
-    m_pPlayer->m_flEjectBrass  = gpGlobals->time + 0.56;
-    m_pPlayer->m_iWeaponVolume = BIG_EXPLOSION_VOLUME;
-    m_pPlayer->m_iWeaponFlash  = NORMAL_GUN_FLASH;
+	m_pPlayer->m_flEjectBrass  = gpGlobals->time + 0.56;
+	m_pPlayer->m_iWeaponVolume = BIG_EXPLOSION_VOLUME;
+	m_pPlayer->m_iWeaponFlash  = NORMAL_GUN_FLASH;
 
-    Vector vecDir = FireBullets3( m_pPlayer->GetGunPosition(), gpGlobals->v_forward, flSpread, 
-        SCOUT_DISTANCE, SCOUT_PENETRATION, BULLET_PLAYER_762MM, SCOUT_DAMAGE, SCOUT_RANGE_MODIFER, m_pPlayer->pev, TRUE, m_pPlayer->random_seed );
+	Vector vecDir = FireBullets3(m_pPlayer->GetGunPosition(), gpGlobals->v_forward, flSpread,
+		SCOUT_DISTANCE, SCOUT_PENETRATION, BULLET_PLAYER_762MM, SCOUT_DAMAGE, SCOUT_RANGE_MODIFER, m_pPlayer->pev, TRUE, m_pPlayer->random_seed);
 
-    int flags;
+	int flags;
 
-    #if defined( CLIENT_WEAPONS )
-        flags = FEV_NOTHOST;
-    #else
-        flags = 0;
-    #endif
+#if defined( CLIENT_WEAPONS )
+	flags = FEV_NOTHOST;
+#else
+	flags = 0;
+#endif
 
-    PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireScout, 0, ( float* )&g_vecZero, ( float* )&g_vecZero, vecDir.x * 1000, vecDir.y * 1000, 
-        ( int )( m_pPlayer->pev->punchangle.x * 100 ), ( int ) (m_pPlayer->pev->punchangle.x * 100 ), FALSE, FALSE );
+	PLAYBACK_EVENT_FULL(flags, m_pPlayer->edict(), m_usFireScout, 0, (float*)&g_vecZero, (float*)&g_vecZero, vecDir.x * 1000, vecDir.y * 1000,
+		(int)(m_pPlayer->pev->punchangle.x * 100), (int)(m_pPlayer->pev->punchangle.x * 100), FALSE, FALSE);
 
-    m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay( flCycleTime );
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = GetNextAttackDelay(flCycleTime);
 
-    if( !m_iClip && m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] <= 0 )
-    {
-        m_pPlayer->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 );
-    }
+	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
+	{
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+	}
 
-    m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8;
-    m_pPlayer->pev->punchangle.x -= 2;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.8;
+	m_pPlayer->pev->punchangle.x -= 2;
 }
 
-void CSCOUT::Reload( void )
+void CSCOUT::Reload(void)
 {
-    if( m_pPlayer->ammo_762nato <= 0 )
-    {
-        return;
-    }
+	if (m_pPlayer->ammo_762nato <= 0)
+	{
+		return;
+	}
 
-    if( DefaultReload( SCOUT_MAX_CLIP, SCOUT_RELOAD, SCOUT_RELOAD ) )
-    {
-        m_pPlayer->SetAnimation( PLAYER_RELOAD );
+	if (DefaultReload(SCOUT_MAX_CLIP, SCOUT_RELOAD, SCOUT_RELOAD))
+	{
+		m_pPlayer->SetAnimation(PLAYER_RELOAD);
 
-        if( m_pPlayer->pev->fov != 90 )
-        {
-            m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 15;
-            SecondaryAttack();
-        }
-    }
+		if (m_pPlayer->pev->fov != 90)
+		{
+			m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 15;
+			SecondaryAttack();
+		}
+	}
 }
 
-void CSCOUT::WeaponIdle( void )
+void CSCOUT::WeaponIdle(void)
 {
-    ResetEmptySound();
-    m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
+	ResetEmptySound();
+	m_pPlayer->GetAutoaimVector(AUTOAIM_10DEGREES);
 
-    if( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
-    {
-        return;
-    }
+	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
+	{
+		return;
+	}
 
-    if( m_iClip )
-    {
-        m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0;
-        SendWeaponAnim( SCOUT_IDLE, UseDecrement() != FALSE );
-    }
+	if (m_iClip)
+	{
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0;
+		SendWeaponAnim(SCOUT_IDLE, UseDecrement() != FALSE);
+	}
 }
 
-BOOL CSCOUT::UseDecrement( void )
+BOOL CSCOUT::UseDecrement(void)
 {
-    #if defined( CLIENT_WEAPONS )
-        return TRUE;
-    #else
-        return FALSE;
-    #endif
+#if defined( CLIENT_WEAPONS )
+	return TRUE;
+#else
+	return FALSE;
+#endif
 }
 
-float CSCOUT::GetMaxSpeed( void )
+float CSCOUT::GetMaxSpeed(void)
 {
-    return m_pPlayer->m_iFOV ? SCOUT_MAX_SPEED : SCOUT_MAX_SPEED_ZOOM;
+	return m_pPlayer->m_iFOV ? SCOUT_MAX_SPEED : SCOUT_MAX_SPEED_ZOOM;
 }

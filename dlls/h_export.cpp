@@ -1,9 +1,9 @@
 /***
 *
 *	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
+*
+*	This product contains software technology licensed from Id
+*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc.
 *	All Rights Reserved.
 *
 *   Use, distribution, and modification of this source code and/or resulting
@@ -16,7 +16,7 @@
 
 ===== h_export.cpp ========================================================
 
-  Entity classes exported by Halflife.
+Entity classes exported by Halflife.
 
 */
 
@@ -40,24 +40,22 @@ globalvars_t  *gpGlobals;
 
 // Required DLL entry point
 BOOL WINAPI DllMain(
-   HINSTANCE hinstDLL,
-   DWORD fdwReason,
-   LPVOID lpvReserved)
+	HINSTANCE hinstDLL,
+	DWORD fdwReason,
+	LPVOID lpvReserved)
 {
-	if      (fdwReason == DLL_PROCESS_ATTACH)
-    {
-    }
+	if (fdwReason == DLL_PROCESS_ATTACH)
+	{
+	}
 	else if (fdwReason == DLL_PROCESS_DETACH)
-    {
-    }
+	{
+	}
 	return TRUE;
 }
 #endif
 
-extern "C" void DLLEXPORT GiveFnptrsToDll(	enginefuncs_t* pengfuncsFromEngine, globalvars_t *pGlobals )
+extern "C" void DLLEXPORT GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t *pGlobals)
 {
 	memcpy(&g_engfuncs, pengfuncsFromEngine, sizeof(enginefuncs_t));
 	gpGlobals = pGlobals;
 }
-
-
