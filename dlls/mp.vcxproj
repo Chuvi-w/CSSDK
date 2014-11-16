@@ -288,6 +288,7 @@
     <ClCompile Include="teamplay_gamerules.cpp">
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
     </ClCompile>
+    <ClCompile Include="training_gamerules.cpp" />
     <ClCompile Include="triggers.cpp">
       <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</RuntimeTypeInfo>
     </ClCompile>
@@ -375,6 +376,7 @@
     <ClInclude Include="spectator.h" />
     <ClInclude Include="talkmonster.h" />
     <ClInclude Include="teamplay_gamerules.h" />
+    <ClInclude Include="training_gamerules.h" />
     <ClInclude Include="trains.h" />
     <ClInclude Include="unisignals.h" />
     <ClInclude Include="util.h" />

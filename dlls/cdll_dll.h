@@ -36,6 +36,10 @@
 #define HIDEHUD_CROSSHAIR       ( 1<<6 )
 #define HIDEHUD_CROSSHAIR2      ( 1<<7 )
 
+#define STATUSICON_HIDE  0
+#define STATUSICON_SHOW  1
+#define STATUSICON_FLASH 2
+
 #define	MAX_AMMO_TYPES	32		// ???
 #define MAX_AMMO_SLOTS  32		// not really slots
 

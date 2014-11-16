@@ -38,6 +38,7 @@ functions dealing with the player
 #include "pm_shared.h"
 #include "client.h"
 #include "career_tasks.h"
+#include "training_gamerules.h"
 
 // #define DUCKFIX
 
@@ -545,10 +546,10 @@ void CBasePlayer::Blind(float duration, float holdTime, float fadeTime, int alph
 
 bool CBasePlayer::CanPlayerBuy(bool display) // Last check: 2013, September 13.
 {
-// 	if (!g_pGameRules->IsMultiplayer())
-// 	{
-// 		return CHalfLifeTraining::PlayerCanBuy(this);
-// 	}
+	if (!g_pGameRules->IsMultiplayer())
+	{
+		return CHalfLifeTraining::PlayerCanBuy(this);
+	}
 
 	if (pev->deadflag != DEAD_NO || ~m_signals.GetState() & SIGNAL_BUY)
 	{
