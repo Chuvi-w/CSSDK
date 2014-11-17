@@ -1429,6 +1429,25 @@ bool CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, B
 	return true;
 }
 
+void CBasePlayer::HostageUsed(void)  // Last check: 2013, November 17.
+{
+	if (m_flDisplayHistory & Hint_lead_hostage_to_rescue_point)
+	{
+		return;
+	}
+
+	if (m_iTeam == TERRORIST)
+	{
+		HintMessage("#Hint_use_hostage_to_stop_him");
+	}
+	else if (m_iTeam == CT)
+	{
+		HintMessage("#Hint_lead_hostage_to_rescue_point");
+	}
+
+	m_flDisplayHistory |= Hint_lead_hostage_to_rescue_point;
+}
+
 // CS
 BOOL CBasePlayer::IsBombGuy(void)
 {
