@@ -5070,7 +5070,7 @@ CBaseEntity *FindEntityForward(CBaseEntity *pMe)
 	return NULL;
 }
 
-BOOL CBasePlayer::FlashlightIsOn(void)
+BOOL CBasePlayer::FlashlightIsOn(void)  // Last check: 2013, November 17.
 {
 	return FBitSet(pev->effects, EF_DIMLIGHT);
 }
