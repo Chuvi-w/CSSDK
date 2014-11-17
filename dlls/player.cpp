@@ -6143,6 +6143,78 @@ void CBasePlayer::DropPlayerItem(char *pszItemName) // Last check: 2013, Novembe
 	}
 }
 
+void CBasePlayer::DropShield(bool bDeploy) // Last check: 2013, November 17.
+{
+	if (!HasShield())
+	{
+		return;
+	}
+
+	if (m_pActiveItem && !m_pActiveItem->CanHolster())
+	{
+		return;
+	}
+
+	if (m_pActiveItem)
+	{
+		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
+
+		if (pWeapon->m_iId == WEAPON_HEGRENADE || pWeapon->m_iId == WEAPON_FLASHBANG || pWeapon->m_iId == WEAPON_SMOKEGRENADE)
+		{
+			if (m_rgAmmo[pWeapon->m_iPrimaryAmmoType] <= 0)
+			{
+				g_pGameRules->GetNextBestWeapon(this, pWeapon);
+			}
+		}
+	}
+
+	if (m_pActiveItem)
+	{
+		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
+
+		if (pWeapon->m_flStartThrow != 0)
+		{
+			m_pActiveItem->Holster();
+		}
+	}
+
+	if (IsReloading())
+	{
+		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
+
+		pWeapon->m_fInReload = FALSE;
+		m_flNextAttack = UTIL_WeaponTimeBase();
+	}
+
+	if (IsProtectedByShield() && m_pActiveItem)
+	{
+		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
+		pWeapon->SecondaryAttack();
+	}
+
+	m_bShieldDrawn = false;
+
+	RemoveShield();
+
+	if (m_pActiveItem && bDeploy)
+	{
+		m_pActiveItem->Deploy();
+	}
+
+	UTIL_MakeVectors(pev->angles);
+
+	CWShield *pShield = (CWShield *)CBaseEntity::Create("weapon_shield", pev->origin + gpGlobals->v_forward * 10, pev->angles, edict());
+	
+	pShield->pev->angles.x = 0;
+	pShield->pev->angles.y = 0;
+	pShield->pev->velocity = gpGlobals->v_forward * 400;
+
+	pShield->SetThink(&CBaseEntity::SUB_Remove);
+	pShield->pev->nextthink = gpGlobals->time + 300;
+
+	pShield->SetCantBePickedUpByUser(this, 2.0);
+}
+
 //=========================================================
 // HasPlayerItem Does the player already have this item?
 //=========================================================
