@@ -520,7 +520,7 @@ public:
 	virtual void StopSneaking(void) { m_tSneaking = gpGlobals->time + 30.0f; }
 	virtual BOOL IsSneaking(void) { return m_tSneaking <= gpGlobals->time; }
 
-	virtual BOOL IsAlive(void) { return pev->deadflag == DEAD_NO && pev->health > 0; }
+	virtual BOOL IsAlive(void) { return pev->deadflag == DEAD_NO && pev->health > 0; } // Last check : 2014, November 17.
 	virtual BOOL ShouldFadeOnDeath(void) { return FALSE; }
 	virtual BOOL IsPlayer(void) { return TRUE; }
 	virtual BOOL IsBot(void) { return FALSE; }
