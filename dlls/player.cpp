@@ -1472,6 +1472,32 @@ void CBasePlayer::HostageUsed(void)  // Last check: 2013, November 17.
 	m_flDisplayHistory |= Hint_lead_hostage_to_rescue_point;
 }
 
+BOOL CBasePlayer::IsArmored(int nHitGroup)  // Last check: 2013, November 17.
+{
+	if (!m_iKevlar)
+	{
+		return FALSE;
+	}
+
+	switch (nHitGroup)
+	{
+		case HITGROUP_HEAD:
+		{
+			return m_iKevlar == 2;
+		}
+		case HITGROUP_GENERIC:
+		case HITGROUP_CHEST:
+		case HITGROUP_STOMACH:
+		case HITGROUP_LEFTARM:
+		case HITGROUP_RIGHTARM:
+		{
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
 // CS
 BOOL CBasePlayer::IsBombGuy(void)
 {
