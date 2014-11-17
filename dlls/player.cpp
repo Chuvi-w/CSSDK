@@ -5579,6 +5579,35 @@ int CBasePlayer::GiveAmmo(int iCount, char *szName, int iMax) // Last check: 201
 	return i;
 }
 
+void CBasePlayer::GiveDefaultItems(void) // Last check: 2013, November 17.
+{
+	RemoveAllItems(FALSE);
+
+	m_bHasPrimary = false;
+
+	switch (m_iTeam)
+	{
+		case CT:
+		{
+			GiveNamedItem("weapon_knife");
+			GiveNamedItem("weapon_usp");
+
+			GiveAmmo(m_bIsVIP ? 12 : 24, "45acp", _45ACP_MAX_CARRY);
+
+			break;
+		}
+		case TERRORIST:
+		{
+			GiveNamedItem("weapon_knife");
+			GiveNamedItem("weapon_glock18");
+
+			GiveAmmo(40, "9mm", _9MM_MAX_CARRY);
+
+			break;
+		}
+	}
+}
+
 /*
 ============
 ItemPreFrame
