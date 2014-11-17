@@ -680,6 +680,106 @@ void CBasePlayer::CalculateYawBlend(void) // Last check: 2013, September 13.
 	m_flYaw = blend_yaw;
 }
 
+void CBasePlayer::StudioEstimateGait(void) // Last check: 2013, September 13.
+{
+	float dt = gpGlobals->frametime;
+
+	if (dt < 0)
+	{
+		dt = 0;
+	}
+	else if (dt > 1)
+	{
+		dt = 1;
+	}
+
+	if (dt == 0)
+	{
+		m_flGaitMovement = 0;
+		return;
+	}
+
+	Vector velocity = pev->origin - m_prevgaitorigin;
+
+	m_prevgaitorigin = pev->origin;
+	m_flGaitMovement = velocity.Length();
+		
+	if (dt <= 0 || m_flGaitMovement / dt < 5)
+	{
+		m_flGaitMovement = 0;
+		velocity.x = velocity.y = 0;
+	}
+
+	if (velocity.x == 0 && velocity.y == 0)
+	{
+		float flYawDiff = pev->angles[1] - m_flGaityaw;
+		float flYaw = flYawDiff;
+
+		flYawDiff = flYawDiff - (int)(flYawDiff / 360) * 360;
+
+		if (flYawDiff > 180)
+		{
+			flYawDiff -= 360;
+		}
+
+		if (flYawDiff < -180)
+		{
+			flYawDiff += 360;
+		}
+
+		if (flYaw < -180)
+		{
+			flYaw += 360;
+		}
+		else if (flYaw > 180)
+		{
+			flYaw -= 360;
+		}
+
+		if (flYaw > -5 && flYaw < 5)
+		{
+			m_flYawModifier = 0.05;
+		}
+
+		if (flYaw < -90 || flYaw > 90)
+		{
+			m_flYawModifier = 3.5;
+		}
+
+		if (dt < 0.25)
+		{
+			flYawDiff *= dt * m_flYawModifier;
+		}
+		else
+		{
+			flYawDiff *= dt;
+		}
+
+		if (abs(flYawDiff) < 0.1)
+		{
+			flYawDiff = 0;
+		}
+
+		m_flGaityaw += flYawDiff;
+		m_flGaityaw -= (int)(m_flGaityaw / 360) * 360;
+		m_flGaitMovement = 0;
+	}
+	else
+	{
+		m_flGaityaw = (atan2(velocity.y, velocity.x) * 180 / M_PI);
+
+		if (m_flGaityaw > 180)
+		{
+			m_flGaityaw = 180;
+		}
+
+		if (m_flGaityaw < -180)
+		{
+			m_flGaityaw = -180;
+		}
+	}
+}
+
 void CBasePlayer::StudioProcessGait(void) // Last check: 2013, September 14.
 {
 	float dt = max(0, gpGlobals->frametime);
