@@ -5075,7 +5075,7 @@ BOOL CBasePlayer::FlashlightIsOn(void)  // Last check: 2013, November 17.
 	return FBitSet(pev->effects, EF_DIMLIGHT);
 }
 
-void CBasePlayer::FlashlightTurnOn(void)
+void CBasePlayer::FlashlightTurnOn(void) // Last check: 2013, November 17.
 {
 	if (!g_pGameRules->FAllowFlashlight())
 	{
@@ -5095,16 +5095,18 @@ void CBasePlayer::FlashlightTurnOn(void)
 	}
 }
 
-void CBasePlayer::FlashlightTurnOff(void)
+void CBasePlayer::FlashlightTurnOff(void) // Last check: 2013, November 17.
 {
 	EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_OFF, 1.0, ATTN_NORM, 0, PITCH_NORM);
+
 	ClearBits(pev->effects, EF_DIMLIGHT);
-	MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
-	WRITE_BYTE(0);
-	WRITE_BYTE(m_iFlashBattery);
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, edict());
+		WRITE_BYTE(0);
+		WRITE_BYTE(m_iFlashBattery);
 	MESSAGE_END();
 
-	m_flFlashLightTime = FLASH_CHARGE_TIME + gpGlobals->time;
+	m_flFlashLightTime = gpGlobals->time + FLASH_CHARGE_TIME;
 }
 
 /*
