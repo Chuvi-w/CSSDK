@@ -3460,14 +3460,11 @@ void FixPlayerCrouchStuck(edict_t *pPlayer)
 	}
 }
 
-void CBasePlayer::Duck()
+void CBasePlayer::Duck(void)  // Last check: 2013, November 17.
 {
-	if (pev->button & IN_DUCK)
+	if (pev->button & IN_DUCK && pev->modelindex && (m_flFlinchTime < gpGlobals->time || pev->health <= 0))
 	{
-		if (m_IdealActivity != ACT_LEAP)
-		{
-			SetAnimation(PLAYER_WALK);
-		}
+		SetAnimation(PLAYER_WALK);
 	}
 }
 
