@@ -555,7 +555,7 @@ bool CBasePlayer::CanPlayerBuy(bool display) // Last check: 2013, September 13.
 		return CHalfLifeTraining::PlayerCanBuy(this);
 	}
 
-	if (pev->deadflag != DEAD_NO || ~m_signals.GetState() & SIGNAL_BUY)
+	if (pev->deadflag != DEAD_NO || !(m_signals.GetState() & SIGNAL_BUY))
 	{
 		return false;
 	}
@@ -822,8 +822,6 @@ void CBasePlayer::StudioProcessGait(void) // Last check: 2013, September 14.
 
 bool CBasePlayer::CanAffordArmor(void) // Last check: 2013, September 14.
 {
-	int money;
-
 	if (m_iKevlar != 1)
 	{
 		return m_iAccount >= 650;
@@ -5041,12 +5039,10 @@ void CBasePlayer::ImpulseCommands()
 	pev->impulse = 0;
 }
 
-//=========================================================
-//=========================================================
-void CBasePlayer::CheatImpulseCommands(int iImpulse)
+
+void CBasePlayer::CheatImpulseCommands(int iImpulse) // Last check: 2013, November 17.
 {
-#if !defined( HLDEMO_BUILD )
-	if (g_flWeaponCheat == 0.0)
+	if (!g_flWeaponCheat)
 	{
 		return;
 	}
@@ -5056,167 +5052,180 @@ void CBasePlayer::CheatImpulseCommands(int iImpulse)
 
 	switch (iImpulse)
 	{
-	case 76:
-	{
-		if (!giPrecacheGrunt)
+		case 204:
 		{
-			giPrecacheGrunt = 1;
-			ALERT(at_console, "You must now restart to use Grunt-o-matic.\n");
+			UTIL_BloodDrips(pev->origin, Vector(0, 0, 1), BLOOD_COLOR_RED, 2000);
 		}
-		else
+		case 76:
 		{
-			UTIL_MakeVectors(Vector(0, pev->v_angle.y, 0));
-			Create("monster_human_grunt", pev->origin + gpGlobals->v_forward * 128, pev->angles);
-		}
-		break;
-	}
-
-	case 101:
-		gEvilImpulse101 = TRUE;
-		GiveNamedItem("item_suit");
-		GiveNamedItem("item_battery");
-		GiveNamedItem("weapon_crowbar");
-		GiveNamedItem("weapon_9mmhandgun");
-		GiveNamedItem("ammo_9mmclip");
-		GiveNamedItem("weapon_shotgun");
-		GiveNamedItem("ammo_buckshot");
-		GiveNamedItem("weapon_9mmAR");
-		GiveNamedItem("ammo_9mmAR");
-		GiveNamedItem("ammo_ARgrenades");
-		GiveNamedItem("weapon_handgrenade");
-		GiveNamedItem("weapon_tripmine");
-#ifndef OEM_BUILD
-		GiveNamedItem("weapon_357");
-		GiveNamedItem("ammo_357");
-		GiveNamedItem("weapon_crossbow");
-		GiveNamedItem("ammo_crossbow");
-		GiveNamedItem("weapon_egon");
-		GiveNamedItem("weapon_gauss");
-		GiveNamedItem("ammo_gaussclip");
-		GiveNamedItem("weapon_rpg");
-		GiveNamedItem("ammo_rpgclip");
-		GiveNamedItem("weapon_satchel");
-		GiveNamedItem("weapon_snark");
-		GiveNamedItem("weapon_hornetgun");
-#endif
-		gEvilImpulse101 = FALSE;
-		break;
-
-	case 102:
-		// Gibbage!!!
-		CGib::SpawnRandomGibs(pev, 1, 1);
-		break;
-
-	case 103:
-		// What the hell are you doing?
-		pEntity = FindEntityForward(this);
-		if (pEntity)
-		{
-			CBaseMonster *pMonster = pEntity->MyMonsterPointer();
-			if (pMonster)
-				pMonster->ReportAIState();
-		}
-		break;
-
-	case 104:
-		// Dump all of the global state varaibles (and global entity names)
-		gGlobalState.DumpGlobals();
-		break;
-
-	case    105:// player makes no sound for monsters to hear.
-	{
-		if (m_fNoPlayerSound)
-		{
-			ALERT(at_console, "Player is audible\n");
-			m_fNoPlayerSound = FALSE;
-		}
-		else
-		{
-			ALERT(at_console, "Player is silent\n");
-			m_fNoPlayerSound = TRUE;
-		}
-		break;
-	}
-
-	case 106:
-		// Give me the classname and targetname of this entity.
-		pEntity = FindEntityForward(this);
-		if (pEntity)
-		{
-			ALERT(at_console, "Classname: %s", STRING(pEntity->pev->classname));
-
-			if (!FStringNull(pEntity->pev->targetname))
+			if (!giPrecacheGrunt)
 			{
-				ALERT(at_console, " - Targetname: %s\n", STRING(pEntity->pev->targetname));
+				giPrecacheGrunt = 1;
+				ALERT(at_console, "You must now restart to use Grunt-o-matic.\n");
 			}
 			else
 			{
-				ALERT(at_console, " - TargetName: No Targetname\n");
+				UTIL_MakeVectors(Vector(0, pev->v_angle.y, 0));
+				Create("monster_human_grunt", pev->origin + gpGlobals->v_forward * 128, pev->angles);
+			}
+			break;
+		}
+
+		case 101:
+		{
+			gEvilImpulse101 = TRUE;
+			AddAccount(16000, true);
+			ALERT(at_console, "Crediting %s with $16000\n", STRING(pev->netname));
+			break;
+		}
+		case 102:
+		{
+			// Gibbage!!!
+			CGib::SpawnRandomGibs(pev, 1, 1);
+			break;
+		}
+		case 103:
+		{
+			// What the hell are you doing?
+			pEntity = FindEntityForward(this);
+
+			if (pEntity)
+			{
+				CBaseMonster *pMonster = pEntity->MyMonsterPointer();
+
+				if (pMonster)
+				{
+					pMonster->ReportAIState();
+				}
+			}
+			break;
+		}
+		case 104:
+		{
+			// Dump all of the global state varaibles (and global entity names)
+			gGlobalState.DumpGlobals();
+			break;
+		}
+		case 105:
+		{
+			// player makes no sound for monsters to hear.
+			if (m_fNoPlayerSound)
+			{
+				ALERT(at_console, "Player is audible\n");
+				m_fNoPlayerSound = FALSE;
+			}
+			else
+			{
+				ALERT(at_console, "Player is silent\n");
+				m_fNoPlayerSound = TRUE;
+			}
+			break;
+		}
+		case 106:
+		{
+			// Give me the classname and targetname of this entity.
+			pEntity = FindEntityForward(this);
+
+			if (pEntity)
+			{
+				ALERT(at_console, "Classname: %s", STRING(pEntity->pev->classname));
+
+				if (!FStringNull(pEntity->pev->targetname))
+				{
+					ALERT(at_console, " - Targetname: %s\n", STRING(pEntity->pev->targetname));
+				}
+				else
+				{
+					ALERT(at_console, " - TargetName: No Targetname\n");
+				}
+
+				ALERT(at_console, "Model: %s\n", STRING(pEntity->pev->model));
+
+				if (pEntity->pev->globalname)
+				{
+					ALERT(at_console, "Globalname: %s\n", STRING(pEntity->pev->globalname));
+				}
 			}
 
-			ALERT(at_console, "Model: %s\n", STRING(pEntity->pev->model));
-			if (pEntity->pev->globalname)
-				ALERT(at_console, "Globalname: %s\n", STRING(pEntity->pev->globalname));
+			break;
 		}
-		break;
-
-	case 107:
-	{
-		TraceResult tr;
-
-		edict_t     *pWorld = g_engfuncs.pfnPEntityOfEntIndex(0);
-
-		Vector start = pev->origin + pev->view_ofs;
-		Vector end = start + gpGlobals->v_forward * 1024;
-		UTIL_TraceLine(start, end, ignore_monsters, edict(), &tr);
-		if (tr.pHit)
-			pWorld = tr.pHit;
-		const char *pTextureName = TRACE_TEXTURE(pWorld, start, end);
-		if (pTextureName)
-			ALERT(at_console, "Texture: %s\n", pTextureName);
-	}
-	break;
-	case    195:// show shortest paths for entire level to nearest node
-	{
-		Create("node_viewer_fly", pev->origin, pev->angles);
-	}
-	break;
-	case    196:// show shortest paths for entire level to nearest node
-	{
-		Create("node_viewer_large", pev->origin, pev->angles);
-	}
-	break;
-	case    197:// show shortest paths for entire level to nearest node
-	{
-		Create("node_viewer_human", pev->origin, pev->angles);
-	}
-	break;
-	case    199:// show nearest node and all connections
-	{
-		ALERT(at_console, "%d\n", WorldGraph.FindNearestNode(pev->origin, bits_NODE_GROUP_REALM));
-		WorldGraph.ShowNodeConnections(WorldGraph.FindNearestNode(pev->origin, bits_NODE_GROUP_REALM));
-	}
-	break;
-	case    202:// Random blood splatter
-		UTIL_MakeVectors(pev->v_angle);
-		UTIL_TraceLine(pev->origin + pev->view_ofs, pev->origin + pev->view_ofs + gpGlobals->v_forward * 128, ignore_monsters, ENT(pev), &tr);
-
-		if (tr.flFraction != 1.0)
-		{// line hit something, so paint a decal
-			CBloodSplat *pBlood = GetClassPtr((CBloodSplat *)NULL);
-			pBlood->Spawn(pev);
-		}
-		break;
-	case    203:// remove creature.
-		pEntity = FindEntityForward(this);
-		if (pEntity)
+		case 107:
 		{
-			if (pEntity->pev->takedamage)
-				pEntity->SetThink(&CBaseEntity::SUB_Remove);
+			TraceResult tr;
+			edict_t *pWorld = g_engfuncs.pfnPEntityOfEntIndex(0);
+
+			Vector start = pev->origin + pev->view_ofs;
+			Vector end = start + gpGlobals->v_forward * 1024;
+
+			UTIL_TraceLine(start, end, ignore_monsters, edict(), &tr);
+
+			if (tr.pHit)
+			{
+				pWorld = tr.pHit;
+			}
+
+			const char *pTextureName = TRACE_TEXTURE(pWorld, start, end);
+
+			if (pTextureName)
+			{
+				ALERT(at_console, "Texture: %s\n", pTextureName);
+			}
+
+			break;
 		}
-		break;
+		case 195:
+		{
+			// show shortest paths for entire level to nearest node
+			Create("node_viewer_fly", pev->origin, pev->angles);
+			break;
+		}
+		case 196:
+		{
+			// show shortest paths for entire level to nearest node
+			Create("node_viewer_large", pev->origin, pev->angles);
+			break;
+		}
+		case 197:
+		{
+			// show shortest paths for entire level to nearest node
+			Create("node_viewer_human", pev->origin, pev->angles);
+			break;
+		}
+		case 199:
+		{
+			// show nearest node and all connections
+			ALERT(at_console, "%d\n", WorldGraph.FindNearestNode(pev->origin, bits_NODE_GROUP_REALM));
+			WorldGraph.ShowNodeConnections(WorldGraph.FindNearestNode(pev->origin, bits_NODE_GROUP_REALM));
+			break;
+		}
+		case 202:// Random blood splatter
+		{
+			UTIL_MakeVectors(pev->v_angle);
+			UTIL_TraceLine(pev->origin + pev->view_ofs, pev->origin + pev->view_ofs + gpGlobals->v_forward * 128, ignore_monsters, ENT(pev), &tr);
+
+			if (tr.flFraction != 1.0)
+			{
+				// line hit something, so paint a decal
+				CBloodSplat *pBlood = GetClassPtr((CBloodSplat *)NULL);
+				pBlood->Spawn(pev);
+			}
+			break;
+		}
+		case 203:
+		{
+			// remove creature.
+			pEntity = FindEntityForward(this);
+
+			if (pEntity)
+			{
+				if (pEntity->pev->takedamage)
+				{
+					pEntity->SetThink(&CBaseEntity::SUB_Remove);
+				}
+			}
+			break;
+		}
 	}
-#endif  // HLDEMO_BUILD
 }
 
 int CBasePlayer::RemovePlayerItem(CBasePlayerItem *pItem)
