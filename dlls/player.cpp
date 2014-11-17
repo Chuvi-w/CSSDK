@@ -3822,52 +3822,54 @@ void CBasePlayer::PlayerUse(void)
 	}
 }
 
-void CBasePlayer::Jump()
+void CBasePlayer::Jump(void)  // Last check: 2013, November 17.
 {
-	Vector      vecWallCheckDir;// direction we're tracing a line to find a wall when walljumping
-	Vector      vecAdjustedVelocity;
-	Vector      vecSpot;
-	TraceResult tr;
-
-	if (FBitSet(pev->flags, FL_WATERJUMP))
-		return;
-
-	if (pev->waterlevel >= 2)
+	if (pev->flags & FL_WATERJUMP || pev->waterlevel >= 2)
 	{
 		return;
 	}
 
-	// jump velocity is sqrt( height * gravity * 2)
-
-	// If this isn't the first frame pressing the jump button, break out.
-	if (!FBitSet(m_afButtonPressed, IN_JUMP))
-		return;         // don't pogo stick
-
-	if (!(pev->flags & FL_ONGROUND) || !pev->groundentity)
+	if (!(m_afButtonPressed & IN_JUMP)
 	{
 		return;
 	}
 
-	// many features in this function use v_forward, so makevectors now.
+	if (!(pev->flags & FL_ONGROUND) || !pev->groundentity))
+	{
+		return;
+	}
+
 	UTIL_MakeVectors(pev->angles);
-
-	// ClearBits(pev->flags, FL_ONGROUND);      // don't stairwalk
-
-	SetAnimation(PLAYER_JUMP);
-
-	if (m_fLongJump &&
-		(pev->button & IN_DUCK) &&
-		(pev->flDuckTime > 0) &&
-		pev->velocity.Length() > 50)
+	
+	if (pev->modelindex && (m_flFlinchTime < gpGlobals->time || pev->health < 0))
 	{
-		SetAnimation(PLAYER_SUPERJUMP);
+		SetAnimation(PLAYER_JUMP);
 	}
 
-	// If you're standing on a conveyor, add it's velocity to yours (for momentum)
-	entvars_t *pevGround = VARS(pev->groundentity);
-	if (pevGround && (pevGround->flags & FL_CONVEYOR))
+	if ((pev->button & IN_DUCK) || (m_afPhysicsFlags & PFLAG_DUCKING))
 	{
-		pev->velocity = pev->velocity + pev->basevelocity;
+		if (m_fLongJump && (pev->button & IN_DUCK) && (gpGlobals->time - m_flDuckTime < 1) && pev->velocity.Length() > 50)
+		{
+			if (pev->modelindex && (m_flFlinchTime < gpGlobals->time || pev->health < 0))
+			{
+				SetAnimation(PLAYER_SUPERJUMP);
+			}
+		}
+	}
+
+	entvars_t *pevGround = VARS(pev->groundentity);
+
+	if (pevGround)
+	{
+		if (pevGround->flags & FL_CONVEYOR)
+		{
+			pev->velocity = pev->velocity + pev->basevelocity;
+		}
+
+		if (FClassnameIs(pevGround, "func_tracktrain") || FClassnameIs(pevGround, "func_train") || FClassnameIs(pevGround, "func_vehicle"))
+		{
+			pev->velocity = pevGround->velocity + pev->velocity;
+		}
 	}
 }
 
