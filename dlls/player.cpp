@@ -5135,18 +5135,18 @@ void CBloodSplat::Spray(void)
 
 //==============================================
 
-void CBasePlayer::GiveNamedItem(const char *pszName)
+void CBasePlayer::GiveNamedItem(const char *pszName) // Last check: 2013, November 17.
 {
-	edict_t *pent;
+	string_t istr = MAKE_STRING(pszName);
 
-	int istr = MAKE_STRING(pszName);
-
-	pent = CREATE_NAMED_ENTITY(istr);
+	edict_t *pent = CREATE_NAMED_ENTITY(istr);
+	
 	if (FNullEnt(pent))
 	{
 		ALERT(at_console, "NULL Ent in GiveNamedItem!\n");
 		return;
 	}
+
 	VARS(pent)->origin = pev->origin;
 	pent->v.spawnflags |= SF_NORESPAWN;
 
