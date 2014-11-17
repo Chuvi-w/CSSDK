@@ -918,6 +918,23 @@ void CBasePlayer::ClearAutoBuyData(void) // Last check: 2013, November 17.
 	m_autoBuyString[0] = '\0';
 }
 
+const char *BotArgs[4];
+bool UseBotArgs = false;
+
+void CBasePlayer::ClientCommand(const char *cmd, const char *arg1, const char *arg2, const char *arg3) // Last check: 2013, November 17.
+{
+	UseBotArgs = true;
+
+	BotArgs[0] = cmd;
+	BotArgs[1] = arg1;
+	BotArgs[2] = arg2;
+	BotArgs[3] = arg3;
+
+	::ClientCommand(edict());
+
+	UseBotArgs = false;
+}
+
 // CS
 bool CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)
 {

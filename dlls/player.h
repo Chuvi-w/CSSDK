@@ -685,7 +685,7 @@ public:
 	void ClearAutoBuyData(void);
 	void AddAutoBuyData(const char *str);
 	void AutoBuy(void);
-	// void ClientCommand( const char*, const char*, const char*, const char*); // Unsure.
+	void ClientCommand(const char *arg0, const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL);
 	void PrioritizeAutoBuyString(char *autobuyString, const char *priorityString);
 
 	const char *PickPrimaryCareerTaskWeapon(void);
