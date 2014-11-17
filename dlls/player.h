@@ -522,7 +522,7 @@ public:
 
 	virtual BOOL IsAlive(void) { return pev->deadflag == DEAD_NO && pev->health > 0; } // Last check : 2014, November 17.
 	virtual BOOL ShouldFadeOnDeath(void) { return FALSE; }
-	virtual BOOL IsPlayer(void) { return TRUE; }
+	virtual BOOL IsPlayer(void) { return (pev->flags & FL_SPECTATOR) == 0; }
 	virtual BOOL IsBot(void) { return FALSE; } // Last check : 2014, November 17.
 	virtual BOOL IsNetClient(void) { return TRUE; } // Last check: 2013, November 17.
 
