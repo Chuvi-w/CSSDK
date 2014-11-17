@@ -6215,6 +6215,11 @@ void CBasePlayer::DropShield(bool bDeploy) // Last check: 2013, November 17.
 	pShield->SetCantBePickedUpByUser(this, 2.0);
 }
 
+bool CBasePlayer::IsReloading(void) // Last check: 2013, November 17.
+{
+	return m_pActiveItem && ((CBasePlayerWeapon *)m_pActiveItem)->m_fInReload;
+}
+
 //=========================================================
 // HasPlayerItem Does the player already have this item?
 //=========================================================
