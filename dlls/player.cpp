@@ -5085,13 +5085,15 @@ void CBasePlayer::FlashlightTurnOn(void) // Last check: 2013, November 17.
 	if ((pev->weapons & (1 << WEAPON_SUIT)))
 	{
 		EMIT_SOUND_DYN(ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_ON, 1.0, ATTN_NORM, 0, PITCH_NORM);
+
 		SetBits(pev->effects, EF_DIMLIGHT);
-		MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, pev);
-		WRITE_BYTE(1);
-		WRITE_BYTE(m_iFlashBattery);
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgFlashlight, NULL, edict());
+			WRITE_BYTE(1);
+			WRITE_BYTE(m_iFlashBattery);
 		MESSAGE_END();
 
-		m_flFlashLightTime = FLASH_DRAIN_TIME + gpGlobals->time;
+		m_flFlashLightTime = gpGlobals->time + FLASH_DRAIN_TIME;
 	}
 }
 
