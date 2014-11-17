@@ -905,10 +905,9 @@ bool CBasePlayer::CanAffordSecondaryAmmo(void) // Last check: 2013, September 14
 	return false;
 }
 
-// CS
-void CBasePlayer::CheckPowerups(entvars_s *pev)
+void CBasePlayer::CheckPowerups(entvars_s *pev) 
 {
-	if (pev->health > 0.0)
+	if (pev->health > 0)
 	{
 		pev->modelindex = m_modelIndexPlayer;
 	}
@@ -3844,7 +3843,9 @@ void CBasePlayer::CheckSuitUpdate()
 
 	// Ignore suit updates if no suit
 	if (!(pev->weapons & (1 << WEAPON_SUIT)))
+	{
 		return;
+	}
 
 	// if in range of radiation source, ping geiger counter
 	UpdateGeigerCounter();
@@ -3861,22 +3862,28 @@ void CBasePlayer::CheckSuitUpdate()
 		for (i = 0; i < CSUITPLAYLIST; i++)
 		{
 			if ((isentence = m_rgSuitPlayList[isearch]))
+			{
 				break;
+			}
 
 			if (++isearch == CSUITPLAYLIST)
+			{
 				isearch = 0;
+			}
 		}
 
 		if (isentence)
 		{
 			m_rgSuitPlayList[isearch] = 0;
+
 			if (isentence > 0)
 			{
 				// play sentence number
-
 				char sentence[CBSENTENCENAME_MAX + 1];
+
 				strcpy(sentence, "!");
 				strcat(sentence, gszallsentencenames[isentence]);
+
 				EMIT_SOUND_SUIT(ENT(pev), sentence);
 			}
 			else
@@ -3887,8 +3894,10 @@ void CBasePlayer::CheckSuitUpdate()
 			m_flSuitUpdate = gpGlobals->time + SUITUPDATETIME;
 		}
 		else
+		{
 			// queue is empty, don't check
 			m_flSuitUpdate = 0;
+		}
 	}
 }
 
@@ -3898,7 +3907,7 @@ void CBasePlayer::CheckSuitUpdate()
 // seconds, then we won't repeat playback of this word or sentence
 // for at least that number of seconds.
 
-void CBasePlayer::SetSuitUpdate(char *name, int fgroup, int iNoRepeatTime)
+void CBasePlayer::SetSuitUpdate(char *name, int fgroup, int iNoRepeatTime) // Last check: 2013, November 17.
 {
 	int i;
 	int isentence;
@@ -3987,24 +3996,6 @@ void CBasePlayer::SetSuitUpdate(char *name, int fgroup, int iNoRepeatTime)
 		else
 			m_flSuitUpdate = gpGlobals->time + SUITUPDATETIME;
 	}
-}
-
-/*
-================
-CheckPowerups
-
-Check for turning off powerups
-
-GLOBALS ASSUMED SET:  g_ulModelIndexPlayer
-================
-*/
-static void
-CheckPowerups(entvars_t *pev)
-{
-	if (pev->health <= 0)
-		return;
-
-	pev->modelindex = g_ulModelIndexPlayer;    // don't use eyes
 }
 
 //=========================================================
