@@ -483,7 +483,7 @@ public:
 	void PlantC4(void);
 
 	void Radio(const char *msg_id, const char *msg_verbose, short int pitch = PITCH_NORM, bool showIcon = true);
-	CBasePlayer*  GetNextRadioRecipient(CBasePlayer *pStartPlayer);
+	CBasePlayer*  GetNextRadioRecipient(CBasePlayer *pStartPlayer); // Used by bot only.
 	void SmartRadio(void);
 
 	void ThrowWeapon(char *pszItemName);

@@ -1143,6 +1143,46 @@ AutoBuyInfoStruct *CBasePlayer::GetAutoBuyCommandInfo(const char *command)  // L
 	return NULL;
 }
 
+CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer) // Last check: 2013, November 17.
+{
+	CBaseEntity *pEntity = NULL;
+
+	while ((pEntity = (CBasePlayer *)UTIL_FindEntityByClassname(pStartPlayer, "player")))
+	{
+		if (FNullEnt(pEntity->edict()))
+		{
+			return NULL;
+		}
+
+		CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
+
+		if (pEntity->IsPlayer())
+		{
+			if (!pEntity->IsDormant() && pPlayer && pPlayer->m_iTeam == m_iTeam)
+			{
+				return pPlayer;
+			}
+		}
+		else if (pPlayer)
+		{
+			if (pPlayer->pev->iuser1 <= OBS_CHASE_LOCKED || pPlayer->pev->iuser1 == OBS_IN_EYE)
+			{
+				if (!FNullEnt(pPlayer->m_hObserverTarget->edict()))
+				{
+					CBasePlayer *ptarget = (CBasePlayer *)((CBaseEntity *)pPlayer->m_hObserverTarget);
+
+					if (ptarget && ptarget->m_iTeam == m_iTeam)
+					{
+						return pPlayer;
+					}
+				}
+			}
+		}
+	}
+
+	return NULL;
+}
+
 // CS
 bool CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)
 {
