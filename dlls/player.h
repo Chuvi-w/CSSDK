@@ -518,7 +518,7 @@ public:
 
 	virtual void StartSneaking(void) { m_tSneaking = gpGlobals->time - 1.0f; }
 	virtual void StopSneaking(void) { m_tSneaking = gpGlobals->time + 30.0f; }
-	virtual BOOL IsSneaking(void) { return m_tSneaking <= gpGlobals->time; }
+	virtual BOOL IsSneaking(void) { return m_tSneaking <= gpGlobals->time; } // Last check : 2014, November 17.
 
 	virtual BOOL IsAlive(void) { return pev->deadflag == DEAD_NO && pev->health > 0; } // Last check : 2014, November 17.
 	virtual BOOL ShouldFadeOnDeath(void) { return FALSE; }
