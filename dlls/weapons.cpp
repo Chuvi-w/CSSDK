@@ -1798,3 +1798,9 @@ void CWShield::Touch(CBaseEntity *pOther) // Last check: 2013, November 17.
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 }
+
+void CWShield::SetCantBePickedUpByUser(CBaseEntity *pEntity, float time) // Last check: 2013, November 17.
+{
+	m_hEntToIgnoreTouchesFrom = pEntity;
+	m_flTimeToIgnoreTouches   = gpGlobals->time + time;
+}
