@@ -1503,6 +1503,28 @@ BOOL CBasePlayer::IsBombGuy(void)  // Last check: 2013, November 17.
 	return g_pGameRules->IsMultiplayer() && m_bHasC4;
 }
 
+bool CBasePlayer::IsHittingShield(const Vector &vecDirection, TraceResult *ptr) // Last check: 2013, November 17.
+{
+	if (!HasShield())
+	{
+		return false;
+	}
+
+	if (ptr->iHitgroup == HITGROUP_SHIELD)
+	{
+		return true;
+	}
+
+	if (!m_bShieldDrawn)
+	{
+		return false;
+	}
+
+	UTIL_MakeVectors(pev->angles);
+
+	return false;
+}
+
 // CS
 void CBasePlayer::MakeVIP(void)
 {
