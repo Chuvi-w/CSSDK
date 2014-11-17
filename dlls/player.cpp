@@ -325,6 +325,26 @@ void LinkUserMessages(void)  // Last check: 2013, May 29
 
 LINK_ENTITY_TO_CLASS(player, CBasePlayer);
 
+
+void SendItemStatus(CBasePlayer *pPlayer) // Last check : 2014, November 17.
+{
+	int itemStatus = 0;
+
+	if (pPlayer->m_bHasNightVision)
+	{
+		itemStatus |= ITEMSTATE_HASNIGHTVISION;
+	}
+
+	if (pPlayer->m_bHasDefuser)
+	{
+		itemStatus |= ITEMSTATE_HASDEFUSER;
+	}
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgItemStatus, NULL, pPlayer->edict());
+		WRITE_BYTE(itemStatus);
+	MESSAGE_END();
+}
+
 void CBasePlayer::AddAccount(int amount, bool bTrackChange) // Last check : 2013, June 13.
 {
 	m_iAccount += amount;
