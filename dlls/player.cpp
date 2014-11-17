@@ -5120,18 +5120,18 @@ so that the client side .dll can behave correctly.
 Reset stuff so that the state is transmitted.
 ===============
 */
-void CBasePlayer::ForceClientDllUpdate(void)
+void CBasePlayer::ForceClientDllUpdate(void)  // Last check: 2013, November 17.
 {
 	m_iClientHealth  = -1;
 	m_iClientBattery = -1;
-	m_iTrain |= TRAIN_NEW;  // Force new train message.
-	m_fWeapon = FALSE;          // Force weapon send
-	//m_fKnownItem = FALSE;    // Force weaponinit messages.
-	m_fInitHUD = TRUE;      // Force HUD gmsgResetHUD message
+	
+	m_fWeapon  = FALSE;      // Force weapon send
+	m_fInitHUD = TRUE;       // Force HUD gmsgResetHUD message
+	m_iTrain  |= TRAIN_NEW;  // Force new train message.
 
-	// Now force all the necessary messages
-	//  to be sent.
+	// Now force all the necessary messages to be sent.
 	UpdateClientData();
+	HandleSignals();
 }
 
 /*
