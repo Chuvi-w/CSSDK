@@ -6630,7 +6630,7 @@ void CBasePlayer::RemoveShield(void) // Last check: 2013, November 17.
 //=========================================================
 // HasPlayerItem Does the player already have this item?
 //=========================================================
-BOOL CBasePlayer::HasPlayerItem(CBasePlayerItem *pCheckItem)
+BOOL CBasePlayer::HasPlayerItem(CBasePlayerItem *pCheckItem) // Last check: 2013, November 17.
 {
 	CBasePlayerItem *pItem = m_rgpPlayerItems[pCheckItem->iItemSlot()];
 
@@ -6640,6 +6640,7 @@ BOOL CBasePlayer::HasPlayerItem(CBasePlayerItem *pCheckItem)
 		{
 			return TRUE;
 		}
+
 		pItem = pItem->m_pNext;
 	}
 
