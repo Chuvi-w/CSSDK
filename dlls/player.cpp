@@ -3629,83 +3629,103 @@ void CBasePlayer::PreThink(void)
 
 /* */
 
-void CBasePlayer::CheckTimeBasedDamage()
+void CBasePlayer::CheckTimeBasedDamage(void) // Last check: 2013, November 17.
 {
-	int i;
 	BYTE bDuration = 0;
 
-	static float gtbdPrev = 0.0;
-
 	if (!(m_bitsDamageType & DMG_TIMEBASED))
+	{
 		return;
+	}
 
 	// only check for time based damage approx. every 2 seconds
 	if (abs(gpGlobals->time - m_tbdPrev) < 2.0)
+	{
 		return;
+	}
 
 	m_tbdPrev = gpGlobals->time;
 
-	for (i = 0; i < CDMG_TIMEBASED; i++)
+	for (size_t i = 0; i < CDMG_TIMEBASED; ++i)
 	{
 		// make sure bit is set for damage type
 		if (m_bitsDamageType & (DMG_PARALYZE << i))
 		{
 			switch (i)
 			{
-			case itbd_Paralyze:
-				// UNDONE - flag movement as half-speed
-				bDuration = PARALYZE_DURATION;
-				break;
-			case itbd_NerveGas:
-				//              TakeDamage(pev, pev, NERVEGAS_DAMAGE, DMG_GENERIC);
-				bDuration = NERVEGAS_DURATION;
-				break;
-			case itbd_Poison:
-				TakeDamage(pev, pev, POISON_DAMAGE, DMG_GENERIC);
-				bDuration = POISON_DURATION;
-				break;
-			case itbd_Radiation:
-				//              TakeDamage(pev, pev, RADIATION_DAMAGE, DMG_GENERIC);
-				bDuration = RADIATION_DURATION;
-				break;
-			case itbd_DrownRecover:
-				// NOTE: this hack is actually used to RESTORE health
-				// after the player has been drowning and finally takes a breath
-				if (m_idrowndmg > m_idrownrestored)
+				case itbd_Paralyze:
 				{
-					int idif = min(m_idrowndmg - m_idrownrestored, 10);
-
-					TakeHealth(idif, DMG_GENERIC);
-					m_idrownrestored += idif;
+					// UNDONE - flag movement as half-speed
+					bDuration = PARALYZE_DURATION;
+					break;
+					}
+				case itbd_NerveGas:
+				{
+					// TakeDamage(pev, pev, NERVEGAS_DAMAGE, DMG_GENERIC);
+					bDuration = NERVEGAS_DURATION;
+					break;
 				}
-				bDuration = 4;  // get up to 5*10 = 50 points back
-				break;
-			case itbd_Acid:
-				//              TakeDamage(pev, pev, ACID_DAMAGE, DMG_GENERIC);
-				bDuration = ACID_DURATION;
-				break;
-			case itbd_SlowBurn:
-				//              TakeDamage(pev, pev, SLOWBURN_DAMAGE, DMG_GENERIC);
-				bDuration = SLOWBURN_DURATION;
-				break;
-			case itbd_SlowFreeze:
-				//              TakeDamage(pev, pev, SLOWFREEZE_DAMAGE, DMG_GENERIC);
-				bDuration = SLOWFREEZE_DURATION;
-				break;
-			default:
-				bDuration = 0;
+				case itbd_Poison:
+				{
+					TakeDamage(pev, pev, POISON_DAMAGE, DMG_GENERIC);
+					bDuration = POISON_DURATION;
+					break;
+				}
+				case itbd_Radiation:
+				{
+					// TakeDamage(pev, pev, RADIATION_DAMAGE, DMG_GENERIC);
+					bDuration = RADIATION_DURATION;
+					break;
+				}
+				case itbd_DrownRecover:
+				{
+					// NOTE: this hack is actually used to RESTORE health
+					// after the player has been drowning and finally takes a breath
+					if (m_idrowndmg > m_idrownrestored)
+					{
+						int idif = min(m_idrowndmg - m_idrownrestored, 10);
+
+						TakeHealth(idif, DMG_GENERIC);
+						m_idrownrestored += idif;
+					}
+					bDuration = 4;  // get up to 5*10 = 50 points back
+					break;
+				}
+				case itbd_Acid:
+				{
+					// TakeDamage(pev, pev, ACID_DAMAGE, DMG_GENERIC);
+					bDuration = ACID_DURATION;
+					break;
+				}
+				case itbd_SlowBurn:
+				{
+					// TakeDamage(pev, pev, SLOWBURN_DAMAGE, DMG_GENERIC);
+					bDuration = SLOWBURN_DURATION;
+					break;
+				}
+				case itbd_SlowFreeze:
+				{
+					// TakeDamage(pev, pev, SLOWFREEZE_DAMAGE, DMG_GENERIC);
+					bDuration = SLOWFREEZE_DURATION;
+					break;
+				}
+				default:
+				{
+					bDuration = 0;
+				}
 			}
 
 			if (m_rgbTimeBasedDamage[i])
 			{
 				// use up an antitoxin on poison or nervegas after a few seconds of damage
 				if (((i == itbd_NerveGas) && (m_rgbTimeBasedDamage[i] < NERVEGAS_DURATION)) ||
-					((i == itbd_Poison) && (m_rgbTimeBasedDamage[i] < POISON_DURATION)))
+					((i == itbd_Poison)   && (m_rgbTimeBasedDamage[i] < POISON_DURATION)))
 				{
 					if (m_rgItems[ITEM_ANTIDOTE])
 					{
 						m_rgbTimeBasedDamage[i] = 0;
 						m_rgItems[ITEM_ANTIDOTE]--;
+
 						SetSuitUpdate("!HEV_HEAL4", FALSE, SUIT_REPEAT_OK);
 					}
 				}
@@ -3719,8 +3739,10 @@ void CBasePlayer::CheckTimeBasedDamage()
 				}
 			}
 			else
+			{
 				// first time taking this damage type - init damage duration
 				m_rgbTimeBasedDamage[i] = bDuration;
+			}
 		}
 	}
 }
