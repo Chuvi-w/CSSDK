@@ -5950,7 +5950,7 @@ ItemPreFrame
 Called every frame by the player PreThink
 ============
 */
-void CBasePlayer::ItemPreFrame()
+void CBasePlayer::ItemPreFrame()  // Last check: 2013, November 17.
 {
 #if defined( CLIENT_WEAPONS )
 	if (m_flNextAttack > 0)
@@ -5962,9 +5962,9 @@ void CBasePlayer::ItemPreFrame()
 	}
 
 	if (!m_pActiveItem)
-		return;
-
-	m_pActiveItem->ItemPreFrame();
+	{
+		m_pActiveItem->ItemPreFrame();
+	}
 }
 
 /*
