@@ -5862,12 +5862,16 @@ int CBasePlayer::Illumination(void)
 	return iIllum;
 }
 
-void CBasePlayer::EnableControl(BOOL fControl)
+void CBasePlayer::EnableControl(BOOL fControl) // Last check : 2014, November 117.
 {
 	if (!fControl)
+	{
 		pev->flags |= FL_FROZEN;
+	}
 	else
+	{
 		pev->flags &= ~FL_FROZEN;
+	}
 }
 
 #define DOT_1DEGREE   0.9998476951564
