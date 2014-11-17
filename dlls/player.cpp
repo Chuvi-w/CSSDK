@@ -39,6 +39,7 @@ functions dealing with the player
 #include "client.h"
 #include "career_tasks.h"
 #include "training_gamerules.h"
+#include "studio.h"
 
 // #define DUCKFIX
 
@@ -677,6 +678,43 @@ void CBasePlayer::CalculateYawBlend(void) // Last check: 2013, September 13.
 	blend_yaw = 255.0 - blend_yaw;
 	pev->blending[0] = (int)blend_yaw;
 	m_flYaw = blend_yaw;
+}
+
+void CBasePlayer::StudioProcessGait(void) // Last check: 2013, September 14.
+{
+	float dt = max(0, gpGlobals->frametime);
+
+	if (dt > 1)
+	{
+		dt = 1;
+	}
+
+	CalculateYawBlend();
+	CalculatePitchBlend();
+
+	void *pmodel = GET_MODEL_PTR(ENT(pev));
+
+	if (pmodel)
+	{
+		studiohdr_t *pstudiohdr = (studiohdr_t *)pmodel;
+		mstudioseqdesc_t *pseqdesc = (mstudioseqdesc_t *)((byte *)pstudiohdr + pstudiohdr->seqindex) + pev->gaitsequence;
+
+		if (pseqdesc->linearmovement[0] > 0)
+		{
+			m_flGaitframe += (m_flGaitMovement / pseqdesc->linearmovement[0]) * pseqdesc->numframes;
+		}
+		else
+		{
+			m_flGaitframe += pseqdesc->fps * dt * pev->framerate;
+		}
+
+		m_flGaitframe -= (m_flGaitframe / pseqdesc->numframes) * pseqdesc->numframes;
+
+		if (m_flGaitframe < 0)
+		{
+			m_flGaitframe += pseqdesc->numframes;
+		}
+	}
 }
 
 // CS
