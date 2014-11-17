@@ -2254,20 +2254,36 @@ class CWeaponBox : public CBaseEntity
 
 public:
 	void EXPORT Kill(void);
+	void EXPORT BombThink(void);
+
 	int		Save(CSave &save);
 	int		Restore(CRestore &restore);
-	static	TYPEDESCRIPTION m_SaveData[];
 
 	BOOL HasWeapon(CBasePlayerItem *pCheckItem);
 	BOOL PackWeapon(CBasePlayerItem *pWeapon);
 	BOOL PackAmmo(int iszName, int iCount);
 
-	CBasePlayerItem	*m_rgpPlayerItems[MAX_ITEM_TYPES];// one slot for each
+	static	             TYPEDESCRIPTION m_SaveData[];      /*     0    64 */
 
-	int m_rgiszAmmo[MAX_AMMO_SLOTS];// ammo names
-	int	m_rgAmmo[MAX_AMMO_SLOTS];// ammo quantities
+	CBasePlayerItem *    m_rgpPlayerItems[MAX_ITEM_TYPES];  /*   152    24 */ // one slot for each
+	int                  m_rgiszAmmo[MAX_AMMO_SLOTS];       /*   176   128 */ // ammo names
+	int                  m_rgAmmo[MAX_AMMO_SLOTS];          /*   304   128 */ // ammo quantities
+	int                  m_cAmmoTypes;                      /*   432     4 */ // how many ammo types packed into this box (if packed by a level designer)
+	bool                 m_bIsBomb;                         /*   436     1 */
 
-	int m_cAmmoTypes;// how many ammo types packed into this box (if packed by a level designer)
+	/* vtable has 7 entries: {
+	[1]  = Precache
+	[0]  = Spawn
+	[45] = Touch
+	[3]  = KeyValue
+	[8]  = SetObjectCollisionBox
+	[4]  = Save
+	[5]  = Restore
+	} */
+	/* size: 440, cachelines: 7, members: 7 */
+	/* sum members: 349, holes: 1, sum holes: 88 */
+	/* padding: 3 */
+	/* last cacheline: 56 bytes */
 };
 
 #ifdef CLIENT_DLL
