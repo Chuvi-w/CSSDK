@@ -5543,39 +5543,34 @@ int CBasePlayer::RemovePlayerItem(CBasePlayerItem *pItem)
 //
 // Returns the unique ID for the ammo, or -1 if error
 //
-int CBasePlayer::GiveAmmo(int iCount, char *szName, int iMax)
+int CBasePlayer::GiveAmmo(int iCount, char *szName, int iMax) // Last check: 2013, November 17.
 {
-	if (!szName)
+	if (pev->flags & FL_SPECTATOR || !szName || !g_pGameRules->CanHaveAmmo(this, szName, iMax))
 	{
-		// no ammo.
 		return -1;
 	}
 
-	if (!g_pGameRules->CanHaveAmmo(this, szName, iMax))
-	{
-		// game rules say I can't have any more of this ammo type.
-		return -1;
-	}
-
-	int i = 0;
-
-	i = GetAmmoIndex(szName);
+	int i = GetAmmoIndex(szName);
 
 	if (i < 0 || i >= MAX_AMMO_SLOTS)
+	{
 		return -1;
+	}
 
 	int iAdd = min(iCount, iMax - m_rgAmmo[i]);
+
 	if (iAdd < 1)
+	{
 		return i;
+	}
 
 	m_rgAmmo[i] += iAdd;
 
-	if (gmsgAmmoPickup)  // make sure the ammo messages have been linked first
+	if (gmsgAmmoPickup)
 	{
-		// Send the message that ammo has been picked up
 		MESSAGE_BEGIN(MSG_ONE, gmsgAmmoPickup, NULL, pev);
-		WRITE_BYTE(GetAmmoIndex(szName));     // ammo ID
-		WRITE_BYTE(iAdd);     // amount
+			WRITE_BYTE(GetAmmoIndex(szName));     // ammo ID
+			WRITE_BYTE(iAdd);					  // amount
 		MESSAGE_END();
 	}
 
