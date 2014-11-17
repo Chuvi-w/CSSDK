@@ -3311,7 +3311,7 @@ void CBasePlayer::Duck()
 //
 // ID's player as such.
 //
-int  CBasePlayer::Classify(void)
+int CBasePlayer::Classify(void) // Last check: 2013, November 17.
 {
 	return CLASS_PLAYER;
 }
