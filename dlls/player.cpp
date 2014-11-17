@@ -6225,6 +6225,20 @@ bool CBasePlayer::IsReloading(void) // Last check: 2013, November 17.
 	return m_pActiveItem && ((CBasePlayerWeapon *)m_pActiveItem)->m_fInReload;
 }
 
+void CBasePlayer::RemoveShield(void) // Last check: 2013, November 17.
+{
+	if (HasShield())
+	{
+		m_bOwnsShield  = false;
+		m_bHasPrimary  = false;
+		m_bShieldDrawn = false;
+
+		pev->gamestate = 1;
+
+		UpdateShieldCrosshair(false);
+	}
+}
+
 //=========================================================
 // HasPlayerItem Does the player already have this item?
 //=========================================================
