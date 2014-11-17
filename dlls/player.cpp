@@ -1525,6 +1525,22 @@ bool CBasePlayer::IsHittingShield(const Vector &vecDirection, TraceResult *ptr) 
 	return false;
 }
 
+bool CBasePlayer::IsObservingPlayer(CBasePlayer *pTarget) // Last check: 2013, November 17.
+{
+	if (!pTarget || IsDormant() || FNullEnt(pTarget))
+	{
+		return false;
+	}
+
+	if (pev->iuser1 == OBS_IN_EYE && pev->iuser2 == pTarget->entindex())
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
 // CS
 void CBasePlayer::MakeVIP(void)
 {
