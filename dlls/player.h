@@ -27,6 +27,10 @@
 #define PLAYER_MIN_BOUNCE_SPEED		 350
 #define PLAYER_FALL_PUNCH_THRESHHOLD ( float )350 // won't punch player's screen/make scrape noise unless player falling at least this fast.
 
+#define MAX_PLAYER_NAME_LENGTH 32
+#define MAX_AUTOBUY_LENGTH     256
+#define MAX_REBUY_LENGTH       256
+
 //
 // Player PHYSICS FLAGS bits
 //

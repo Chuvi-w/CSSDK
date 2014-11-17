@@ -641,6 +641,30 @@ void CBasePlayer::AutoBuy(void) // Last check : 2013, June 6.
 	// }
 }
 
+void CBasePlayer::InitRebuyData(const char *string) // Last check : 2014, November 17.
+{
+	if (!string)
+	{
+		return;
+	}
+
+	int length = strlen(string);
+
+	if (length <= MAX_REBUY_LENGTH)
+	{
+		if (m_rebuyString)
+		{
+			delete m_rebuyString;
+			m_rebuyString = NULL;
+		}
+
+		m_rebuyString = new char[length + 1];
+		strcpy(m_rebuyString, string);
+
+		m_rebuyString[length] = '\0';
+	}
+}
+
 void CBasePlayer::Blind(float duration, float holdTime, float fadeTime, int alpha) // Last check : 2014, November 11.
 {
 	m_blindUntilTime = gpGlobals->time + duration;
