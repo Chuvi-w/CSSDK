@@ -1554,6 +1554,15 @@ void CBasePlayer::SetBombIcon(BOOL bFlash)
 	SetScoreboardAttributes(NULL);
 }
 
+void CBasePlayer::SendFOV(int fov) // Last check: 2013, November 17.
+{
+	m_iFOV = m_iClientFOV = pev->fov = fov;
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgSetFOV, NULL, edict());
+		WRITE_BYTE(fov);
+	MESSAGE_END();
+}
+
 // CS
 void CBasePlayer::SetNewPlayerModel(const char *modelName)
 {
