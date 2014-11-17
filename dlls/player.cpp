@@ -1852,6 +1852,11 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 	}
 }
 
+void CBasePlayer::RemoveLevelText(void)  // Last check: 2013, November 17.
+{
+	ResetMenu();
+}
+
 // CS
 void CBasePlayer::Reset(void)
 {
