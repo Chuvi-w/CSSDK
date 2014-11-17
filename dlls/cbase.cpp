@@ -238,6 +238,28 @@ void RemoveEntityHashValue(struct entvars_s *pev, const char *value, hash_types_
 	}
 }
 
+
+edict_t *CREATE_NAMED_ENTITY(string_t iClass)
+{
+	edict_t *named = g_engfuncs.pfnCreateNamedEntity(iClass);
+
+	if (named)
+	{
+		AddEntityHashValue(&named->v, STRING(iClass), CLASSNAME);
+	}
+
+	return named;
+}
+
+void REMOVE_ENTITY(edict_t *e)
+{
+	if (e)
+	{
+		g_engfuncs.pfnRemoveEntity(e);
+	}
+}
+
+
 static DLL_FUNCTIONS gFunctionTable =
 {
 	GameDLLInit,				//pfnGameInit

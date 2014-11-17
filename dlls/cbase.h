@@ -60,6 +60,12 @@ CBaseGroup
 #endif
 #endif
 
+#undef CREATE_NAMED_ENTITY
+#undef REMOVE_ENTITY
+
+edict_t *CREATE_NAMED_ENTITY(string_t iClass);
+void REMOVE_ENTITY(edict_t *e);
+
 #define EXPORT CBASE_DLLEXPORT
 
 extern "C" CBASE_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion);
