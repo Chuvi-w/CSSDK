@@ -935,6 +935,93 @@ void CBasePlayer::ClientCommand(const char *cmd, const char *arg1, const char *a
 	UseBotArgs = false;
 }
 
+void CBasePlayer::Disappear(void) // Last check: 2013, November 17.
+{
+	if (m_pTank)
+	{
+		m_pTank->Use(this, this, USE_OFF, 0);
+		m_pTank = NULL;
+	}
+
+	CSound *pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(edict()));
+
+	if (pSound)
+	{
+		pSound->Reset();
+	}
+
+	m_fSequenceFinished = TRUE;
+
+	pev->modelindex = m_modelIndexPlayer;
+	pev->view_ofs   = Vector(0, 0, -8);
+	pev->deadflag   = DEAD_DYING;
+	pev->solid      = SOLID_NOT;
+	pev->flags     &= FL_ONGROUND;
+
+	m_iClientHealth = 0;
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgHealth, NULL, edict());
+		WRITE_BYTE(m_iClientHealth);
+	MESSAGE_END();
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, NULL, edict());
+		WRITE_BYTE(0);
+		WRITE_BYTE(0xFF);
+		WRITE_BYTE(0xFF);
+	MESSAGE_END();
+
+	SendFOV(0);
+
+	g_pGameRules->CheckWinConditions();
+
+	m_bNotKilled = false;
+
+	if (m_bHasC4)
+	{
+		DropPlayerItem("weapon_c4");
+		SetProgressBarTime(0);
+	}
+	else if (m_bHasDefuser)
+	{
+		m_bHasDefuser = false;
+		pev->body = 0;
+
+		GiveNamedItem("item_thighpack");
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, edict());
+			WRITE_BYTE(STATUSICON_HIDE);
+			WRITE_STRING("defuser");
+		MESSAGE_END();
+
+		SendItemStatus(this);
+		SetProgressBarTime(0);
+	}
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, edict());
+		WRITE_BYTE(STATUSICON_HIDE);
+		WRITE_STRING("buyzone");
+	MESSAGE_END();
+
+	if (m_iMenu >= Menu_Buy)
+	{
+		if (m_iMenu <= Menu_BuyItem)
+		{
+			CLIENT_COMMAND(ENT(pev), "slot10\n");
+		}
+		else if (m_iMenu == Menu_ClientBuy)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, NULL, edict());
+			MESSAGE_END();
+		}
+	}
+
+	SetThink(&CBasePlayer::PlayerDeathThink);
+
+	pev->nextthink = gpGlobals->time + 0.1;
+	pev->angles.x  = 0;
+	pev->angles.z  = 0;
+}
+
 // CS
 bool CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)
 {
