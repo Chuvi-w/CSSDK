@@ -609,7 +609,7 @@ public:
 	void GiveNamedItem(const char *szName);
 	void EnableControl(BOOL fControl);
 	virtual void ResetMaxSpeed(void);
-	bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride);
+	bool HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead = FALSE, BOOL bOverride = FALSE);
 
 	virtual int GiveAmmo(int iAmount, char *szName, int iMax);
 	void SendAmmoUpdate(void);

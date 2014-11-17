@@ -1183,6 +1183,237 @@ CBasePlayer *CBasePlayer::GetNextRadioRecipient(CBasePlayer *pStartPlayer) // La
 	return NULL;
 }
 
+void CBasePlayer::HandleSignals(void) // Last check: 2013, November 17.
+{
+	if (g_pGameRules->IsMultiplayer())
+	{
+		if (!g_pGameRules->m_bMapHasBuyZone)
+		{
+			if (m_iTeam == TERRORIST || m_iTeam == CT)
+			{
+				CBaseEntity *pEntity = NULL;
+				const char *classname = (m_iTeam == TERRORIST) ? "info_player_deathmatch" : "info_player_start";
+
+				while ((pEntity = UTIL_FindEntityByClassname(pEntity, classname)) != NULL)
+				{
+					if ((pEntity->pev->origin - pev->origin).Length() < 200)
+					{
+						m_signals.Signal(SIGNAL_BUY);
+					}
+				}
+			}
+		}
+
+		if (!g_pGameRules->m_bMapHasBombZone)
+		{
+			CBaseEntity *pEntity = NULL;
+
+			while ((pEntity = UTIL_FindEntityByClassname(pEntity, "info_bomb_target")) != NULL)
+			{
+				if ((pEntity->pev->origin - pev->origin).Length() <= 256)
+				{
+					m_signals.Signal(SIGNAL_BOMB);
+				}
+			}
+		}
+
+		if (!g_pGameRules->m_bMapHasRescueZone)
+		{
+			CBaseEntity *pEntity = NULL;
+
+			while ((pEntity = UTIL_FindEntityByClassname(pEntity, "info_hostage_rescue")) != NULL)
+			{
+				if ((pEntity->pev->origin - pev->origin).Length() <= 256)
+				{
+					m_signals.Signal(SIGNAL_RESCUE);
+				}
+			}
+		}
+	}
+
+	int signalSave    = m_signals.GetSignal();
+	int signalChanged = m_signals.GetState() ^ m_signals.GetSignal();
+
+	m_signals.Update();
+
+	if (signalChanged & SIGNAL_BUY)
+	{
+		if (signalSave & SIGNAL_BUY)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+				WRITE_BYTE(STATUSICON_SHOW);
+				WRITE_STRING("buyzone");
+				WRITE_BYTE(0);
+				WRITE_BYTE(160);
+				WRITE_BYTE(0);
+			MESSAGE_END();
+		}
+		else
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+				WRITE_BYTE(STATUSICON_HIDE);
+				WRITE_STRING("buyzone");
+			MESSAGE_END();
+
+			if (m_iMenu >= Menu_Buy)
+			{
+				if (m_iMenu <= Menu_BuyItem)
+				{
+					CLIENT_COMMAND(ENT(pev), "slot10\n");
+				}
+				else if (m_iMenu == Menu_ClientBuy)
+				{
+					MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, NULL, pev);
+					MESSAGE_END();
+				}
+			}
+		}
+	}
+
+	if (signalChanged & SIGNAL_BOMB)
+	{
+		if (signalSave & SIGNAL_BOMB)
+		{
+			if (m_bHasC4 && !(m_flDisplayHistory & Hint_you_are_in_targetzone))
+			{
+				m_flDisplayHistory |= Hint_you_are_in_targetzone;
+				HintMessage("#Hint_you_are_in_targetzone");
+			}
+
+			SetBombIcon(TRUE);
+		}
+		else
+		{
+			SetBombIcon(FALSE);
+		}
+	}
+
+	if (signalChanged & SIGNAL_RESCUE)
+	{
+		if (signalSave & SIGNAL_RESCUE)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+				WRITE_BYTE(STATUSICON_SHOW);
+				WRITE_STRING("rescue");
+				WRITE_BYTE(0);
+				WRITE_BYTE(160);
+				WRITE_BYTE(0);
+			MESSAGE_END();
+
+			if (m_iTeam == CT && !(m_flDisplayHistory & Hint_hostage_rescue_zone))
+			{
+				m_flDisplayHistory |= Hint_hostage_rescue_zone;
+				HintMessage("#Hint_hostage_rescue_zone");
+			}
+		}
+		else
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+				WRITE_BYTE(STATUSICON_HIDE);
+				WRITE_STRING("rescue");
+			MESSAGE_END();
+
+			if (m_iMenu >= Menu_Buy)
+			{
+				if (m_iMenu <= Menu_BuyItem)
+				{
+					CLIENT_COMMAND(ENT(pev), "slot10\n");
+				}
+				else if (m_iMenu == Menu_ClientBuy)
+				{
+					MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, NULL, pev);
+					MESSAGE_END();
+				}
+			}
+		}
+	}
+
+	if (signalChanged & SIGNAL_ESCAPE)
+	{
+		if (signalSave & SIGNAL_ESCAPE)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+				WRITE_BYTE(STATUSICON_SHOW);
+				WRITE_STRING("escape");
+				WRITE_BYTE(0);
+				WRITE_BYTE(160);
+				WRITE_BYTE(0);
+			MESSAGE_END();
+
+			if (m_iTeam == CT && !(m_flDisplayHistory & Hint_terrorist_escape_zone))
+			{
+				m_flDisplayHistory |= Hint_terrorist_escape_zone;
+				HintMessage("#Hint_terrorist_escape_zone", TRUE);
+			}
+		}
+		else
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+				WRITE_BYTE(STATUSICON_HIDE);
+				WRITE_STRING("escape");
+			MESSAGE_END();
+
+			if (m_iMenu >= Menu_Buy)
+			{
+				if (m_iMenu <= Menu_BuyItem)
+				{
+					CLIENT_COMMAND(ENT(pev), "slot10\n");
+				}
+				else if (m_iMenu == Menu_ClientBuy)
+				{
+					MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, NULL, pev);
+					MESSAGE_END();
+				}
+			}
+		}
+	}
+
+	if (signalChanged & SIGNAL_VIPSAFETY)
+	{
+		if (signalSave & SIGNAL_VIPSAFETY)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+				WRITE_BYTE(STATUSICON_SHOW);
+				WRITE_STRING("vipsafety");
+				WRITE_BYTE(0);
+				WRITE_BYTE(160);
+				WRITE_BYTE(0);
+			MESSAGE_END();
+
+			if (m_iTeam == CT && !(m_flDisplayHistory & Hint_ct_vip_zone))
+			{
+				m_flDisplayHistory |= Hint_ct_vip_zone;
+				HintMessage("#Hint_ct_vip_zone");
+			}
+			else if (m_iTeam == TERRORIST && !(m_flDisplayHistory & Hint_terrorist_vip_zone))
+			{
+				m_flDisplayHistory |= Hint_terrorist_vip_zone;
+				HintMessage("#Hint_terrorist_vip_zone");
+			}
+		}
+		else
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+				WRITE_BYTE(STATUSICON_HIDE);
+				WRITE_STRING("vipsafety");
+			MESSAGE_END();
+
+			if (m_iMenu >= Menu_Buy)
+			{
+				if (m_iMenu <= Menu_BuyItem)
+				{
+					CLIENT_COMMAND(ENT(pev), "slot10\n");
+				}
+				else if (m_iMenu == Menu_ClientBuy)
+				{
+					MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, NULL, pev);
+					MESSAGE_END();
+				}
+			}
+		}
+	}
+}
+
 // CS
 bool CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)
 {

@@ -33,6 +33,7 @@
 #define Hint_out_of_ammo                        ( 1<<15 )
 #define Hint_you_are_in_targetzone              ( 1<<16 )
 #define Hint_hostage_rescue_zone                ( 1<<17 )
+#define Hint_terrorist_escape_zone				( 1<<18 )
 #define Hint_ct_vip_zone                        ( 1<<19 )
 #define Hint_terrorist_vip_zone                 ( 1<<19 )
 #define Hint_Only_CT_Can_Move_Hostages          ( 1<<21 )

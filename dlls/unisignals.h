@@ -28,9 +28,33 @@ class CUnifiedSignals
 {
 public:
 
-	int Update(void);
-	void Signal(int flSignal);
-	int GetState(void) { return m_flState; }
+	CUnifiedSignals(void)
+	{
+		m_flSignal = 0;
+		m_flState = 0;
+	}
+
+public:
+	void Update(void)
+	{
+		m_flState = m_flSignal;
+		m_flSignal = 0;	
+	}
+
+	void Signal(int flSignal) 
+	{
+		m_flSignal |= flSignal; 
+	}
+
+	int GetSignal(void) 
+	{ 
+		return m_flSignal;
+	}
+
+	int GetState(void) 
+	{ 
+		return m_flState;
+	}
 
 private:
 
