@@ -524,7 +524,7 @@ public:
 	virtual BOOL ShouldFadeOnDeath(void) { return FALSE; }
 	virtual BOOL IsPlayer(void) { return TRUE; }
 	virtual BOOL IsBot(void) { return FALSE; } // Last check : 2014, November 17.
-	virtual BOOL IsNetClient(void) { return TRUE; }
+	virtual BOOL IsNetClient(void) { return TRUE; } // Last check: 2013, November 17.
 
 	BOOL IsBombGuy(void);
 	bool IsLookingAtPosition(const Vector *pos, float angleTolerance);
