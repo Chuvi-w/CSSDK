@@ -887,6 +887,26 @@ bool CBasePlayer::CanAffordPrimaryAmmo(void) // Last check: 2013, September 14.
 	return false;
 }
 
+bool CBasePlayer::CanAffordSecondaryAmmo(void) // Last check: 2013, September 14.
+{
+	CBasePlayerItem *pItem = m_rgpPlayerItems[PISTOL_SLOT];
+
+	if (pItem)
+	{
+		for (size_t i = 0; i < MAX_WEAPONS; ++i)
+		{
+			WeaponStruct *weapon = &g_weaponStruct[i];
+
+			if (weapon->m_type == pItem->m_iId && m_iAccount >= weapon->m_ammoPrice)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 // CS
 void CBasePlayer::CheckPowerups(entvars_s *pev)
 {
