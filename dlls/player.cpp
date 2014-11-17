@@ -5823,7 +5823,7 @@ void CBasePlayer::UpdateClientData(void)
 // FBecomeProne - Overridden for the player to set the proper
 // physics flags when a barnacle grabs player.
 //=========================================================
-BOOL CBasePlayer::FBecomeProne(void)
+BOOL CBasePlayer::FBecomeProne(void)  // Last check: 2013, November 17.
 {
 	m_afPhysicsFlags |= PFLAG_ONBARNACLE;
 	return TRUE;
