@@ -346,9 +346,6 @@ void CHalfLifeTraining::CheckWinConditions(void) // Last check: 2013, September 
 
 			UTIL_SetSize(pHostage->pev, Vector(-16, -16, 0), Vector(16, 16, 72));
 
-			CBaseEntity *pFirstRescueArea;
-			CBaseEntity *pRescueArea;
-
 			edict_t *pentRescueArea = FIND_ENTITY_BY_CLASSNAME(NULL, "func_hostage_rescue");
 
 			if (!FNullEnt(pentRescueArea))
