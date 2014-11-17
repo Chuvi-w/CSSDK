@@ -523,7 +523,7 @@ public:
 	virtual BOOL IsAlive(void) { return pev->deadflag == DEAD_NO && pev->health > 0; } // Last check : 2014, November 17.
 	virtual BOOL ShouldFadeOnDeath(void) { return FALSE; }
 	virtual BOOL IsPlayer(void) { return TRUE; }
-	virtual BOOL IsBot(void) { return FALSE; }
+	virtual BOOL IsBot(void) { return FALSE; } // Last check : 2014, November 17.
 	virtual BOOL IsNetClient(void) { return TRUE; }
 
 	BOOL IsBombGuy(void);
