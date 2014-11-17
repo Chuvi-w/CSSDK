@@ -5974,11 +5974,17 @@ ItemPostFrame
 Called every frame by the player PostThink
 ============
 */
-void CBasePlayer::ItemPostFrame()
+void CBasePlayer::ItemPostFrame()   // Last check: 2013, November 17.
 {
-	// check if the player is using a tank
 	if (m_pTank != NULL)
+	{
 		return;
+	}
+
+	if (m_pActiveItem && HasShield() && IsReloading() && (pev->button & IN_ATTACK2))
+	{
+		m_flNextAttack = UTIL_WeaponTimeBase();
+	}
 
 #if defined( CLIENT_WEAPONS )
 	if (m_flNextAttack > 0)
@@ -5992,9 +5998,9 @@ void CBasePlayer::ItemPostFrame()
 	ImpulseCommands();
 
 	if (!m_pActiveItem)
-		return;
-
-	m_pActiveItem->ItemPostFrame();
+	{
+		m_pActiveItem->ItemPostFrame();
+	}
 }
 
 int CBasePlayer::GetAmmoIndex(const char *psz)  // Last check: 2013, November 17.
