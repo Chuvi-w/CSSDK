@@ -5486,76 +5486,77 @@ ImpulseCommands
 */
 extern float g_flWeaponCheat;
 
-void CBasePlayer::ImpulseCommands()
+void CBasePlayer::ImpulseCommands()  // Last check: 2013, November 17
 {
-	TraceResult tr;// UNDONE: kill me! This is temporary for PreAlpha CDs
-
-	// Handle use events
 	PlayerUse();
 
-	int iImpulse = (int)pev->impulse;
+	TraceResult tr;
+	int iImpulse = pev->impulse;
+
 	switch (iImpulse)
 	{
-	case 99:
-	{
-		int iOn;
-
-		if (!gmsgLogo)
+		case 99:
 		{
-			iOn = 1;
-			gmsgLogo = REG_USER_MSG("Logo", 1);
-		}
-		else
-		{
-			iOn = 0;
-		}
+			int iOn;
 
-		ASSERT(gmsgLogo > 0);
-		// send "health" update message
-		MESSAGE_BEGIN(MSG_ONE, gmsgLogo, NULL, pev);
-		WRITE_BYTE(iOn);
-		MESSAGE_END();
+			if (!gmsgLogo)
+			{
+				iOn = 1;
+				gmsgLogo = REG_USER_MSG("Logo", 1);
+			}
+			else
+			{
+				iOn = 0;
+			}
 
-		if (!iOn)
-			gmsgLogo = 0;
-		break;
-	}
-	case 100:
-		// temporary flashlight for level designers
-		if (FlashlightIsOn())
-		{
-			FlashlightTurnOff();
-		}
-		else
-		{
-			FlashlightTurnOn();
-		}
-		break;
+			ASSERT(gmsgLogo > 0);
+		
+			MESSAGE_BEGIN(MSG_ONE, gmsgLogo, NULL, pev);
+				WRITE_BYTE(iOn);
+			MESSAGE_END();
 
-	case    201:// paint decal
-
-		if (gpGlobals->time < m_flNextDecalTime)
-		{
-			// too early!
+			if (!iOn)
+			{
+				gmsgLogo = 0;
+			}
 			break;
 		}
-
-		UTIL_MakeVectors(pev->v_angle);
-		UTIL_TraceLine(pev->origin + pev->view_ofs, pev->origin + pev->view_ofs + gpGlobals->v_forward * 128, ignore_monsters, ENT(pev), &tr);
-
-		if (tr.flFraction != 1.0)
-		{// line hit something, so paint a decal
-			m_flNextDecalTime = gpGlobals->time + decalfrequency.value;
-			CSprayCan *pCan = GetClassPtr((CSprayCan *)NULL);
-			pCan->Spawn(pev);
+		case 100:
+		{
+			if (FlashlightIsOn())
+			{
+				FlashlightTurnOff();
+			}
+			else
+			{
+				FlashlightTurnOn();
+			}
+			break;
 		}
+		case 201:// paint decal
+		{
+			if (gpGlobals->time < m_flNextDecalTime)
+			{
+				break;
+			}
 
-		break;
+			UTIL_MakeVectors(pev->v_angle);
+			UTIL_TraceLine(pev->origin + pev->view_ofs, pev->origin + pev->view_ofs + gpGlobals->v_forward * 128, ignore_monsters, edict(), &tr);
 
-	default:
-		// check all of the cheat impulse commands now
-		CheatImpulseCommands(iImpulse);
-		break;
+			if (tr.flFraction != 1.0)
+			{
+				m_flNextDecalTime = gpGlobals->time + decalfrequency.value;
+				CSprayCan *pCan = GetClassPtr((CSprayCan *)NULL);
+				pCan->Spawn(pev);
+			}
+
+			break;
+		}
+		default:
+		{
+			CheatImpulseCommands(iImpulse);
+			break;
+		}
 	}
 
 	pev->impulse = 0;
