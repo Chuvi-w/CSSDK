@@ -207,9 +207,9 @@ typedef enum
 
 typedef struct
 {
-	AutoBuyClassType     m_class;              /*     0     4 */
-	char                *m_command;            /*     4     4 */
-	char                *m_classname;          /*     8     4 */
+	int /* AutoBuyClassType*/   m_class;              /*     0     4 */
+	char                       *m_command;            /*     4     4 */
+	char                       *m_classname;          /*     8     4 */
 } AutoBuyInfoStruct;
 
 #define CHAT_INTERVAL 1.0f

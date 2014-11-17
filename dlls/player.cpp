@@ -74,6 +74,45 @@ extern WeaponStruct g_weaponStruct[MAX_WEAPONS];
 #define FLASH_DRAIN_TIME     1.2 //100 units/3 minutes
 #define FLASH_CHARGE_TIME    0.2 // 100 units/20 seconds  (seconds per unit)
 
+AutoBuyInfoStruct g_autoBuyInfo[] =
+{
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE      , "galil" , "weapon_galil"        },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE      , "ak47"  , "weapon_ak47"         },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SNIPERRIFLE, "scout" , "weapon_scout"        },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE      , "sg552" , "weapon_sg552"        },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SNIPERRIFLE, "awp"   , "weapon_awp"          },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SNIPERRIFLE, "g3sg1" , "weapon_g3sg1"        },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE      , "famas" , "weapon_famas"        },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE      , "m4a1"  , "weapon_m4a1"         },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_RIFLE      , "aug"   , "weapon_aug"          },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SNIPERRIFLE, "sg550" , "weapon_sg550"        },
+	{ AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL   , "glock" , "weapon_glock18"      },
+	{ AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL   , "usp"   , "weapon_usp"          },
+	{ AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL   , "p228"  , "weapon_p228"         },
+	{ AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL   , "deagle", "weapon_deagle"       },
+	{ AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL   , "elites", "weapon_elite"        },
+	{ AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_PISTOL   , "fn57"  , "weapon_fiveseven"    },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SHOTGUN    , "m3"    , "weapon_m3"           },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SHOTGUN    , "xm1014", "weapon_xm1014"       },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SMG        , "mac10" , "weapon_mac10"        },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SMG        , "tmp"   , "weapon_tmp"          },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SMG        , "mp5"   , "weapon_mp5navy"      },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SMG        , "ump45" , "weapon_ump45"        },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SMG        , "p90"   , "weapon_p90"          },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_MACHINEGUN , "m249"  , "weapon_m249"         },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_AMMO       , "primammo", "primammo"          },
+	{ AUTOBUYCLASS_SECONDARY | AUTOBUYCLASS_AMMO     , "secammo" , "secammo"           },
+	{ AUTOBUYCLASS_ARMOR                             , "vest"    , "item_kevlar"       },
+	{ AUTOBUYCLASS_ARMOR                             , "vesthelm", "item_assaultsuit"  },
+	{ AUTOBUYCLASS_GRENADE                           , "flash"   , "weapon_flashbang"  },
+	{ AUTOBUYCLASS_GRENADE                           , "hegren"  , "weapon_hegrenade"  },
+	{ AUTOBUYCLASS_GRENADE                           , "sgren"   , "weapon_smokegrenade"},
+	{ AUTOBUYCLASS_NIGHTVISION                       , "nvgs"    , "nvgs"              },
+	{ AUTOBUYCLASS_DEFUSER                           , "defuser" , "defuser"           },
+	{ AUTOBUYCLASS_PRIMARY | AUTOBUYCLASS_SHIELD     , "shield"  , "shield"            },
+	{ 0, NULL, NULL }
+};
+
 // Global Savedata for player
 TYPEDESCRIPTION CBasePlayer::m_playerSaveData[] =
 {
@@ -1083,6 +1122,25 @@ void CBasePlayer::Disappear(void) // Last check: 2013, November 17.
 	pev->nextthink = gpGlobals->time + 0.1;
 	pev->angles.x  = 0;
 	pev->angles.z  = 0;
+}
+
+AutoBuyInfoStruct *CBasePlayer::GetAutoBuyCommandInfo(const char *command)  // Last check: 2013, November 17.
+{
+	size_t i = 0;
+	AutoBuyInfoStruct *info = NULL;
+
+	do
+	{
+		info = &(g_autoBuyInfo[i++]);
+
+		if (stricmp(info->m_command, command) == 0)
+		{
+			return info;
+		}
+
+	} while (info->m_class);
+
+	return NULL;
 }
 
 // CS
