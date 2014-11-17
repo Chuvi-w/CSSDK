@@ -2257,7 +2257,7 @@ int CBasePlayer::TakeHealth(float flHealth, int bitsDamageType)
 	return CBaseMonster::TakeHealth(flHealth, bitsDamageType);
 }
 
-Vector CBasePlayer::GetGunPosition()
+Vector CBasePlayer::GetGunPosition(void) // Last check: 2013, November 17.
 {
 	//  UTIL_MakeVectors(pev->v_angle);
 	//  m_HackedGunPos = pev->view_ofs;
