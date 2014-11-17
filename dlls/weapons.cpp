@@ -1737,3 +1737,16 @@ void CWeaponBox::BombThink(void) // Last check: 2013, November 17.
 
 	pev->nextthink =  gpGlobals->time + 1.0;
 }
+
+
+
+LINK_ENTITY_TO_CLASS(weapon_shield, CWShield);
+
+void CWShield::Spawn(void)
+{
+	pev->movetype = MOVETYPE_TOSS;
+	pev->solid    = SOLID_TRIGGER;
+
+	UTIL_SetSize(pev, g_vecZero, g_vecZero);
+	SET_MODEL(edict(), "models/w_shield.mdl");
+}
