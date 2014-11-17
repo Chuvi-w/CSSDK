@@ -905,12 +905,17 @@ bool CBasePlayer::CanAffordSecondaryAmmo(void) // Last check: 2013, September 14
 	return false;
 }
 
-void CBasePlayer::CheckPowerups(entvars_s *pev) 
+void CBasePlayer::CheckPowerups(entvars_s *pev) // Last check: 2013, November 17.
 {
 	if (pev->health > 0)
 	{
 		pev->modelindex = m_modelIndexPlayer;
 	}
+}
+
+void CBasePlayer::ClearAutoBuyData(void) // Last check: 2013, November 17.
+{
+	m_autoBuyString[0] = '\0';
 }
 
 // CS
