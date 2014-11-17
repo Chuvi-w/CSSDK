@@ -616,22 +616,67 @@ void CBasePlayer::CalculatePitchBlend(void) // Last check: 2013, September 13.
 	if (pitch <= -45)
 	{
 		blend_pitch = 255;
-		pitch = -1;
 	}
 	else if (pitch < 45)
 	{
 		blend_pitch = (45.0 - pitch) * 255 / 90;
-		pitch = blend_pitch;
 	}
 	else
 	{
 		blend_pitch = 0;
-		pitch = 0;
 	}
 		
-	pev->blending[1] = (int)pitch;
+	pev->blending[1] = (int)blend_pitch;
 
 	m_flPitch = blend_pitch;
+}
+
+void CBasePlayer::CalculateYawBlend(void) // Last check: 2013, September 13.
+{
+	StudioEstimateGait();
+
+	float yaw = pev->angles[1] - m_flGaityaw;
+
+	if (yaw < -180)
+	{
+		yaw += 360;
+	}
+	else if (yaw > 180)
+	{
+		yaw -= 360;
+	}
+
+	if (m_flGaitMovement != 0)
+	{
+		if (yaw > 120)
+		{
+			m_flGaityaw -= 180;
+			m_flGaitMovement = -m_flGaitMovement;
+			yaw -= 180;
+		}
+		else if (yaw < -120)
+		{
+			m_flGaityaw += 180;
+			m_flGaitMovement = -m_flGaitMovement;
+			yaw += 180;
+		}
+	}
+
+	float blend_yaw = (yaw / 90) * 128.0 + 127.0;
+
+	if (blend_yaw > 255)
+	{
+		blend_yaw = 255;
+	}
+
+	if (blend_yaw < 0)
+	{
+		blend_yaw = 0;
+	}
+
+	blend_yaw = 255.0 - blend_yaw;
+	pev->blending[0] = (int)blend_yaw;
+	m_flYaw = blend_yaw;
 }
 
 // CS
