@@ -6055,7 +6055,7 @@ GetCustomDecalFrames
 Returns the # of custom frames this player's custom clan logo contains.
 =============
 */
-int CBasePlayer::GetCustomDecalFrames(void)
+int CBasePlayer::GetCustomDecalFrames(void)  // Last check: 2013, November 17.
 {
 	return m_nCustomSprayFrames;
 }
