@@ -1414,8 +1414,7 @@ void CBasePlayer::HandleSignals(void) // Last check: 2013, November 17.
 	}
 }
 
-// CS
-bool CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)
+bool CBasePlayer::HintMessage(const char *pMessage, BOOL bDisplayIfPlayerDead, BOOL bOverride)  // Last check: 2013, November 17.
 {
 	if (!bDisplayIfPlayerDead && !IsAlive())
 	{
