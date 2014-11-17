@@ -6225,6 +6225,32 @@ bool CBasePlayer::IsReloading(void) // Last check: 2013, November 17.
 	return m_pActiveItem && ((CBasePlayerWeapon *)m_pActiveItem)->m_fInReload;
 }
 
+void CBasePlayer::GiveShield(bool bRetire) // Last check: 2013, November 17.
+{
+	m_bOwnsShield = true;
+	m_bHasPrimary = true;
+
+	if (m_pActiveItem)
+	{
+		CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_pActiveItem;
+
+		if (bRetire)
+		{
+			if (m_rgAmmo[pWeapon->m_iPrimaryAmmoType] > 0)
+			{
+				pWeapon->Holster();
+			}
+
+			if (!pWeapon->Deploy())
+			{
+				pWeapon->RetireWeapon();
+			}
+		}
+	}
+
+	pev->gamestate = 0;
+}
+
 void CBasePlayer::RemoveShield(void) // Last check: 2013, November 17.
 {
 	if (HasShield())
