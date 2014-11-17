@@ -607,6 +607,33 @@ bool CBasePlayer::CanPlayerBuy(bool display) // Last check: 2013, September 13.
 	return true;
 }
 
+
+void CBasePlayer::CalculatePitchBlend(void) // Last check: 2013, September 13.
+{
+	float pitch = (int)pev->angles[0] * 3;
+	float blend_pitch;
+
+	if (pitch <= -45)
+	{
+		blend_pitch = 255;
+		pitch = -1;
+	}
+	else if (pitch < 45)
+	{
+		blend_pitch = (45.0 - pitch) * 255 / 90;
+		pitch = blend_pitch;
+	}
+	else
+	{
+		blend_pitch = 0;
+		pitch = 0;
+	}
+		
+	pev->blending[1] = (int)pitch;
+
+	m_flPitch = blend_pitch;
+}
+
 // CS
 void CBasePlayer::CheckPowerups(entvars_s *pev)
 {
