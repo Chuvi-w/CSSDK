@@ -834,6 +834,10 @@ bool CBasePlayer::CanAffordArmor(void) // Last check: 2013, September 14.
 	return m_iAccount >= 350;
 }
 
+bool CBasePlayer::CanAffordDefuseKit() // Last check: 2013, September 14.
+{
+	return m_iAccount >= 200;
+}
 
 
 // CS
