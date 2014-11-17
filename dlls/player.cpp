@@ -3848,10 +3848,10 @@ int CBasePlayer::Classify(void) // Last check: 2013, November 17.
 }
 
 //Player ID
-void CBasePlayer::InitStatusBar()
+void CBasePlayer::InitStatusBar() // Last check: 2013, November 17.
 {
 	m_flStatusBarDisappearDelay = 0;
-	//m_SbarString1[0] = m_SbarString0[0] = 0;
+	m_SbarString0[0] = '\0';
 }
 
 void CBasePlayer::UpdateStatusBar()
