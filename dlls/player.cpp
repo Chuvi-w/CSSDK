@@ -3505,9 +3505,9 @@ void CBasePlayer::WaterMove()
 }
 
 // TRUE if the player is attached to a ladder
-BOOL CBasePlayer::IsOnLadder(void)
+BOOL CBasePlayer::IsOnLadder(void)  // Last check: 2013, November 17.
 {
-	return (pev->movetype == MOVETYPE_FLY);
+	return pev->movetype == MOVETYPE_FLY;
 }
 
 void CBasePlayer::PlayerDeathThink(void)
