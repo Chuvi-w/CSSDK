@@ -5242,11 +5242,9 @@ void CBasePlayer::SelectLastItem(void)
 //==============================================
 // HasWeapons - do I have any weapons at all?
 //==============================================
-BOOL CBasePlayer::HasWeapons(void)
+BOOL CBasePlayer::HasWeapons(void)  // Last check: 2013, November 17.
 {
-	int i;
-
-	for (i = 0; i < MAX_ITEM_TYPES; i++)
+	for (size_t i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
 		if (m_rgpPlayerItems[i])
 		{
