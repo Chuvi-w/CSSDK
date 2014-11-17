@@ -6649,12 +6649,11 @@ BOOL CBasePlayer::HasPlayerItem(CBasePlayerItem *pCheckItem)
 //=========================================================
 // HasNamedPlayerItem Does the player already have this item?
 //=========================================================
-BOOL CBasePlayer::HasNamedPlayerItem(const char *pszItemName)
+BOOL CBasePlayer::HasNamedPlayerItem(const char *pszItemName) // Last check: 2013, November 17.
 {
 	CBasePlayerItem *pItem;
-	int i;
 
-	for (i = 0; i < MAX_ITEM_TYPES; i++)
+	for (size_t i = 0; i < MAX_ITEM_TYPES; ++i)
 	{
 		pItem = m_rgpPlayerItems[i];
 
@@ -6664,6 +6663,7 @@ BOOL CBasePlayer::HasNamedPlayerItem(const char *pszItemName)
 			{
 				return TRUE;
 			}
+
 			pItem = pItem->m_pNext;
 		}
 	}
