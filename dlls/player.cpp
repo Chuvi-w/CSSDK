@@ -1498,8 +1498,7 @@ BOOL CBasePlayer::IsArmored(int nHitGroup)  // Last check: 2013, November 17.
 	return FALSE;
 }
 
-// CS
-BOOL CBasePlayer::IsBombGuy(void)
+BOOL CBasePlayer::IsBombGuy(void)  // Last check: 2013, November 17.
 {
 	return g_pGameRules->IsMultiplayer() && m_bHasC4;
 }
