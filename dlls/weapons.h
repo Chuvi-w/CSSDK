@@ -2286,6 +2286,30 @@ public:
 	/* last cacheline: 56 bytes */
 };
 
+
+class CWShield : public CBaseEntity
+{
+public:
+
+	void Spawn(void);
+	void EXPORT Touch(CBaseEntity *pOther);
+	void SetCantBePickedUpByUser(CBaseEntity *pEntity, float time);
+
+private:
+
+	EHANDLE   m_hEntToIgnoreTouchesFrom; /*   152     8 */
+	float     m_flTimeToIgnoreTouches;   /*   160     4 */
+
+	/* vtable has 2 entries: {
+	[0]  = Spawn
+	[45] = Touch
+	} */
+	/* size: 164, cachelines: 3, members: 3 */
+	/* sum members: 12, holes: 1, sum holes: 152 */
+	/* last cacheline: 36 bytes */
+};
+
+
 #ifdef CLIENT_DLL
 bool bIsMultiplayer(void);
 void LoadVModel(char *szViewModel, CBasePlayer *m_pPlayer);
