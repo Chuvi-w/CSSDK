@@ -5540,20 +5540,24 @@ void CBasePlayer::ItemPostFrame()
 	m_pActiveItem->ItemPostFrame();
 }
 
-int CBasePlayer::GetAmmoIndex(const char *psz)
+int CBasePlayer::GetAmmoIndex(const char *psz)  // Last check: 2013, November 17.
 {
-	int i;
-
 	if (!psz)
+	{
 		return -1;
+	}
 
-	for (i = 1; i < MAX_AMMO_SLOTS; i++)
+	for (size_t i = 1; i < MAX_AMMO_SLOTS; ++i)
 	{
 		if (!CBasePlayerItem::AmmoInfoArray[i].pszName)
+		{
 			continue;
+		}
 
 		if (stricmp(psz, CBasePlayerItem::AmmoInfoArray[i].pszName) == 0)
+		{
 			return i;
+		}
 	}
 
 	return -1;
