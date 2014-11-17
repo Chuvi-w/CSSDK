@@ -68,6 +68,10 @@
 
 #define TEAM_NAME_LENGTH	16
 
+#define IGNOREMSG_NONE  0
+#define IGNOREMSG_ENEMY 1
+#define IGNOREMSG_TEAM  2
+
 typedef enum
 {
 	PLAYER_IDLE,
