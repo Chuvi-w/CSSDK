@@ -3835,7 +3835,7 @@ Play suit update if it's time
 #define SUITUPDATETIME  3.5
 #define SUITFIRSTUPDATETIME 0.1
 
-void CBasePlayer::CheckSuitUpdate()
+void CBasePlayer::CheckSuitUpdate(void) // Last check: 2013, November 17.
 {
 	int i;
 	int isentence = 0;
