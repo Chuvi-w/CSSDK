@@ -1700,3 +1700,40 @@ void CWeaponBox::SetObjectCollisionBox(void)
 	pev->absmin = pev->origin + Vector(-16, -16, 0);
 	pev->absmax = pev->origin + Vector(16, 16, 16);
 }
+
+void CWeaponBox::BombThink(void) // Last check: 2013, November 17.
+{
+	if (!m_bIsBomb)
+	{
+		return;
+	}
+
+	CBaseEntity *pEntity = NULL;
+
+	while ((pEntity = (CBasePlayer *)UTIL_FindEntityByClassname(pEntity, "player")))
+	{
+		if (FNullEnt(pEntity->edict()))
+		{
+			break;
+		}
+
+		if (!pEntity->IsPlayer() || pEntity->IsDormant())
+		{
+			continue;
+		}
+
+		CBasePlayer *pPlayer = GetClassPtr((CBasePlayer *)pEntity->pev);
+
+		if (pPlayer->pev->deadflag == DEAD_NO && pPlayer->m_iTeam == TERRORIST)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgBombDrop, NULL, pPlayer->edict());
+				WRITE_COORD(pev->origin.x);
+				WRITE_COORD(pev->origin.y);
+				WRITE_COORD(pev->origin.z);
+				WRITE_BYTE(0);
+			MESSAGE_END();
+		}
+	}
+
+	pev->nextthink =  gpGlobals->time + 1.0;
+}

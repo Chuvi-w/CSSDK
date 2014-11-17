@@ -6078,7 +6078,7 @@ void CBasePlayer::DropPlayerItem(char *pszItemName) // Last check: 2013, Novembe
 							break;
 						}
 
-						if (!pEntity->IsPlayer() || pEntity->pev->flags == FL_DORMANT)
+						if (!pEntity->IsPlayer() || pEntity->IsDormant())
 						{
 							continue;
 						}
