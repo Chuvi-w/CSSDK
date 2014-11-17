@@ -1781,6 +1781,54 @@ void CBasePlayer::UpdateShieldCrosshair(bool draw)
 		m_iHideHUD |= HIDEHUD_CROSSHAIR2;
 }
 
+
+void CBasePlayer::BuildRebuyStruct(void) // Last check: 2013, September 17.
+{
+	if (m_bIsInRebuy)
+	{
+		return;
+	}
+
+	CBasePlayerWeapon *pPrimary   = (CBasePlayerWeapon *)m_rgpPlayerItems[PRIMARY_WEAPON_SLOT];
+	CBasePlayerWeapon *pSecondary = (CBasePlayerWeapon *)m_rgpPlayerItems[PISTOL_SLOT];
+
+	if (pPrimary != NULL)
+	{
+		m_rebuyStruct.m_primaryWeapon = pPrimary->m_iId;
+		m_rebuyStruct.m_primaryAmmo   = m_rgAmmo[pPrimary->m_iPrimaryAmmoType];
+	}
+	else
+	{
+		m_rebuyStruct.m_primaryAmmo   = 0;
+		m_rebuyStruct.m_primaryWeapon = HasShield() ? WEAPON_SHIELDGUN : 0;
+	}
+
+	if (pSecondary != NULL)
+	{
+		m_rebuyStruct.m_secondaryWeapon = pSecondary->m_iId;
+		m_rebuyStruct.m_secondaryAmmo   = m_rgAmmo[pSecondary->m_iPrimaryAmmoType];
+	}
+	else
+	{
+		m_rebuyStruct.m_secondaryWeapon = 0;
+		m_rebuyStruct.m_secondaryAmmo   = 0;
+	}
+
+	int heGrenade    = GetAmmoIndex("HEGrenade");
+	int flashbang    = GetAmmoIndex("Flashbang");
+	int smokeGrenade = GetAmmoIndex("SmokeGrenade");
+
+	m_rebuyStruct.m_heGrenade    = heGrenade != -1 ? m_rgAmmo[heGrenade] : 0;
+	m_rebuyStruct.m_flashbang    = flashbang != -1 ? m_rgAmmo[flashbang] : 0;
+	m_rebuyStruct.m_smokeGrenade = smokeGrenade != -1 ? m_rgAmmo[smokeGrenade] : 0;
+
+	m_rebuyStruct.m_defuser     = m_bHasDefuser;
+	m_rebuyStruct.m_nightVision = m_bHasNightVision;
+	m_rebuyStruct.m_armor       = m_iKevlar;
+}
+
+
+
 /*
  *
  */
