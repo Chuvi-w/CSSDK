@@ -1936,14 +1936,13 @@ void CBasePlayer::ResetMaxSpeed()
 	}
 }
 
-// CS
-void CBasePlayer::ResetMenu(void)
+void CBasePlayer::ResetMenu(void)  // Last check: 2013, November 17.
 {
-	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, ENT(pev));
-	WRITE_SHORT(0);
-	WRITE_CHAR(0);
-	WRITE_BYTE(0);
-	WRITE_STRING(0);
+	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, pev);
+		WRITE_SHORT(0);
+		WRITE_CHAR(0);
+		WRITE_BYTE(0);
+		WRITE_STRING(0);
 	MESSAGE_END();
 }
 
