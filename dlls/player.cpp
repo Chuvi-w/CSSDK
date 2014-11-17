@@ -817,6 +817,25 @@ void CBasePlayer::StudioProcessGait(void) // Last check: 2013, September 14.
 	}
 }
 
+bool CBasePlayer::CanAffordArmor(void) // Last check: 2013, September 14.
+{
+	int money;
+
+	if (m_iKevlar != 1)
+	{
+		return m_iAccount >= 650;
+	}
+
+	if (pev->armorvalue < 100)
+	{
+		return m_iAccount >= 650;
+	}
+	
+	return m_iAccount >= 350;
+}
+
+
+
 // CS
 void CBasePlayer::CheckPowerups(entvars_s *pev)
 {

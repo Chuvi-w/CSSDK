@@ -548,7 +548,7 @@ public:
 	BOOL SwitchWeapon(CBasePlayerItem *pWeapon);
 	void CheckPowerups(entvars_t *pev);
 
-	bool CanAffordPrimary(void);
+	bool CanAffordPrimary(void); // Tutor only.
 	bool CanAffordPrimaryAmmo(void);
 	bool CanAffordSecondaryAmmo(void);
 	bool CanAffordArmor(void);
