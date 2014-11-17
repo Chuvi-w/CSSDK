@@ -1742,11 +1742,59 @@ void CWeaponBox::BombThink(void) // Last check: 2013, November 17.
 
 LINK_ENTITY_TO_CLASS(weapon_shield, CWShield);
 
-void CWShield::Spawn(void)
+void CWShield::Spawn(void) // Last check: 2013, November 17.
 {
 	pev->movetype = MOVETYPE_TOSS;
 	pev->solid    = SOLID_TRIGGER;
 
 	UTIL_SetSize(pev, g_vecZero, g_vecZero);
 	SET_MODEL(edict(), "models/w_shield.mdl");
+}
+
+void CWShield::Touch(CBaseEntity *pOther) // Last check: 2013, November 17.
+{
+	if (!pOther->IsPlayer())
+	{
+		return;
+	}
+
+	CBasePlayer *pPlayer = (CBasePlayer *)pOther;
+
+	if (pPlayer->pev->deadflag == DEAD_NO)
+	{
+		if (m_hEntToIgnoreTouchesFrom != 0 && pPlayer == m_hEntToIgnoreTouchesFrom)
+		{
+			if (m_flTimeToIgnoreTouches > gpGlobals->time)
+			{
+				return;
+			}
+
+			m_hEntToIgnoreTouchesFrom = NULL;
+		}
+	}
+
+	if (pPlayer->m_bHasPrimary)
+	{
+		return;
+	}
+
+	if (pPlayer->m_rgpPlayerItems[PRIMARY_WEAPON_SLOT] != NULL && pPlayer->m_rgpPlayerItems[PISTOL_SLOT]->m_iId == WEAPON_ELITE)
+	{
+		return;
+	}
+
+	if (pPlayer->m_pActiveItem && !pPlayer->m_pActiveItem->CanHolster())
+	{
+		return;
+	}
+
+	if (!pPlayer->m_bIsVIP)
+	{
+		pPlayer->GiveShield(true);
+
+		EMIT_SOUND(edict(), CHAN_ITEM, "items/gunpickup2.wav", VOL_NORM, ATTN_NORM);
+		UTIL_Remove(this);
+
+		pev->nextthink = gpGlobals->time + 0.1;
+	}
 }
