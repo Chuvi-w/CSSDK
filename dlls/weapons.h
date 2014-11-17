@@ -346,6 +346,16 @@ typedef enum
 } InventorySlotType;
 
 // CS
+typedef struct // Last check: 2013, November 17
+{
+	int m_type;       /*     0     4 */
+	int m_price;      /*     4     4 */
+	int m_side;       /*     8     4 */
+	int m_slot;       /*    12     4 */
+	int m_ammoPrice;  /*    16     4 */
+} WeaponStruct;
+
+// CS
 enum WeaponState
 {
 	WPNSTATE_USP_SILENCED       = (1 << 0),

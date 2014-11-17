@@ -59,6 +59,9 @@ extern edict_t *EntSelectSpawnPoint(CBaseEntity *pPlayer);
 // the world node graph
 extern CGraph   WorldGraph;
 
+// CS
+extern WeaponStruct g_weaponStruct[MAX_WEAPONS];
+
 #define TRAIN_ACTIVE    0x80
 #define TRAIN_NEW       0xc0
 #define TRAIN_OFF       0x00
@@ -842,6 +845,26 @@ bool CBasePlayer::CanAffordDefuseKit(void) // Last check: 2013, September 14.
 bool CBasePlayer::CanAffordGrenade(void) // Last check: 2013, September 14.
 {
 	return m_iAccount >= 200;
+}
+
+bool CBasePlayer::CanAffordPrimary(void)
+{
+	if (m_iTeam != CT && m_iTeam != TERRORIST)
+	{
+		return false;
+	}
+
+	for (size_t i = 0; i < MAX_WEAPONS; ++i)
+	{
+		WeaponStruct *s = &g_weaponStruct[i];
+
+		if ((s->m_side & m_iTeam) && s->m_slot == PRIMARY_WEAPON_SLOT && m_iAccount >= s->m_price)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 

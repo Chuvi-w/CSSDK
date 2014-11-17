@@ -68,6 +68,42 @@ MULTIDAMAGE gMultiDamage;
 
 #define TRACER_FREQ		4			// Tracers fire every fourth bullet
 
+
+
+// CS
+WeaponStruct g_weaponStruct[MAX_WEAPONS] = // Last check: 2013, November 17
+{
+	// TYPE			 PRICE  SIDE            SLOT			    ACOST
+	WEAPON_P228     , 600 , TERRORIST | CT, PISTOL_SLOT        , 50,
+	WEAPON_SCOUT    , 2750, TERRORIST | CT, PRIMARY_WEAPON_SLOT, 80,
+	WEAPON_XM1014   , 3000, TERRORIST | CT, PRIMARY_WEAPON_SLOT, 65,
+	WEAPON_MAC10    , 1400, TERRORIST     , PRIMARY_WEAPON_SLOT, 25,
+	WEAPON_AUG      , 3500, CT            , PRIMARY_WEAPON_SLOT, 60,
+	WEAPON_ELITE    , 800 , TERRORIST     , PISTOL_SLOT        , 20,
+	WEAPON_UMP45    , 750 , TERRORIST | CT, PISTOL_SLOT        , 50,
+	WEAPON_SG550    , 1700, CT            , PRIMARY_WEAPON_SLOT, 25,
+	WEAPON_USP      , 500 , TERRORIST | CT, PISTOL_SLOT        , 25,
+	WEAPON_GLOCK18  , 400 , TERRORIST | CT, PISTOL_SLOT        , 20,
+	WEAPON_MP5N     , 1500, TERRORIST | CT, PRIMARY_WEAPON_SLOT, 20,
+	WEAPON_AWP      , 4750, TERRORIST | CT, PRIMARY_WEAPON_SLOT, 125,
+	WEAPON_M249     , 5750, TERRORIST | CT, PRIMARY_WEAPON_SLOT, 60,
+	WEAPON_M3       , 1700, TERRORIST | CT, PRIMARY_WEAPON_SLOT, 65,
+	WEAPON_M4A1     , 3100, CT            , PRIMARY_WEAPON_SLOT, 60,
+	WEAPON_TMP      , 1250, CT            , PRIMARY_WEAPON_SLOT, 20,
+	WEAPON_G3SG1    , 5000, TERRORIST     , PRIMARY_WEAPON_SLOT, 80,
+	WEAPON_DEAGLE   , 650 , TERRORIST | CT, PISTOL_SLOT        , 40,
+	WEAPON_SG552    , 3500, TERRORIST     , PRIMARY_WEAPON_SLOT, 60,
+	WEAPON_AK47     , 2500, TERRORIST     , PRIMARY_WEAPON_SLOT, 80,
+	WEAPON_P90      , 2350, TERRORIST | CT, PRIMARY_WEAPON_SLOT, 50,
+	WEAPON_FAMAS    , 2250, CT            , PRIMARY_WEAPON_SLOT, 60,
+	WEAPON_GALIL    , 2250, TERRORIST     , PRIMARY_WEAPON_SLOT, 60,
+	WEAPON_SHIELDGUN, 2200,	CT            , PRIMARY_WEAPON_SLOT, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
+
+
 //=========================================================
 // MaxAmmoCarry - pass in a name and this function will tell
 // you the maximum amount of that type of ammunition that a
