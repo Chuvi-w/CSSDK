@@ -847,7 +847,7 @@ bool CBasePlayer::CanAffordGrenade(void) // Last check: 2013, September 14.
 	return m_iAccount >= 200;
 }
 
-bool CBasePlayer::CanAffordPrimary(void)
+bool CBasePlayer::CanAffordPrimary(void) // Last check: 2013, September 14.
 {
 	if (m_iTeam != CT && m_iTeam != TERRORIST)
 	{
@@ -856,9 +856,9 @@ bool CBasePlayer::CanAffordPrimary(void)
 
 	for (size_t i = 0; i < MAX_WEAPONS; ++i)
 	{
-		WeaponStruct *s = &g_weaponStruct[i];
+		WeaponStruct *weapon = &g_weaponStruct[i];
 
-		if ((s->m_side & m_iTeam) && s->m_slot == PRIMARY_WEAPON_SLOT && m_iAccount >= s->m_price)
+		if ((weapon->m_side & m_iTeam) && weapon->m_slot == PRIMARY_WEAPON_SLOT && m_iAccount >= weapon->m_price)
 		{
 			return true;
 		}
@@ -867,6 +867,25 @@ bool CBasePlayer::CanAffordPrimary(void)
 	return false;
 }
 
+bool CBasePlayer::CanAffordPrimaryAmmo(void) // Last check: 2013, September 14.
+{
+	CBasePlayerItem *pItem = m_rgpPlayerItems[PRIMARY_WEAPON_SLOT];
+
+	if (pItem)
+	{
+		for (size_t i = 0; i < MAX_WEAPONS; ++i)
+		{
+			WeaponStruct *weapon = &g_weaponStruct[i];
+
+			if (weapon->m_type == pItem->m_iId && m_iAccount >= weapon->m_ammoPrice)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
 
 // CS
 void CBasePlayer::CheckPowerups(entvars_s *pev)
