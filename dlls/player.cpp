@@ -694,6 +694,62 @@ void CBasePlayer::InitRebuyData(const char *string) // Last check : 2014, Novemb
 	}
 }
 
+void CBasePlayer::ParseAutoBuyString(const char *string, const bool &boughtPrimary, const bool &boughtSecondary)  // Last check : 2014, November 18.
+{
+	char command[32];
+	const char *c = string;
+
+	if (!string && !*string)
+	{
+		return;
+	}
+
+	while (*c != NULL)
+	{
+		int i = 0;
+
+		while (*c && *c != ' ' && i < sizeof(command))
+		{
+			command[i] = *c;
+			++c;
+			++i;
+		}
+
+		if (*c == ' ')
+		{
+			++c;
+		}
+
+		command[i] = 0;
+		i = 0;
+
+		while (command[i] != 0)
+		{
+			if (command[i] == ' ')
+			{
+				command[i] = 0;
+				break;
+			}
+
+			++i;
+		}
+
+		if (!strlen(command))
+		{
+			continue;
+		}
+
+		AutoBuyInfoStruct *commandInfo = GetAutoBuyCommandInfo(command);
+
+		if (ShouldExecuteAutoBuyCommand(commandInfo, boughtPrimary, boughtSecondary))
+		{
+			ClientCommand(commandInfo->m_command);
+			PostAutoBuyCommandProcessing(commandInfo, boughtPrimary, boughtSecondary);
+		}
+	}
+}
+
+
 void CBasePlayer::Blind(float duration, float holdTime, float fadeTime, int alpha) // Last check : 2014, November 11.
 {
 	m_blindUntilTime = gpGlobals->time + duration;
