@@ -24,6 +24,8 @@
 
 extern int gmsgCurWeapon;
 extern int gmsgSetFOV;
+extern int gmsgStatusIcon;
+
 // Find the next client in the game for this player to spectate
 void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
 {
@@ -170,50 +172,123 @@ void CBasePlayer::Observer_CheckTarget()
 	}
 }
 
-void CBasePlayer::Observer_CheckProperties()
+void CBasePlayer::Observer_CheckProperties(void)  // Last check: 2013, November 18.
 {
-	// try to find a traget if we have no current one
 	if (pev->iuser1 == OBS_IN_EYE && m_hObserverTarget != NULL)
 	{
-		CBasePlayer* target = (CBasePlayer*)(UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict())));
+		CBasePlayer *pTarget = (CBasePlayer *)UTIL_PlayerByIndex(m_hObserverTarget->entindex());
 
-		if (!target)
-			return;
-
-		int weapon = (target->m_pActiveItem != NULL) ? target->m_pActiveItem->m_iId : 0;
-		// use fov of tracked client
-		if (m_iFOV != target->m_iFOV || m_iObserverWeapon != weapon)
+		if (!pTarget)
 		{
-			m_iFOV = target->m_iFOV;
-			m_iClientFOV = m_iFOV;
-			// write fov before wepon data, so zoomed crosshair is set correctly
+			return;
+		}
+
+		int weapon = pTarget->m_pActiveItem ? pTarget->m_pActiveItem->m_iId : 0;
+
+		if (m_iFOV != pTarget->m_iFOV || m_iObserverWeapon != weapon)
+		{
+			m_iClientFOV = m_iFOV = pTarget->m_iFOV;
+
 			MESSAGE_BEGIN(MSG_ONE, gmsgSetFOV, NULL, pev);
-			WRITE_BYTE(m_iFOV);
+				WRITE_BYTE(m_iFOV);
 			MESSAGE_END();
 
 			m_iObserverWeapon = weapon;
-			//send weapon update
+
 			MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, NULL, pev);
-			WRITE_BYTE(1);	// 1 = current weapon, not on target
-			WRITE_BYTE(m_iObserverWeapon);
-			WRITE_BYTE(0);	// clip
+				WRITE_BYTE(1);
+				WRITE_BYTE(m_iObserverWeapon);
+				WRITE_BYTE(0);
 			MESSAGE_END();
 		}
-	}
-	else
-	{
-		m_iFOV = 90;
 
-		if (m_iObserverWeapon != 0)
+		int targetBombState = STATUSICON_HIDE;
+
+		if (pTarget->m_bHasC4)
 		{
-			m_iObserverWeapon = 0;
-
-			MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, NULL, pev);
-			WRITE_BYTE(1);	// 1 = current weapon
-			WRITE_BYTE(m_iObserverWeapon);
-			WRITE_BYTE(0);	// clip
-			MESSAGE_END();
+			targetBombState = (pTarget->m_signals.GetState() & SIGNAL_BOMB) ? STATUSICON_FLASH : STATUSICON_SHOW;
 		}
+
+		if (m_iObserverC4State != targetBombState)
+		{
+			m_iObserverC4State = targetBombState;
+
+			if (targetBombState)
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+					WRITE_BYTE(m_iObserverC4State);
+					WRITE_STRING("c4");
+					WRITE_BYTE(0);
+					WRITE_BYTE(160);
+					WRITE_BYTE(0);
+				MESSAGE_END();
+			}
+			else
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+					WRITE_BYTE(STATUSICON_HIDE);
+					WRITE_STRING("c4");
+				MESSAGE_END();
+			}
+		}
+
+		if (m_bObserverHasDefuser != pTarget->m_bHasDefuser)
+		{
+			m_bObserverHasDefuser = pTarget->m_bHasDefuser;
+
+			if (pTarget->m_bHasDefuser)
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+					WRITE_BYTE(STATUSICON_SHOW);
+					WRITE_STRING("defuser");
+					WRITE_BYTE(0);
+					WRITE_BYTE(160);
+					WRITE_BYTE(0);
+				MESSAGE_END();
+			}
+			else
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+					WRITE_BYTE(STATUSICON_HIDE);
+					WRITE_STRING("defuser");
+				MESSAGE_END();
+			}
+		}
+
+		return;
+	}
+
+	m_iFOV = 90;
+
+	if (m_iObserverWeapon)
+	{
+		m_iObserverWeapon = 0;
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, NULL, pev);
+			WRITE_BYTE(1);
+			WRITE_BYTE(m_iObserverWeapon);
+			WRITE_BYTE(0);
+		MESSAGE_END();
+	}
+
+	if (m_iObserverC4State)
+	{
+		m_iObserverC4State = 0;
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+			WRITE_BYTE(0);
+			WRITE_STRING("c4");
+		MESSAGE_END();
+	}
+
+	if (m_bObserverHasDefuser)
+	{
+		m_bObserverHasDefuser = false;
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+			WRITE_BYTE(0);
+			WRITE_STRING("defuser");
+		MESSAGE_END();
 	}
 }
 
