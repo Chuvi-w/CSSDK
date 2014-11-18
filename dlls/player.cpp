@@ -1540,17 +1540,14 @@ bool CBasePlayer::IsObservingPlayer(CBasePlayer *pTarget) // Last check: 2013, N
 	return false;
 }
 
-
-// CS
-void CBasePlayer::MakeVIP(void)
+void CBasePlayer::MakeVIP(void) // Last check: 2013, November 18.
 {
 	pev->body = 0;
 	m_iModelName = MODEL_VIP;
 
 	g_engfuncs.pfnSetClientKeyValue(entindex(), g_engfuncs.pfnGetInfoKeyBuffer(edict()), "model", "vip");
 
-	UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Became_VIP\"\n",
-		STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()));
+	UTIL_LogPrintf("\"%s<%i><%s><CT>\" triggered \"Became_VIP\"\n",	STRING(pev->netname), GETPLAYERUSERID(edict()), GETPLAYERAUTHID(edict()));
 
 	m_iTeam      = CT;
 	m_bIsVIP     = true;
