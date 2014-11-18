@@ -1064,6 +1064,12 @@ bool CBasePlayer::NeedsGrenade(void)  // Last check: 2013, September 14.
 	return true;
 }
 
+bool CBasePlayer::NeedsPrimaryAmmo(void)  // Last check: 2013, September 14.
+{
+	CBasePlayerWeapon *pWeapon = (CBasePlayerWeapon *)m_rgpPlayerItems[PRIMARY_WEAPON_SLOT];
+
+	return pWeapon && pWeapon->m_iId != WEAPON_SHIELDGUN && m_rgAmmo[pWeapon->m_iPrimaryAmmoType] < pWeapon->iMaxAmmo1();
+}
 
 void CBasePlayer::CheckPowerups(entvars_s *pev) // Last check: 2013, November 17.
 {
