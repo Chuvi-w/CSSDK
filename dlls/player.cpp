@@ -1801,61 +1801,58 @@ void CBasePlayer::JoiningThink(void)  // Last check: 2013, November 17.
 	}
 }
 
-// CS
-void CBasePlayer::Pain(int m_LastHitGroup, bool HasArmour)
+void CBasePlayer::Pain(int m_LastHitGroup, bool HasArmour)   // Last check: 2013, November 18.
 {
-	int random = RANDOM_LONG(0, 2);
+	int rand = RANDOM_LONG(0, 2);
 
 	switch (m_LastHitGroup)
 	{
-	case HITGROUP_LEFTLEG:
-	case HITGROUP_RIGHTLEG:
-	{
-		switch (random)
+		case HITGROUP_LEFTLEG:
+		case HITGROUP_RIGHTLEG:
 		{
-		case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-1.wav", 1, ATTN_NORM); break;
-		case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-2.wav", 1, ATTN_NORM); break;
-		case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-3.wav", 1, ATTN_NORM); break;
-		}
-
-		break;
-	}
-	case HITGROUP_HEAD:
-	{
-		if (m_iKevlar == 2)
-		{
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_helmet-1.wav", 1, ATTN_NORM);
-		}
-		else
-		{
-			switch (random)
+			if (HasArmour)
 			{
-			case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot1.wav", 1, ATTN_NORM); break;
-			case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot2.wav", 1, ATTN_NORM); break;
-			case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot3.wav", 1, ATTN_NORM); break;
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_kevlar-1.wav", VOL_NORM, ATTN_NORM);
 			}
-		}
 
-		break;
-	}
-	default:
-	{
-		if (HasArmour)
-		{
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_kevlar-1.wav", 1, ATTN_NORM);
-		}
-		else
-		{
-			switch (random)
+			switch (rand)
 			{
-			case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-1.wav", 1, ATTN_NORM); break;
-			case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-2.wav", 1, ATTN_NORM); break;
-			case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-3.wav", 1, ATTN_NORM); break;
+				case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-1.wav", 1, ATTN_NORM); break;
+				case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-2.wav", 1, ATTN_NORM); break;
+				case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-3.wav", 1, ATTN_NORM); break;
 			}
-		}
 
-		break;
-	}
+			break;
+		}
+		case HITGROUP_HEAD:
+		{
+			if (m_iKevlar == 2)
+			{
+				EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_helmet-1.wav", 1, ATTN_NORM);
+			}
+			else
+			{
+				switch (rand)
+				{
+					case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot1.wav", 1, ATTN_NORM); break;
+					case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot2.wav", 1, ATTN_NORM); break;
+					case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/headshot3.wav", 1, ATTN_NORM); break;
+				}
+			}
+
+			break;
+		}
+		default:
+		{
+			switch (rand)
+			{
+				case 0: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-1.wav", 1, ATTN_NORM); break;
+				case 1: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-2.wav", 1, ATTN_NORM); break;
+				case 2: EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/bhit_flesh-3.wav", 1, ATTN_NORM); break;
+			}
+
+			break;
+		}
 	}
 }
 
