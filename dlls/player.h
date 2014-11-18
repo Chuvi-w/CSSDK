@@ -582,7 +582,7 @@ public:
 	bool NeedsGrenade(void);
 
 	virtual void UpdateClientData(void);
-	virtual int ObjectCaps(void) { return CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual int ObjectCaps(void) { return CBaseMonster::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; } // Last check: 2013, November 18.
 	virtual void Precache(void);
 
 	BOOL IsOnLadder(void);
