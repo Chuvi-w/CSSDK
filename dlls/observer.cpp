@@ -121,50 +121,49 @@ void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)   // 
 	}
 }
 
-// Handle buttons in observer mode
-void CBasePlayer::Observer_HandleButtons()
+void CBasePlayer::Observer_HandleButtons(void)   // Last check: 2013, November 18.
 {
-	// Slow down mouse clicks
 	if (m_flNextObserverInput > gpGlobals->time)
+	{
 		return;
+	}
 
-	// Jump changes from modes: Chase to Roaming
 	if (m_afButtonPressed & IN_JUMP)
 	{
-		if (pev->iuser1 == OBS_CHASE_LOCKED)
-			Observer_SetMode(OBS_CHASE_FREE);
-
-		else if (pev->iuser1 == OBS_CHASE_FREE)
-			Observer_SetMode(OBS_IN_EYE);
-
-		else if (pev->iuser1 == OBS_IN_EYE)
-			Observer_SetMode(OBS_ROAMING);
-
-		else if (pev->iuser1 == OBS_ROAMING)
-			Observer_SetMode(OBS_MAP_FREE);
-
-		else if (pev->iuser1 == OBS_MAP_FREE)
-			Observer_SetMode(OBS_MAP_CHASE);
-
-		else
-			Observer_SetMode(OBS_CHASE_FREE);	// don't use OBS_CHASE_LOCKED anymore
-
-		m_flNextObserverInput = gpGlobals->time + 0.2;
-	}
-
-	// Attack moves to the next player
-	if (m_afButtonPressed & IN_ATTACK)//&& pev->iuser1 != OBS_ROAMING )
-	{
-		Observer_FindNextPlayer(false, NULL);
+		switch (pev->iuser1)
+		{
+			case OBS_CHASE_LOCKED:
+				Observer_SetMode(OBS_CHASE_FREE);
+				break;
+			case OBS_CHASE_FREE:
+				Observer_SetMode(OBS_IN_EYE);
+				break;
+			case OBS_IN_EYE:
+				Observer_SetMode(OBS_ROAMING);
+				break;
+			case OBS_ROAMING:
+				Observer_SetMode(OBS_MAP_FREE);
+				break;
+			case OBS_MAP_FREE:
+				Observer_SetMode(OBS_MAP_CHASE);
+				break;
+			default:
+				Observer_SetMode(m_bObserverAutoDirector? OBS_CHASE_LOCKED : OBS_CHASE_FREE);
+				break;
+		}
 
 		m_flNextObserverInput = gpGlobals->time + 0.2;
 	}
 
-	// Attack2 moves to the prev player
-	if (m_afButtonPressed & IN_ATTACK2)// && pev->iuser1 != OBS_ROAMING )
+	if (m_afButtonPressed & IN_ATTACK)
 	{
-		Observer_FindNextPlayer(true, NULL);
+		Observer_FindNextPlayer(false);
+		m_flNextObserverInput = gpGlobals->time + 0.2;
+	}
 
+	if (m_afButtonPressed & IN_ATTACK2)
+	{
+		Observer_FindNextPlayer(true);
 		m_flNextObserverInput = gpGlobals->time + 0.2;
 	}
 }
