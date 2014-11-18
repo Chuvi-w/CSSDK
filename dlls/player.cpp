@@ -1032,9 +1032,14 @@ bool CBasePlayer::CanAffordSecondaryAmmo(void) // Last check: 2013, September 14
 }
 
 
-bool CBasePlayer::NeedsArmor(void) // Last check: 2013, September 14.
+bool CBasePlayer::NeedsArmor(void)  // Last check: 2013, September 14.
 {
 	return m_iKevlar && pev->armorvalue < 50;
+}
+
+bool CBasePlayer::NeedsDefuseKit(void)  // Last check: 2013, September 14.
+{
+	!m_bHasDefuser && m_iTeam == CT && g_pGameRules->m_bMapHasBombTarget;
 }
 
 
