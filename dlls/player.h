@@ -575,7 +575,7 @@ public:
 	bool CanAffordDefuseKit(void);
 	bool CanAffordGrenade(void);
 
-	bool NeedsPrimaryAmmo(void);
+	bool NeedsPrimaryAmmo(void);  // Tutor only.
 	bool NeedsSecondaryAmmo(void);
 	bool NeedsArmor(void);
 	bool NeedsDefuseKit(void);

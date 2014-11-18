@@ -1039,7 +1039,29 @@ bool CBasePlayer::NeedsArmor(void)  // Last check: 2013, September 14.
 
 bool CBasePlayer::NeedsDefuseKit(void)  // Last check: 2013, September 14.
 {
-	!m_bHasDefuser && m_iTeam == CT && g_pGameRules->m_bMapHasBombTarget;
+	return !m_bHasDefuser && m_iTeam == CT && g_pGameRules->m_bMapHasBombTarget;
+}
+
+bool CBasePlayer::NeedsGrenade(void)  // Last check: 2013, September 14.
+{
+	int ammoIndex;
+
+	if ((ammoIndex = GetAmmoIndex("HEGrenade")) > -1 && m_rgAmmo[ammoIndex])
+	{
+		return false;
+	}
+
+	if ((ammoIndex = GetAmmoIndex("Flashbang")) > -1 && m_rgAmmo[ammoIndex])
+	{
+		return false;
+	}
+
+	if ((ammoIndex = GetAmmoIndex("SmokeGrenade")) > -1 && m_rgAmmo[ammoIndex])
+	{
+		return false;
+	}
+
+	return true;
 }
 
 
