@@ -1527,7 +1527,7 @@ bool CBasePlayer::IsHittingShield(const Vector &vecDirection, TraceResult *ptr) 
 
 bool CBasePlayer::IsObservingPlayer(CBasePlayer *pTarget) // Last check: 2013, November 17.
 {
-	if (!pTarget || IsDormant() || FNullEnt(pTarget))
+	if (!pTarget || IsDormant() || FNullEnt(pTarget->edict()))
 	{
 		return false;
 	}
@@ -3112,13 +3112,56 @@ entvars_t *g_pevLastInflictor;  // Set in combat.cpp.  Used to pass the damage i
 
 void CBasePlayer::Killed(entvars_t *pevAttacker, int iGib)
 {
-	CSound *pSound;
+	m_canSwitchObserverModes = false;
 
-	// Holster weapon immediately, to allow it to cleanup
-	if (m_pActiveItem)
-		m_pActiveItem->Holster();
+	if (m_LastHitGroup == HITGROUP_HEAD)
+	{
+		m_bHeadshotKilled = true;
+	}
 
-	g_pGameRules->PlayerKilled(this, pevAttacker, g_pevLastInflictor);
+	CBaseEntity *pAttacker = CBaseEntity::Instance(pevAttacker);
+
+	// TODO: Implement me.
+	// TheBots->OnEvent(EVENT_PLAYER_DIED, this, pAttacker);
+
+	if (g_pGameRules->IsCareer())
+	{
+		if (!IsBot())
+		{
+			TheCareerTasks->HandleEvent(EVENT_DIE, NULL, this);
+			TheCareerTasks->HandleDeath(m_iTeam, NULL);
+		}
+
+		if (!m_bKilledByBomb)
+		{
+			// ...
+		}
+	}
+
+	if (!m_bKilledByBomb)
+	{
+		g_pGameRules->PlayerKilled(this, pevAttacker, g_pevLastInflictor);
+	}
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, pev);
+		WRITE_BYTE(0);
+	MESSAGE_END();
+
+	m_bNightVisionOn = false;
+
+	for (int i = 1; i < gpGlobals->maxClients; ++i)
+	{
+		CBasePlayer *pOther = (CBasePlayer *)UTIL_PlayerByIndex(i);
+
+		if (pOther && pOther->IsObservingPlayer(this))
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, pOther->pev);
+				WRITE_BYTE(0);
+			MESSAGE_END();
+
+			pOther->m_bNightVisionOn = false;
+		}
+	}
 
 	if (m_pTank != NULL)
 	{
@@ -3126,58 +3169,223 @@ void CBasePlayer::Killed(entvars_t *pevAttacker, int iGib)
 		m_pTank = NULL;
 	}
 
-	// this client isn't going to be thinking for a while, so reset the sound until they respawn
-	pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(edict()));
+	CSound *pSound = CSoundEnt::SoundPointerForIndex(CSoundEnt::ClientSoundIndex(edict()));
+	
+	if (pSound)
 	{
-		if (pSound)
+		pSound->Reset();
+	}
+	
+	if (pev->modelindex && (m_flFlinchTime < gpGlobals->time || pev->health <= 0))
+	{
+		SetAnimation(PLAYER_DIE);
+	}
+
+	if (m_pActiveItem && m_pActiveItem->m_pPlayer)
+	{
+		switch (m_pActiveItem->m_iId)
 		{
-			pSound->Reset();
+			case WEAPON_HEGRENADE:
+			{
+				if ((pev->button & IN_ATTACK) && m_rgAmmo[((CBasePlayerWeapon *)m_pActiveItem)->m_iPrimaryAmmoType])
+				{
+					CGrenade::ShootTimed2(pev, GetGunPosition(), pev->angles, 1.5, m_iTeam, ((CHEGrenade *)m_pActiveItem)->m_usCreateExplosion);
+				}
+				break;
+			}
+			case WEAPON_FLASHBANG:
+			{
+				if (pev->button & IN_ATTACK && m_rgAmmo[((CBasePlayerWeapon *)m_pActiveItem)->m_iPrimaryAmmoType])
+				{
+					CGrenade::ShootTimed(pev, GetGunPosition(), pev->angles, 1.5);
+				}
+				break;
+			}
+			case WEAPON_SMOKEGRENADE:
+			{
+				if ((pev->button & IN_ATTACK) && m_rgAmmo[((CBasePlayerWeapon *)m_pActiveItem)->m_iPrimaryAmmoType])
+				{
+					CGrenade::ShootSmokeGrenade(pev, GetGunPosition(), pev->angles, 1.5, ((CSmokeGrenade *)m_pActiveItem)->m_usCreateSmoke);
+				}
+				break;
+			}
 		}
 	}
 
-	SetAnimation(PLAYER_DIE);
+	pev->modelindex = m_modelIndexPlayer;
+	pev->deadflag   = DEAD_DYING;
+	pev->movetype   = MOVETYPE_TOSS;
+	pev->takedamage = DAMAGE_NO;
 
-	//m_iRespawnFrames = 0;
+	pev->gamestate = 1;
+	m_bShieldDrawn = false;
 
-	pev->modelindex = g_ulModelIndexPlayer;    // don't use eyes
+	pev->flags &= ~FL_ONGROUND;
 
-	pev->deadflag       = DEAD_DYING;
-	pev->movetype       = MOVETYPE_TOSS;
-	ClearBits(pev->flags, FL_ONGROUND);
-	if (pev->velocity.z < 10)
-		pev->velocity.z += RANDOM_FLOAT(0, 300);
+	if (!fadetoblack.value)
+	{
+		pev->iuser1 = OBS_CHASE_FREE;
+		pev->iuser2 = ENTINDEX(edict());
+		pev->iuser3 = ENTINDEX(ENT(pevAttacker));
 
-	// clear out the suit message cache so we don't keep chattering
+		m_hObserverTarget = UTIL_PlayerByIndex(pev->iuser3);
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgADStop, NULL, pev);
+		MESSAGE_END();
+	}
+	else
+	{
+		UTIL_ScreenFade(this, Vector(0, 0, 0), 3, 3, 255, FFADE_OUT | FFADE_STAYOUT);
+	}
+
+	SetScoreboardAttributes();
+
+	if (m_iThrowDirection)
+	{
+		switch (m_iThrowDirection)
+		{
+			case THROW_FORWARD:
+			{
+				UTIL_MakeVectors(pev->angles);
+
+				pev->velocity = gpGlobals->v_forward * RANDOM_FLOAT(100, 200);
+				pev->velocity.z = RANDOM_FLOAT(50, 100);
+
+				break;
+			}
+			case THROW_BACKWARD:
+			{
+				UTIL_MakeVectors(pev->angles);
+
+				pev->velocity = gpGlobals->v_forward * RANDOM_FLOAT(-100, -200);
+				pev->velocity.z = RANDOM_FLOAT(50, 100);
+
+				break;
+			}
+			case THROW_HITVEL:
+			{
+				if (FClassnameIs(pevAttacker, "player"))
+				{
+					UTIL_MakeVectors(pevAttacker->angles);
+
+					pev->velocity = gpGlobals->v_forward * RANDOM_FLOAT(200, 300);
+					pev->velocity.z = RANDOM_FLOAT(200, 300);
+				}
+
+				break;
+			}
+			case THROW_BOMB:
+			{
+				pev->velocity = m_vBlastVector * (1 / m_vBlastVector.Length()) * (2300 - m_vBlastVector.Length()) * 0.25;
+				pev->velocity.z = (2300 - m_vBlastVector.Length()) / 2.75;
+
+				break;
+			}
+			case THROW_GRENADE:
+			{
+				pev->velocity = m_vBlastVector * (1 / m_vBlastVector.Length()) * (500 - m_vBlastVector.Length());
+				pev->velocity.z = (350 - m_vBlastVector.Length()) * 1.5;
+
+				break;
+			}
+			case THROW_HITVEL_MINUS_AIRVEL:
+			{
+				if (FClassnameIs(pevAttacker, "player"))
+				{
+					UTIL_MakeVectors(pevAttacker->angles);
+					pev->velocity = gpGlobals->v_forward * RANDOM_FLOAT(200, 300);
+				}
+
+				break;
+			}
+		}
+
+		m_iThrowDirection = THROW_NONE;
+	}
+
 	SetSuitUpdate(NULL, FALSE, 0);
 
-	// send "health" update message to zero
 	m_iClientHealth = 0;
+
 	MESSAGE_BEGIN(MSG_ONE, gmsgHealth, NULL, pev);
-	WRITE_BYTE(m_iClientHealth);
+		WRITE_BYTE(m_iClientHealth);
 	MESSAGE_END();
 
-	// Tell Ammo Hud that the player is dead
 	MESSAGE_BEGIN(MSG_ONE, gmsgCurWeapon, NULL, pev);
-	WRITE_BYTE(0);
-	WRITE_BYTE(0XFF);
-	WRITE_BYTE(0xFF);
+		WRITE_BYTE(0);
+		WRITE_BYTE(0xFF);
+		WRITE_BYTE(0xFF);
 	MESSAGE_END();
 
-	// reset FOV
-	pev->fov = m_iFOV = m_iClientFOV = 0;
+	SendFOV(0);
 
-	MESSAGE_BEGIN(MSG_ONE, gmsgSetFOV, NULL, pev);
-	WRITE_BYTE(0);
-	MESSAGE_END();
+	g_pGameRules->CheckWinConditions();
+	m_bNotKilled = false;
 
-	// UNDONE: Put this in, but add FFADE_PERMANENT and make fade time 8.8 instead of 4.12
-	// UTIL_ScreenFade( edict(), Vector(128,0,0), 6, 15, 255, FFADE_OUT | FFADE_MODULATE );
-
-	if ((pev->health < -40 && iGib != GIB_NEVER) || iGib == GIB_ALWAYS)
+	if (m_bHasC4)
 	{
-		pev->solid          = SOLID_NOT;
-		GibMonster();   // This clears pev->model
+		DropPlayerItem("weapon_c4");
+		SetProgressBarTime(0);
+	}
+	else if (m_bHasDefuser)
+	{
+		m_bHasDefuser = false;
+		pev->body = 0;
+
+		GiveNamedItem("item_thighpack");
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+			WRITE_BYTE(STATUSICON_HIDE);
+			WRITE_STRING("defuser");
+		MESSAGE_END();
+
+		SendItemStatus(this);
+		SetProgressBarTime(0);
+	}
+
+	if (m_bIsDefusing)
+	{
+		SetProgressBarTime(0);
+	}
+
+	m_bIsDefusing = false;
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgStatusIcon, NULL, pev);
+		WRITE_BYTE(STATUSICON_HIDE);
+		WRITE_STRING("buyzone");
+	MESSAGE_END();
+
+	if (m_iMenu >= Menu_Buy)
+	{
+		if (m_iMenu <= Menu_BuyItem)
+		{
+			CLIENT_COMMAND(ENT(pev), "slot10\n");
+		}
+		else if (m_iMenu == Menu_ClientBuy)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgBuyClose, NULL, pev);
+			MESSAGE_END();
+		}
+	}
+
+	SetThink(&CBasePlayer::PlayerDeathThink);
+	pev->nextthink = gpGlobals->time + 0.1;
+	pev->solid = SOLID_NOT;
+
+	if (m_bPunishedForTK)
+	{
+		m_bPunishedForTK = false;
+		HintMessage("#Hint_cannot_play_because_tk");
+	}
+
+	if ((pev->health < -9000 && iGib != GIB_NEVER) || iGib == GIB_ALWAYS)
+	{
+		pev->solid = SOLID_NOT;
+		GibMonster();
 		pev->effects |= EF_NODRAW;
+
+		g_pGameRules->CheckWinConditions();
+
 		return;
 	}
 
@@ -3186,8 +3394,11 @@ void CBasePlayer::Killed(entvars_t *pevAttacker, int iGib)
 	pev->angles.x = 0;
 	pev->angles.z = 0;
 
-	SetThink(&CBasePlayer::PlayerDeathThink);
-	pev->nextthink = gpGlobals->time + 0.1;
+	if (!(m_flDisplayHistory & Hint_Spec_Duck))
+	{
+		HintMessage("#Spec_Duck", TRUE, TRUE);
+		m_flDisplayHistory |= Hint_Spec_Duck;
+	}
 }
 
 // Set the activity based on an event or current state
@@ -3829,12 +4040,12 @@ void CBasePlayer::Jump(void)  // Last check: 2013, November 17.
 		return;
 	}
 
-	if (!(m_afButtonPressed & IN_JUMP)
+	if (!(m_afButtonPressed & IN_JUMP))
 	{
 		return;
 	}
 
-	if (!(pev->flags & FL_ONGROUND) || !pev->groundentity))
+	if (!(pev->flags & FL_ONGROUND) || !pev->groundentity)
 	{
 		return;
 	}

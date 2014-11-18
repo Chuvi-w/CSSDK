@@ -194,6 +194,18 @@ typedef struct
 	int m_armor;
 } RebuyStruct;
 
+typedef enum
+{
+	THROW_NONE,
+	THROW_FORWARD,
+	THROW_BACKWARD,
+	THROW_HITVEL,
+	THROW_BOMB,
+	THROW_GRENADE,
+	THROW_HITVEL_MINUS_AIRVEL
+}
+ThrowDirection;
+
 // CS
 typedef enum
 {
@@ -539,7 +551,7 @@ public:
 	virtual int Restore(CRestore &restore);
 
 	void Reset(void);
-	void SetScoreboardAttributes(CBasePlayer *destination);
+	void SetScoreboardAttributes(CBasePlayer *destination = NULL);
 
 	void RenewItems(void);
 	void PackDeadPlayerItems(void);
