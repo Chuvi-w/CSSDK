@@ -3889,17 +3889,18 @@ BOOL CBasePlayer::IsOnLadder(void)  // Last check: 2013, November 17.
 	return pev->movetype == MOVETYPE_FLY;
 }
 
-void CBasePlayer::PlayerDeathThink(void)
+void CBasePlayer::PlayerDeathThink(void)  // Last check: 2013, November 18.
 {
-	float flForward;
+	if (m_iJoiningState != JOINED)
+	{
+		return;
+	}
 
 	if (FBitSet(pev->flags, FL_ONGROUND))
 	{
-		flForward = pev->velocity.Length() - 20;
-		if (flForward <= 0)
-			pev->velocity = g_vecZero;
-		else
-			pev->velocity = flForward * pev->velocity.Normalize();
+		float flForward = pev->velocity.Length() - 20;
+
+		pev->velocity = flForward ? g_vecZero : flForward * pev->velocity.Normalize();
 	}
 
 	if (HasWeapons())
@@ -3911,69 +3912,62 @@ void CBasePlayer::PlayerDeathThink(void)
 		PackDeadPlayerItems();
 	}
 
-	if (pev->modelindex && (!m_fSequenceFinished) && (pev->deadflag == DEAD_DYING))
+	if (pev->modelindex && !m_fSequenceFinished && pev->deadflag == DEAD_DYING)
 	{
 		StudioFrameAdvance();
-
-		//m_iRespawnFrames++;               // Note, these aren't necessarily real "frames", so behavior is dependent on # of client movement commands
-		//if ( m_iRespawnFrames < 120 )   // Animations should be no longer than this
-		//  return;
+		return;
 	}
 
 	// once we're done animating our death and we're on the ground, we want to set movetype to None so our dead body won't do collisions and stuff anymore
 	// this prevents a bug where the dead body would go to a player's head if he walked over it while the dead player was clicking their button to respawn
 	if (pev->movetype != MOVETYPE_NONE && FBitSet(pev->flags, FL_ONGROUND))
-		pev->movetype = MOVETYPE_NONE;
-
-	if (pev->deadflag == DEAD_DYING)
-		pev->deadflag = DEAD_DEAD;
-
-	StopAnimation();
-
-	pev->effects |= EF_NOINTERP;
-	pev->framerate = 0.0;
-
-	BOOL fAnyButtonDown = (pev->button & ~IN_SCORE);
-
-	// wait for all buttons released
-	if (pev->deadflag == DEAD_DEAD)
 	{
-		if (fAnyButtonDown)
-			return;
-
-		if (g_pGameRules->FPlayerCanRespawn(this))
-		{
-			m_fDeadTime = gpGlobals->time;
-			pev->deadflag = DEAD_RESPAWNABLE;
-		}
-
-		return;
+		pev->movetype = MOVETYPE_NONE;
 	}
 
-	// if the player has been dead for one second longer than allowed by forcerespawn,
-	// forcerespawn isn't on. Send the player off to an intermission camera until they
-	// choose to respawn.
-	if (g_pGameRules->IsMultiplayer() && (gpGlobals->time > (m_fDeadTime + 6)) && !(m_afPhysicsFlags & PFLAG_OBSERVER))
+	if (pev->deadflag == DEAD_DYING)
 	{
-		// go to dead camera.
+		m_fDeadTime = gpGlobals->time;
+		pev->deadflag = DEAD_DEAD;
+	}
+
+	StopAnimation();
+	pev->effects |= EF_NOINTERP;
+
+	bool bAnyButtonDown = (pev->button & ~IN_SCORE);
+
+	if (g_pGameRules->IsMultiplayer() && gpGlobals->time > m_fDeadTime + 3 && !(m_afPhysicsFlags & PFLAG_OBSERVER))
+	{
+		SpawnClientSideCorpse();
 		StartDeathCam();
 	}
 
-	if (pev->iuser1)	// player is in spectator mode
-		return;
+	if (pev->deadflag == DEAD_DEAD && m_iTeam != UNASSIGNED && m_iTeam != SPECTATOR)
+	{
+		if (bAnyButtonDown)
+		{
+			return;
+		}
 
-	// wait for any button down,  or mp_forcerespawn is set and the respawn time is up
-	if (!fAnyButtonDown
-		&& !(g_pGameRules->IsMultiplayer() && forcerespawn.value > 0 && (gpGlobals->time > (m_fDeadTime + 5))))
-		return;
+		if (g_pGameRules->FPlayerCanRespawn(this))
+		{
+			pev->deadflag = DEAD_RESPAWNABLE;
 
-	pev->button = 0;
-	//m_iRespawnFrames = 0;
+			if (g_pGameRules->IsMultiplayer())
+			{
+				g_pGameRules->CheckWinConditions();
+			}
+		}
 
-	//ALERT(at_console, "Respawn\n");
+		pev->nextthink = gpGlobals->time + 0.1;
+	}
+	else if (pev->deadflag == DEAD_RESPAWNABLE)
+	{
+		respawn(pev, FALSE);
 
-	respawn(pev, !(m_afPhysicsFlags & PFLAG_OBSERVER));// don't copy a corpse if we're in deathcam.
-	pev->nextthink = -1;
+		pev->button    = 0;
+		pev->nextthink = -1;
+	}
 }
 
 //=========================================================
