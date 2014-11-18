@@ -28,6 +28,7 @@ extern int gmsgSetFOV;
 extern int gmsgStatusIcon;
 extern int gmsgSpecHealth2;
 extern int gmsgCrosshair;
+extern int gmsgNVGToggle;
 
 #define FORCECAMERA_SPECTATE_ANYONE    0
 #define FORCECAMERA_SPECTATE_ONLY_TEAM 1
@@ -35,7 +36,7 @@ extern int gmsgCrosshair;
 
 void UpdateClientEffects(CBasePlayer *pObserver, int oldMode);
 
-int GetForceCamera(void)
+int GetForceCamera(void)  // Last check: 2013, November 18.
 {
 	int retVal;
 
@@ -54,6 +55,95 @@ int GetForceCamera(void)
 	}
 
 	return retVal;
+}
+
+void UpdateClientEffects(CBasePlayer *pObserver, int oldMode)  // Last check: 2013, November 18.
+{
+	bool clearProgress    = false;
+	bool clearBlindness   = false;
+	bool clearNightvision = false;
+	bool blindnessOk      = fadetoblack.value == 0 ? true : false;
+
+	if (oldMode == OBS_IN_EYE && pObserver->pev->iuser1 != OBS_IN_EYE)
+	{
+		clearProgress = true;
+		clearBlindness = true;
+		clearNightvision = true;
+	}
+
+	if (pObserver->pev->iuser1 == OBS_IN_EYE)
+	{
+		clearProgress    = true;
+		clearBlindness   = true;
+		clearNightvision = true;
+
+		if (pObserver->m_hObserverTarget->IsPlayer())
+		{
+			CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(pObserver->m_hObserverTarget->entindex());
+
+			if (pPlayer && pPlayer->m_progressStart && pPlayer->m_progressEnd > pPlayer->m_progressStart && pPlayer->m_progressEnd > gpGlobals->time)
+			{
+				float percentRemaining = gpGlobals->time - pPlayer->m_progressStart;
+				pObserver->SetProgressBarTime2(pPlayer->m_progressEnd - pPlayer->m_progressStart, percentRemaining);
+				clearProgress = false;
+			}
+
+			if (blindnessOk && pPlayer && pPlayer->m_blindStartTime && pPlayer->m_blindFadeTime)
+			{
+				float fadeTime, holdTime, alpha, ratio;
+				float endTime = pPlayer->m_blindFadeTime + pPlayer->m_blindHoldTime + pPlayer->m_blindStartTime;
+
+				if (endTime > gpGlobals->time)
+				{
+					clearBlindness = false;
+
+					fadeTime = pPlayer->m_blindFadeTime;
+					alpha    = pPlayer->m_blindAlpha;
+					holdTime = pPlayer->m_blindHoldTime + pPlayer->m_blindStartTime - gpGlobals->time;
+
+					if (holdTime <= 0)
+					{
+						holdTime = 0;
+						ratio    = (endTime - gpGlobals->time) / pPlayer->m_blindFadeTime;
+						alpha    = pPlayer->m_blindAlpha * ratio;
+						fadeTime = ratio * fadeTime;
+					}
+
+					UTIL_ScreenFade(pObserver, Vector(255, 255, 255), fadeTime, holdTime, alpha, 0);
+				}
+			}
+
+			clearNightvision = false;
+
+			if (pPlayer->m_bNightVisionOn != pObserver->m_bNightVisionOn)
+			{
+				MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, pObserver->pev);
+					WRITE_BYTE(pPlayer->m_bNightVisionOn != false);
+				MESSAGE_END();
+
+				pObserver->m_bNightVisionOn = pPlayer->m_bNightVisionOn;
+			}
+		}
+	}
+
+	if (clearProgress)
+	{
+		pObserver->SetProgressBarTime(0);
+	}
+
+	if (blindnessOk && clearBlindness)
+	{
+		UTIL_ScreenFade(pObserver, Vector(0, 0, 0), 0.001, 0, 0, 0);
+	}
+
+	if (clearNightvision)
+	{
+		MESSAGE_BEGIN(MSG_ONE, gmsgNVGToggle, NULL, pObserver->pev);
+			WRITE_BYTE(0);
+		MESSAGE_END();
+
+		pObserver->m_bNightVisionOn = false;
+	}
 }
 
 CBaseEntity *CBasePlayer::Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam)   // Last check: 2013, November 18.
