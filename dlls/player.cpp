@@ -694,7 +694,7 @@ void CBasePlayer::InitRebuyData(const char *string) // Last check : 2014, Novemb
 	}
 }
 
-void CBasePlayer::ParseAutoBuyString(const char *string, const bool &boughtPrimary, const bool &boughtSecondary)  // Last check : 2014, November 18.
+void CBasePlayer::ParseAutoBuyString(const char *string, bool &boughtPrimary, bool &boughtSecondary)  // Last check : 2014, November 18.
 {
 	char command[32];
 	const char *c = string;
@@ -746,6 +746,30 @@ void CBasePlayer::ParseAutoBuyString(const char *string, const bool &boughtPrima
 			ClientCommand(commandInfo->m_command);
 			PostAutoBuyCommandProcessing(commandInfo, boughtPrimary, boughtSecondary);
 		}
+	}
+}
+
+void CBasePlayer::PostAutoBuyCommandProcessing(const AutoBuyInfoStruct *commandInfo, bool &boughtPrimary, bool &boughtSecondary)
+{
+	if (!commandInfo)
+	{
+		return;
+	}
+
+	CBasePlayerWeapon *pPrimary   = (CBasePlayerWeapon *)m_rgpPlayerItems[PRIMARY_WEAPON_SLOT];
+	CBasePlayerWeapon *pSecondary = (CBasePlayerWeapon *)m_rgpPlayerItems[PISTOL_SLOT];
+
+	if (pPrimary && !stricmp(STRING(pPrimary->pev->classname), commandInfo->m_classname))
+	{
+		boughtPrimary = true;
+	}
+	else if ((commandInfo->m_class & AUTOBUYCLASS_SHIELD) && HasShield())
+	{
+		boughtPrimary = true;
+	}
+	else if (pSecondary && !stricmp(STRING(pSecondary->pev->classname), commandInfo->m_classname))
+	{
+		boughtSecondary = true;
 	}
 }
 

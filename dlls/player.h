@@ -714,8 +714,8 @@ public:
 	const char *PickGrenadeKillWeaponString(void);
 
 	bool ShouldExecuteAutoBuyCommand(const AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary);
-	void PostAutoBuyCommandProcessing(const AutoBuyInfoStruct *commandInfo, const bool &boughtPrimary, const bool &boughtSecondary);
-	void ParseAutoBuyString(const char *string, const bool &boughtPrimary, const bool &boughtSecondary);
+	void PostAutoBuyCommandProcessing(const AutoBuyInfoStruct *commandInfo, bool &boughtPrimary, bool &boughtSecondary);
+	void ParseAutoBuyString(const char *string, bool &boughtPrimary, bool &boughtSecondary);
 	AutoBuyInfoStruct *GetAutoBuyCommandInfo(const char *command);
 	void InitRebuyData(const char *str);
 	void BuildRebuyStruct(void);
