@@ -1031,6 +1031,13 @@ bool CBasePlayer::CanAffordSecondaryAmmo(void) // Last check: 2013, September 14
 	return false;
 }
 
+
+bool CBasePlayer::NeedsArmor(void) // Last check: 2013, September 14.
+{
+	return m_iKevlar && pev->armorvalue < 50;
+}
+
+
 void CBasePlayer::CheckPowerups(entvars_s *pev) // Last check: 2013, November 17.
 {
 	if (pev->health > 0)
