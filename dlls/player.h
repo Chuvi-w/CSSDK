@@ -492,7 +492,7 @@ public:
 
 	void SpawnClientSideCorpse(void);
 
-	void Observer_FindNextPlayer(bool bReverse, const char *name);
+	void Observer_FindNextPlayer(bool bReverse = false, const char *name = NULL);
 	CBaseEntity* Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam);
 	void Observer_HandleButtons(void);
 	void Observer_SetMode(int iMode);

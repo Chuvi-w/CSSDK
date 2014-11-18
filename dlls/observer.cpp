@@ -128,47 +128,69 @@ void CBasePlayer::Observer_HandleButtons()
 	}
 }
 
-void CBasePlayer::Observer_CheckTarget()
+void CBasePlayer::Observer_CheckTarget()  // Last check: 2013, November 18.
 {
-	if (pev->iuser1 == OBS_ROAMING)
-		return;
-
-	// try to find a traget if we have no current one
-	if (m_hObserverTarget == NULL)
+	if (pev->iuser1 == OBS_ROAMING && !m_bWasFollowing)
 	{
-		Observer_FindNextPlayer(false, NULL);
+		return;
+	}
 
-		if (m_hObserverTarget == NULL)
+	if (m_bWasFollowing)
+	{
+		Observer_FindNextPlayer();
+
+		if (m_hObserverTarget && m_iObserverLastMode != pev->iuser1)
 		{
-			// no target found at all
+			Observer_SetMode(m_iObserverLastMode);
+		}
 
-			int lastMode = pev->iuser1;
+		return;
+	}
 
+	if (!m_hObserverTarget)
+	{
+		Observer_FindNextPlayer();
+	}
+
+	if (m_hObserverTarget)
+	{
+		CBasePlayer *pTarget = (CBasePlayer *)UTIL_PlayerByIndex(m_hObserverTarget->entindex());
+
+		if (!pTarget || pTarget->pev->deadflag == DEAD_RESPAWNABLE || FBitSet(pTarget->pev->effects, EF_NODRAW))
+		{
+			Observer_FindNextPlayer();
+		}
+		else
+		{
+			if (pTarget->pev->deadflag == DEAD_DEAD && gpGlobals->time > pTarget->m_fDeadTime + 2)
+			{
+				Observer_FindNextPlayer();
+
+				if (!m_hObserverTarget)
+				{
+					int lastMode = pev->iuser1;
+
+					if (lastMode != OBS_ROAMING)
+					{
+						Observer_SetMode(OBS_ROAMING);
+					}
+
+					m_iObserverLastMode = lastMode;
+					m_bWasFollowing     = true;
+				}
+			}
+		}
+	}
+	else
+	{
+		int lastMode = pev->iuser1;
+
+		if (lastMode != OBS_ROAMING)
+		{
 			Observer_SetMode(OBS_ROAMING);
-
-			m_iObserverLastMode = lastMode;	// don't overwrite users lastmode
-
-			return;	// we still have np target return
 		}
-	}
 
-	CBasePlayer* target = (CBasePlayer*)(UTIL_PlayerByIndex(ENTINDEX(m_hObserverTarget->edict())));
-
-	if (!target)
-	{
-		Observer_FindNextPlayer(false, NULL);
-		return;
-	}
-
-	// check taget
-	if (target->pev->deadflag == DEAD_DEAD)
-	{
-		if ((target->m_fDeadTime + 2.0f) < gpGlobals->time)
-		{
-			// 3 secs after death change target
-			Observer_FindNextPlayer(false, NULL);
-			return;
-		}
+		m_iObserverLastMode = lastMode;
 	}
 }
 
