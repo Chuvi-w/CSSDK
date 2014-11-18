@@ -55,6 +55,28 @@ int GetForceCamera(void)
 	return retVal;
 }
 
+CBaseEntity *CBasePlayer::Observer_IsValidTarget(int iPlayerIndex, bool bSameTeam)   // Last check: 2013, November 18.
+{
+	if (iPlayerIndex > gpGlobals->maxClients || iPlayerIndex < 1)
+	{
+		return NULL;
+	}
+
+	CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(iPlayerIndex);
+
+	if (!pPlayer || pPlayer == this || pPlayer->has_disconnected || pPlayer->IsObserver() || FBitSet(pPlayer->pev->effects, EF_NODRAW) || pPlayer->m_iTeam == UNASSIGNED)
+	{
+		return NULL;
+	}
+
+	if (bSameTeam && pPlayer->m_iTeam != m_iTeam)
+	{
+		return NULL;
+	}
+
+	return pPlayer;
+}
+
 void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)   // Last check: 2013, November 18.
 {
 	if (m_flNextFollowTime && gpGlobals->time < m_flNextFollowTime)
