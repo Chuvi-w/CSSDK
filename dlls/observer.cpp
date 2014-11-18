@@ -15,68 +15,109 @@
 //
 // $NoKeywords: $
 //=============================================================================
-#include	"extdll.h"
-#include	"util.h"
-#include	"cbase.h"
-#include	"player.h"
-#include	"weapons.h"
-#include	"pm_shared.h"
+#include "extdll.h"
+#include "util.h"
+#include "cbase.h"
+#include "player.h"
+#include "weapons.h"
+#include "pm_shared.h"
+#include "game.h"
 
 extern int gmsgCurWeapon;
 extern int gmsgSetFOV;
 extern int gmsgStatusIcon;
+extern int gmsgSpecHealth2;
 
-// Find the next client in the game for this player to spectate
-void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)
+#define FORCECAMERA_SPECTATE_ANYONE    0
+#define FORCECAMERA_SPECTATE_ONLY_TEAM 1
+#define FORCECAMERA_ONLY_FRIST_PERSON  2
+
+void UpdateClientEffects(CBasePlayer *pObserver, int oldMode);
+
+int GetForceCamera(void)
 {
-	// MOD AUTHORS: Modify the logic of this function if you want to restrict the observer to watching
-	//				only a subset of the players. e.g. Make it check the target's team.
+	int retVal;
 
-	int		iStart;
-	if (m_hObserverTarget)
-		iStart = ENTINDEX(m_hObserverTarget->edict());
+	if (!fadetoblack.value)
+	{
+		retVal = (int)CVAR_GET_FLOAT("mp_forcechasecam");
+
+		if (retVal == FORCECAMERA_SPECTATE_ANYONE)
+		{
+			retVal = (int)CVAR_GET_FLOAT("mp_forcecamera");
+		}
+	}
 	else
-		iStart = ENTINDEX(edict());
-	int	    iCurrent = iStart;
+	{
+		retVal = FORCECAMERA_ONLY_FRIST_PERSON;
+	}
+
+	return retVal;
+}
+
+void CBasePlayer::Observer_FindNextPlayer(bool bReverse, const char *name)   // Last check: 2013, November 18.
+{
+	if (m_flNextFollowTime && gpGlobals->time < m_flNextFollowTime)
+	{
+		return;
+	}
+
+	m_flNextFollowTime = gpGlobals->time + 0.25;
+
+	int iStart = m_hObserverTarget ? m_hObserverTarget->entindex() : entindex();
+	int iCurrent = iStart;
+
 	m_hObserverTarget = NULL;
+
 	int iDir = bReverse ? -1 : 1;
+	bool bForceSameTeam = (GetForceCamera() != FORCECAMERA_SPECTATE_ANYONE && m_iTeam != SPECTATOR);
 
 	do
 	{
 		iCurrent += iDir;
 
-		// Loop through the clients
 		if (iCurrent > gpGlobals->maxClients)
+		{
 			iCurrent = 1;
-		if (iCurrent < 1)
+		}
+		else if (iCurrent < 1)
+		{
 			iCurrent = gpGlobals->maxClients;
+		}
 
-		CBaseEntity *pEnt = UTIL_PlayerByIndex(iCurrent);
-		if (!pEnt)
-			continue;
-		if (pEnt == this)
-			continue;
-		// Don't spec observers or players who haven't picked a class yet
-		//if ( ((CBasePlayer*)pEnt)->IsObserver() || (pEnt->pev->effects & EF_NODRAW) )
-		//	continue;
+		m_hObserverTarget = Observer_IsValidTarget(iCurrent, bForceSameTeam);
 
-		// MOD AUTHORS: Add checks on target here.
+		if (m_hObserverTarget)
+		{
+			if (!name)
+			{
+				break;
+			}
 
-		m_hObserverTarget = pEnt;
-		break;
+			CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex(m_hObserverTarget->entindex());
+
+			if (!strcmp(name, STRING(pPlayer->pev->netname)))
+			{
+				break;
+			}
+		}
 	} while (iCurrent != iStart);
 
-	// Did we find a target?
 	if (m_hObserverTarget)
 	{
-		// Move to the target
 		UTIL_SetOrigin(pev, m_hObserverTarget->pev->origin);
 
-		// ALERT( at_console, "Now Tracking %s\n", STRING( m_hObserverTarget->pev->netname ) );
+		MESSAGE_BEGIN(MSG_ONE, gmsgSpecHealth2, NULL, pev);
+			WRITE_BYTE(min(0, m_hObserverTarget->pev->health));
+			WRITE_BYTE(m_hObserverTarget->entindex());
+		MESSAGE_END();
 
-		// Store the target in pev so the physics DLL can get to it
 		if (pev->iuser1 != OBS_ROAMING)
-			pev->iuser2 = ENTINDEX(m_hObserverTarget->edict());
+		{
+			pev->iuser2 = m_hObserverTarget->entindex();
+		}
+
+		UpdateClientEffects(this, pev->iuser1);
 	}
 }
 
