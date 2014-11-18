@@ -1071,6 +1071,14 @@ bool CBasePlayer::NeedsPrimaryAmmo(void)  // Last check: 2013, September 14.
 	return pWeapon && pWeapon->m_iId != WEAPON_SHIELDGUN && m_rgAmmo[pWeapon->m_iPrimaryAmmoType] < pWeapon->iMaxAmmo1();
 }
 
+bool CBasePlayer::NeedsSecondaryAmmo(void)  // Last check: 2013, September 14.
+{
+	CBasePlayerWeapon* pWeapon = (CBasePlayerWeapon *)m_rgpPlayerItems[PISTOL_SLOT];
+
+	return pWeapon && m_rgAmmo[pWeapon->m_iPrimaryAmmoType] < pWeapon->iMaxAmmo1();
+}
+
+
 void CBasePlayer::CheckPowerups(entvars_s *pev) // Last check: 2013, November 17.
 {
 	if (pev->health > 0)
