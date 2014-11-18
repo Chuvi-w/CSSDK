@@ -2568,6 +2568,34 @@ void CBasePlayer::SwitchTeam(void)
 	}
 }
 
+void CBasePlayer::SpawnClientSideCorpse(void)  // Last check: 2013, November 18.
+{
+	char *infobuffer = g_engfuncs.pfnGetInfoKeyBuffer(edict());
+	char *pModel = g_engfuncs.pfnInfoKeyValue(infobuffer, "model");
+
+	MESSAGE_BEGIN(MSG_ALL, gmsgSendCorpse);
+		WRITE_STRING(pModel);
+		WRITE_LONG(pev->origin.x * 128);
+		WRITE_LONG(pev->origin.y * 128);
+		WRITE_LONG(pev->origin.z * 128);
+		WRITE_COORD(pev->angles.x);
+		WRITE_COORD(pev->angles.y);
+		WRITE_COORD(pev->angles.z);
+		WRITE_LONG((pev->animtime - gpGlobals->time) * 100);
+		WRITE_BYTE(pev->sequence);
+		WRITE_BYTE(pev->body);
+		WRITE_BYTE(m_iTeam);
+		WRITE_BYTE(entindex());
+	MESSAGE_END();
+
+	m_canSwitchObserverModes = true;
+
+// 	if (TheTutor)
+// 	{
+// 		TheTutor->OnEvent(EVENT_CLIENT_CORPSE_SPAWNED, this, NULL);
+// 	}
+}
+
 // CS
 void CBasePlayer::SyncRoundTimer(void)
 {
@@ -3934,7 +3962,7 @@ void CBasePlayer::PlayerDeathThink(void)  // Last check: 2013, November 18.
 	StopAnimation();
 	pev->effects |= EF_NOINTERP;
 
-	bool bAnyButtonDown = (pev->button & ~IN_SCORE);
+	BOOL fAnyButtonDown = (pev->button & ~IN_SCORE);
 
 	if (g_pGameRules->IsMultiplayer() && gpGlobals->time > m_fDeadTime + 3 && !(m_afPhysicsFlags & PFLAG_OBSERVER))
 	{
@@ -3944,7 +3972,7 @@ void CBasePlayer::PlayerDeathThink(void)  // Last check: 2013, November 18.
 
 	if (pev->deadflag == DEAD_DEAD && m_iTeam != UNASSIGNED && m_iTeam != SPECTATOR)
 	{
-		if (bAnyButtonDown)
+		if (fAnyButtonDown)
 		{
 			return;
 		}
