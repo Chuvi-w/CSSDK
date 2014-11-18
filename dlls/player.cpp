@@ -749,6 +749,27 @@ void CBasePlayer::ParseAutoBuyString(const char *string, const bool &boughtPrima
 	}
 }
 
+bool CBasePlayer::ShouldExecuteAutoBuyCommand(const AutoBuyInfoStruct *commandInfo, bool boughtPrimary, bool boughtSecondary)
+{
+	if (!commandInfo)
+	{
+		return false;
+	}
+
+	if (boughtPrimary && FBitSet(commandInfo->m_class, AUTOBUYCLASS_PRIMARY) && !FBitSet(commandInfo->m_class, AUTOBUYCLASS_AMMO))
+	{
+		return false;
+	}
+
+	if (boughtSecondary && FBitSet(commandInfo->m_class, AUTOBUYCLASS_SECONDARY) && !FBitSet(commandInfo->m_class, AUTOBUYCLASS_AMMO))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+
 
 void CBasePlayer::Blind(float duration, float holdTime, float fadeTime, int alpha) // Last check : 2014, November 11.
 {
