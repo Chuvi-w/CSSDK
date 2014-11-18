@@ -498,7 +498,7 @@ public:
 	void Observer_SetMode(int iMode);
 	void Observer_CheckTarget(void);
 	void Observer_CheckProperties(void);
-	int IsObserver(void);
+	int IsObserver(void) { return pev->iuser1; }  // Last check: 2013, November 18.
 
 	void PlantC4(void);
 
