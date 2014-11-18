@@ -27,6 +27,7 @@ extern int gmsgCurWeapon;
 extern int gmsgSetFOV;
 extern int gmsgStatusIcon;
 extern int gmsgSpecHealth2;
+extern int gmsgCrosshair;
 
 #define FORCECAMERA_SPECTATE_ANYONE    0
 #define FORCECAMERA_SPECTATE_ONLY_TEAM 1
@@ -376,58 +377,81 @@ void CBasePlayer::Observer_CheckProperties(void)  // Last check: 2013, November 
 	}
 }
 
-// Attempt to change the observer mode
-void CBasePlayer::Observer_SetMode(int iMode)
+void CBasePlayer::Observer_SetMode(int iMode)  // Last check: 2013, November 18.
 {
-	// Just abort if we're changing to the mode we're already in
 	if (iMode == pev->iuser1)
-		return;
-
-	// is valid mode ?
-	if (iMode < OBS_CHASE_LOCKED || iMode > OBS_MAP_CHASE)
-		iMode = OBS_IN_EYE; // now it is
-	// verify observer target again
-	if (m_hObserverTarget != NULL)
 	{
-		CBaseEntity *pEnt = m_hObserverTarget;
-
-		if ((pEnt == this) || (pEnt == NULL))
-			m_hObserverTarget = NULL;
-		else if ( /*((CBasePlayer*)pEnt)->IsObserver()|| */ (pEnt->pev->effects & EF_NODRAW))
-			m_hObserverTarget = NULL;
+		return;
 	}
 
-	// set spectator mode
-	pev->iuser1 = iMode;
+	int forcecamera = GetForceCamera();
 
-	// if we are not roaming, we need a valid target to track
-	if ((iMode != OBS_ROAMING) && (m_hObserverTarget == NULL))
+	if (iMode < OBS_CHASE_LOCKED || iMode > OBS_MAP_CHASE)
 	{
-		Observer_FindNextPlayer(false, NULL);
+		iMode = OBS_IN_EYE;
+	}
 
-		// if we didn't find a valid target switch to roaming
-		if (m_hObserverTarget == NULL)
+	int oldMode = pev->iuser1;
+
+	if (m_iTeam != SPECTATOR)
+	{
+		if (forcecamera == FORCECAMERA_SPECTATE_ONLY_TEAM)
 		{
-			ClientPrint(pev, HUD_PRINTCENTER, "#Spec_NoTarget");
-			pev->iuser1 = OBS_ROAMING;
+			if (iMode == OBS_ROAMING)
+			{
+				iMode = OBS_MAP_FREE;
+			}
+		}
+		else if (forcecamera == FORCECAMERA_ONLY_FRIST_PERSON)
+		{
+			iMode = OBS_IN_EYE;
 		}
 	}
 
-	// set target if not roaming
-	if (pev->iuser1 == OBS_ROAMING)
+	if (m_hObserverTarget)
 	{
-		pev->iuser2 = 0;
+		CBasePlayer *pPlayer = (CBasePlayer *)((CBaseEntity *)m_hObserverTarget);
+
+		if (pPlayer == this || !pPlayer || pPlayer->has_disconnected || pPlayer->IsObserver() || (pPlayer->pev->effects & EF_NODRAW) || (forcecamera != FORCECAMERA_SPECTATE_ANYONE && pPlayer->m_iTeam != m_iTeam))
+		{
+			m_hObserverTarget = NULL;
+		}
 	}
-	else
-		pev->iuser2 = ENTINDEX(m_hObserverTarget->edict());
 
-	pev->iuser3 = 0;	// clear second target from death cam
+	pev->iuser1 = iMode;
 
-	// print spepctaor mode on client screen
+	if (iMode != OBS_ROAMING)
+	{
+		if (!m_hObserverTarget)
+		{
+			Observer_FindNextPlayer();
+
+			if (!m_hObserverTarget)
+			{
+				ClientPrint(pev, HUD_PRINTCENTER, "#Spec_NoTarget");
+				pev->iuser1 = OBS_ROAMING;
+			}
+		}
+	}
+
+	pev->iuser2 = (pev->iuser1 != OBS_ROAMING) ? m_hObserverTarget->entindex() : 0;
+	pev->iuser3 = 0;
+
+	if (m_hObserverTarget)
+	{
+		UTIL_SetOrigin(pev, m_hObserverTarget->pev->origin);
+	}
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgCrosshair, NULL, pev);
+		WRITE_BYTE((iMode == OBS_ROAMING) ? 1 : 0);
+	MESSAGE_END();
+
+	UpdateClientEffects(this, oldMode);
 
 	char modemsg[16];
 	sprintf(modemsg, "#Spec_Mode%i", pev->iuser1);
 	ClientPrint(pev, HUD_PRINTCENTER, modemsg);
 
 	m_iObserverLastMode = iMode;
+	m_bWasFollowing     = false;
 }
