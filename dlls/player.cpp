@@ -2236,6 +2236,49 @@ void CBasePlayer::SetProgressBarTime(int time)
 	}
 }
 
+void CBasePlayer::SetProgressBarTime2(int time, float timeElapsed)  // Last check: 2013, November 18.
+{
+	if (time)
+	{
+		m_progressStart = gpGlobals->time - timeElapsed;
+		m_progressEnd   = time + m_progressStart;
+	}
+	else
+	{
+		time = 0;
+		m_progressStart = 0;
+		m_progressEnd   = 0;
+	}
+
+	int iTimeElapsed = (time * 100.0 / (m_progressEnd - m_progressStart));
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgBarTime2, NULL, pev);
+		WRITE_SHORT(time);
+		WRITE_SHORT(iTimeElapsed);
+	MESSAGE_END();
+
+	CBaseEntity *pPlayer = NULL;
+	int myIndex = entindex();
+
+	while ((pPlayer = UTIL_FindEntityByClassname(pPlayer, "player")) != NULL)
+	{
+		if (FNullEnt(pPlayer->edict()))
+		{
+			break;
+		}
+
+		CBasePlayer *player = GetClassPtr((CBasePlayer *)pPlayer->pev);
+
+		if (player->pev->iuser1 == OBS_IN_EYE && player->pev->iuser2 == myIndex)
+		{
+			MESSAGE_BEGIN(MSG_ONE, gmsgBarTime, NULL, player->pev);
+				WRITE_SHORT(time);
+				WRITE_SHORT(iTimeElapsed);
+			MESSAGE_END();
+		}
+	}
+}
+
 // CS
 void CBasePlayer::SetScoreboardAttributes(CBasePlayer *destination)
 {
