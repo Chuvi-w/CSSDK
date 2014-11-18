@@ -642,7 +642,7 @@ public:
 	void JoiningThink(void);
 
 	void RemoveLevelText(void);
-	void MenuPrint(CBasePlayer *pl, const char *msg);
+	void MenuPrint(const char *pszText);
 	void ResetMenu(void);
 
 	void SyncRoundTimer(void);

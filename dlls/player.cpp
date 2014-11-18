@@ -1849,6 +1849,34 @@ void CBasePlayer::Radio(const char *msg_id, const char *msg_verbose, short pitch
 	}
 }
 
+#define MENUBUF_LEN 51
+
+void CBasePlayer::MenuPrint(const char *pszText) // Last check: 2013, November 18.
+{
+	char szBuffer[MENUBUF_LEN + 1];
+
+	while (strlen(pszText) >= MENUBUF_LEN - 1)
+	{
+		strncpy(szBuffer, pszText, MENUBUF_LEN - 1);
+		szBuffer[MENUBUF_LEN - 1] = '\0';
+		pszText += MENUBUF_LEN - 1;
+
+		MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, pev);
+			WRITE_SHORT(0xFFFF);
+			WRITE_CHAR(-1);
+			WRITE_BYTE(1);
+			WRITE_STRING(szBuffer);
+		MESSAGE_END();
+	}
+
+	MESSAGE_BEGIN(MSG_ONE, gmsgShowMenu, NULL, pev);
+		WRITE_SHORT(0xFFFF);
+		WRITE_CHAR(-1);
+		WRITE_BYTE(0);
+		WRITE_STRING(pszText);
+	MESSAGE_END();
+}
+
 void CBasePlayer::RemoveLevelText(void)  // Last check: 2013, November 17.
 {
 	ResetMenu();
