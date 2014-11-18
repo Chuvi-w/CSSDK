@@ -696,7 +696,7 @@ public:
 	bool IsReloading(void);
 	bool IsBlind(const CBasePlayer *pPlayer) { return m_blindUntilTime > gpGlobals->time; }
 	virtual void Blind(float duration, float holdTime, float fadeTime, int alpha);
-	virtual void OnTouchingWeapon(CWeaponBox *box) {}
+	virtual void OnTouchingWeapon(CWeaponBox *box) { /*empty */ }  // Last check: 2013, November 18.
 
 	// bool IsAutoFollowAllowed( const CBasePlayer *pPlayer); // Unsure.
 	void InhibitAutoFollow(float duration);
