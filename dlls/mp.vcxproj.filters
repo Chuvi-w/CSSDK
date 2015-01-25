@@ -267,6 +267,12 @@
     <ClCompile Include="..\game_shared\shared_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="training_gamerules.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ammo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="activity.h">
@@ -414,6 +420,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="maprules.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="training_gamerules.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
